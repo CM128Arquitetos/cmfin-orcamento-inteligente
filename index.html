@@ -2169,6 +2169,29 @@ body.cmfin-authenticated .cmfin-login-screen {
   }
 }
 
+
+.cmfin-password-toggle {
+  color: #60756f;
+  background: transparent;
+}
+.cmfin-password-toggle:hover {
+  color: #0c3b34;
+  background: rgba(12, 59, 52, 0.06);
+}
+.cmfin-eye-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+.cmfin-eye-icon path,
+.cmfin-eye-icon circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 </style>
 </head>
 <body>
@@ -2376,6 +2399,27 @@ body.cmfin-authenticated .cmfin-login-screen {
       }
     }
 
+    
+    function cmfinOpenSupport(event){
+      if(event) event.preventDefault();
+      const links = [
+        'https://api.whatsapp.com/send/?phone=5588981402633&text&type=phone_number&app_absent=0',
+        'https://api.whatsapp.com/send/?phone=5588988045794&text&type=phone_number&app_absent=0'
+      ];
+      window.open(links[0], '_blank', 'noopener,noreferrer');
+      setTimeout(() => {
+        window.open(links[1], '_blank', 'noopener,noreferrer');
+      }, 450);
+
+      if(typeof toast === 'function'){
+        toast('Abrimos os contatos de suporte no WhatsApp. Caso o navegador bloqueie uma das abas, permita pop-ups para este site.', {
+          title: 'Suporte CMFin',
+          type: 'info',
+          icon: '☎'
+        });
+      }
+    }
+
     function toggleCmfinPassword(){
       const input = document.getElementById('cmfinLoginPassword');
       if(!input) return;
@@ -2446,7 +2490,6 @@ body.cmfin-authenticated .cmfin-login-screen {
             <label for="cmfinLoginEmail">E-mail ou usuário</label>
             <div class="cmfin-login-input-wrap">
               <input id="cmfinLoginEmail" type="text" autocomplete="username" placeholder="seu@email.com">
-              <span class="login-field-icon">@</span>
             </div>
           </div>
 
@@ -2454,13 +2497,16 @@ body.cmfin-authenticated .cmfin-login-screen {
             <label for="cmfinLoginPassword">Senha</label>
             <div class="cmfin-login-input-wrap">
               <input id="cmfinLoginPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha">
-              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinPassword()" aria-label="Mostrar ou ocultar senha">👁</button>
+              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinPassword()" aria-label="Mostrar ou ocultar senha"><svg class="cmfin-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.25 12s3.75-6.25 9.75-6.25S21.75 12 21.75 12 18 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                <circle cx="12" cy="12" r="2.75"></circle>
+              </svg></button>
             </div>
           </div>
 
           <div class="cmfin-login-options">
             <label class="cmfin-login-check"><input id="cmfinRemember" type="checkbox" checked> Manter conectado</label>
-            <a class="cmfin-login-link" href="mailto:grupo10.admp@gmail.com">Suporte</a>
+            <a class="cmfin-login-link" href="#" onclick="cmfinOpenSupport(event)">Suporte</a>
           </div>
 
           <button class="cmfin-login-btn" type="submit">Entrar no sistema</button>
@@ -2480,7 +2526,10 @@ body.cmfin-authenticated .cmfin-login-screen {
             <label for="cmfinNewPassword">Nova senha</label>
             <div class="cmfin-login-input-wrap">
               <input id="cmfinNewPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres">
-              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinNewPassword()" aria-label="Mostrar ou ocultar senha">👁</button>
+              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinNewPassword()" aria-label="Mostrar ou ocultar senha"><svg class="cmfin-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.25 12s3.75-6.25 9.75-6.25S21.75 12 21.75 12 18 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                <circle cx="12" cy="12" r="2.75"></circle>
+              </svg></button>
             </div>
           </div>
 
@@ -2488,7 +2537,10 @@ body.cmfin-authenticated .cmfin-login-screen {
             <label for="cmfinConfirmPassword">Confirmar nova senha</label>
             <div class="cmfin-login-input-wrap">
               <input id="cmfinConfirmPassword" type="password" autocomplete="new-password" placeholder="Repita a nova senha">
-              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinConfirmPassword()" aria-label="Mostrar ou ocultar senha">👁</button>
+              <button type="button" class="cmfin-password-toggle" onclick="toggleCmfinConfirmPassword()" aria-label="Mostrar ou ocultar senha"><svg class="cmfin-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.25 12s3.75-6.25 9.75-6.25S21.75 12 21.75 12 18 18.25 12 18.25 2.25 12 2.25 12Z"></path>
+                <circle cx="12" cy="12" r="2.75"></circle>
+              </svg></button>
             </div>
           </div>
 
