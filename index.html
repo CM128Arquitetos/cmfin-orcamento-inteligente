@@ -2790,6 +2790,30 @@ body.cmfin-authenticated .cmfin-login-screen {
       localStorage.removeItem(CMFIN_BUDGET_LICENSE_USER_KEY);
     }
 
+    function cmfinDataStorageKey(licenseId){
+      const id = String(licenseId || cmfinGetActiveLicenseId() || '').trim();
+      return id ? `precificadorEltonV1:${id}` : 'precificadorEltonV1:sem_licenca';
+    }
+
+    function cmfinSalvarLocalPorLicenca(){
+      const key = cmfinDataStorageKey();
+      localStorage.setItem(key, JSON.stringify(data));
+      return key;
+    }
+
+    function cmfinCarregarLocalPorLicenca(licenseId){
+      const key = cmfinDataStorageKey(licenseId);
+      const stored = localStorage.getItem(key);
+      if(!stored) return false;
+      try {
+        data = mergeDefaults(JSON.parse(stored), defaultData);
+        return true;
+      } catch(e){
+        console.warn('Não foi possível carregar dados locais desta licença:', e);
+        return false;
+      }
+    }
+
 
     function cmfinOrcamentoHeaders(extra = {}){
       return {
@@ -2914,7 +2938,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(Array.isArray(rows) && rows.length && rows[0]?.dados){
         data = mergeDefaults(rows[0].dados, defaultData);
         normalizeVehicles();
-        cmfinPersistData({ cloud: false });
+        cmfinPersistData();
         cmfinCloudLoadedLicenseId = licenseId;
 
         if(typeof renderConfig === 'function'){
@@ -2950,7 +2974,23 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(options.resetWhenEmpty){
         data = structuredClone(defaultData);
         normalizeVehicles();
-        cmfinPersistData();
+        cmfinCloudLoadedLicenseId = licenseId;
+        cmfinPersistData({ cloud: false });
+        await cmfinSalvarDadosNuvem(false);
+        if(typeof renderConfig === 'function'){
+          renderConfig();
+          renderVehicleDatalist();
+          renderVehicles();
+          renderComplementaryTypes();
+          renderComplementaryServices();
+          renderHistory();
+          renderSmartSuggestions();
+          renderBrandCustomizationFields();
+          applyBrandCustomization();
+          calculate();
+          syncProfessionalShareRows();
+          updateHistorySaveButton();
+        }
       }
 
       return false;
@@ -3004,7 +3044,14 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
 
     function cmfinPersistData(options = {}){
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinSalvarLocalPorLicenca();
+
+      // Mantém a chave antiga apenas como compatibilidade do próprio navegador,
+      // mas a leitura principal agora é sempre individual por licença.
+      if(!cmfinGetActiveLicenseId()){
+        localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      }
+
       if(options.cloud !== false) cmfinAgendarSalvarNuvem();
     }
 
@@ -3094,10 +3141,12 @@ body.cmfin-authenticated .cmfin-login-screen {
         if(licenseChanged){
           data = structuredClone(defaultData);
           normalizeVehicles();
-          cmfinPersistData();
+          cmfinPersistData({ cloud: false });
         }
         localStorage.setItem('cmfinLastLoadedBudgetLicenseId', cmfinPendingLicenseId);
 
+        // Carrega primeiro o cache local individual desta licença e depois confirma com a nuvem.
+        cmfinCarregarLocalPorLicenca(cmfinPendingLicenseId);
         await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: true });
 
         cmfinPendingPasswordChangeUser = licenca.email || licenca.cliente || user;
@@ -4405,17 +4454,27 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
 
     function loadAll(){
-      const stored = localStorage.getItem('precificadorEltonV1');
-      if(stored){ try { data = mergeDefaults(JSON.parse(stored), defaultData); } catch(e){} }
+      const activeLicenseId = cmfinGetActiveLicenseId();
+
+      if(activeLicenseId){
+        // A leitura local agora é separada por licença. Assim um cliente não herda
+        // configurações salvas por outro cliente no mesmo navegador.
+        if(!cmfinCarregarLocalPorLicenca(activeLicenseId)){
+          data = structuredClone(defaultData);
+        }
+      } else {
+        // Sem login/licença ativa: abre limpo. Não usa mais o armazenamento geral como fonte principal.
+        data = structuredClone(defaultData);
+      }
+
       const configPreset = 'cm128_finance_v40_sem_margem_minima_2026_05_08';
       if(!data.config || data.config._preset !== configPreset){
         data.config = Object.assign({}, defaultData.config, { _preset: configPreset });
       }
       normalizeVehicles();
-      cmfinPersistData();
+      cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
       renderConfig(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
-      const activeLicenseId = cmfinGetActiveLicenseId();
       if(activeLicenseId) cmfinCarregarDadosNuvem(activeLicenseId, { showError: false });
     }
     function toggleActionMenu(event){
@@ -6471,7 +6530,7 @@ ${p.obs}` : ''}`;
       const csv = rows.map(r=>r.map(c=>`"${String(c??'').replaceAll('"','""')}"`).join(';')).join('\n');
       const blob = new Blob([csv], {type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historico_orcamentos.csv'; a.click(); URL.revokeObjectURL(a.href);
     }
-    window.addEventListener('beforeunload', () => localStorage.setItem('precificadorEltonV1', JSON.stringify(data))); 
+    window.addEventListener('beforeunload', () => cmfinSalvarLocalPorLicenca()); 
     loadAll();
     const pd = document.getElementById('propData'); if(pd && !pd.value) pd.value = val('data') || todayISO();
     renderDeliverableChecklist();
