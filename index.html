@@ -1794,6 +1794,99 @@ body.cmfin-authenticated .cmfin-login-screen {
 .cmfin-login-note strong {
   color: #10251f;
 }
+.cmfin-toast-host {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+.cmfin-toast {
+  min-width: 320px;
+  max-width: 420px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(9, 28, 23, 0.96);
+  color: #f5fbf8;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 22px 46px rgba(0,0,0,.30);
+  backdrop-filter: blur(14px);
+  transform: translateY(-8px) scale(.98);
+  opacity: 0;
+  transition: opacity .22s ease, transform .22s ease;
+  pointer-events: auto;
+  overflow: hidden;
+}
+.cmfin-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.cmfin-toast::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #15a36d 0%, #6ee7b7 100%);
+  opacity: .95;
+}
+.cmfin-toast-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0f4737 0%, #0a2b22 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #7df0c2;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.cmfin-toast-body {
+  min-width: 0;
+}
+.cmfin-toast-title {
+  margin: 0 0 4px;
+  color: #ffffff;
+  font-size: .96rem;
+  font-weight: 900;
+  letter-spacing: .01em;
+}
+.cmfin-toast-message {
+  margin: 0;
+  color: rgba(245,251,248,.82);
+  font-size: .85rem;
+  line-height: 1.45;
+}
+.cmfin-toast-success::after {
+  background: linear-gradient(90deg, #15a36d 0%, #70f0c0 100%);
+}
+.cmfin-toast-info::after {
+  background: linear-gradient(90deg, #2c7be5 0%, #7db6ff 100%);
+}
+.cmfin-toast-error::after {
+  background: linear-gradient(90deg, #d93025 0%, #ff8e86 100%);
+}
+@media (max-width: 640px) {
+  .cmfin-toast-host {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .cmfin-toast {
+    min-width: 0;
+    max-width: none;
+  }
+}
 .cmfin-login-foot {
   color: rgba(255,255,255,.58);
   font-size: .84rem;
@@ -1836,6 +1929,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 </style>
 </head>
 <body>
+  <div class="cmfin-toast-host" id="cmfinToastHost" aria-live="polite" aria-atomic="true"></div>
   <script>
     if (localStorage.getItem('cmfinAuth') === 'ok') {
       document.body.classList.add('cmfin-authenticated');
@@ -1893,7 +1987,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       document.body.classList.add('cmfin-authenticated');
       const pwd = document.getElementById('cmfinLoginPassword');
       if(pwd) pwd.value = '';
-      if(typeof toast === 'function') toast('Acesso liberado. Bem-vindo ao CMFin.');
+      if(typeof toast === 'function') toast('Seu acesso foi validado com sucesso. Bem-vindo ao painel do CMFin.', { title: 'Login realizado com sucesso', type: 'success', icon: '✓' });
     }
 
     function cmfinShowPasswordChange(user){
@@ -2053,8 +2147,8 @@ body.cmfin-authenticated .cmfin-login-screen {
           <div class="cmfin-login-error" id="cmfinLoginError">Informe e-mail/usuário e senha para continuar.</div>
 
           <div class="cmfin-login-note">
-            <strong>Senha temporária no primeiro acesso.</strong><br>
-            Quando o usuário receber uma senha temporária, o sistema solicitará a criação de uma nova senha antes de liberar o painel.
+            <strong>Primeiro acesso com senha temporária.</strong><br>
+            Após o primeiro login, o sistema solicitará a criação de uma senha definitiva para concluir a ativação da conta e liberar o painel com segurança.
           </div>
         </div>
 
@@ -2087,11 +2181,11 @@ body.cmfin-authenticated .cmfin-login-screen {
           <button class="cmfin-login-secondary-btn" type="button" onclick="cmfinBackToLogin()">Voltar ao login</button>
 
           <div class="cmfin-login-error" id="cmfinPasswordChangeError">Confira a nova senha e tente novamente.</div>
-          <div class="cmfin-login-success" id="cmfinPasswordChangeSuccess">Senha alterada com sucesso. Acesso liberado.</div>
+          <div class="cmfin-login-success" id="cmfinPasswordChangeSuccess">Senha definitiva criada com sucesso. Seu acesso foi liberado.</div>
 
           <div class="cmfin-login-note">
-            <strong>Pronto para integração com Supabase.</strong><br>
-            Na conexão real, o sistema atualizará a senha temporária no banco e registrará a data da alteração.
+            <strong>Definição da senha definitiva.</strong><br>
+            Esta nova senha substituirá a senha temporária enviada inicialmente e passará a ser a senha oficial de acesso da conta.
           </div>
         </div>
       </form>
@@ -2942,7 +3036,31 @@ body.cmfin-authenticated .cmfin-login-screen {
     });
 
     function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); localStorage.setItem('precificadorEltonV1', JSON.stringify(data)); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); renderSmartSuggestions(); updateHistorySaveButton(); toast('Dados salvos neste navegador.'); }
-    function toast(msg){ alert(msg); }
+    function toast(msg, options = {}){
+      const host = document.getElementById('cmfinToastHost');
+      const title = options.title || 'Notificação do sistema';
+      const type = options.type || 'info';
+      const icon = options.icon || (type === 'success' ? '✓' : type === 'error' ? '!' : '•');
+      if(!host){
+        console.log(title + ': ' + msg);
+        return;
+      }
+      const toastEl = document.createElement('div');
+      toastEl.className = `cmfin-toast cmfin-toast-${type}`;
+      toastEl.innerHTML = `
+        <div class="cmfin-toast-icon">${icon}</div>
+        <div class="cmfin-toast-body">
+          <div class="cmfin-toast-title">${title}</div>
+          <p class="cmfin-toast-message">${msg}</p>
+        </div>`;
+      host.appendChild(toastEl);
+      requestAnimationFrame(() => toastEl.classList.add('show'));
+      const removeToast = () => {
+        toastEl.classList.remove('show');
+        setTimeout(() => toastEl.remove(), 220);
+      };
+      setTimeout(removeToast, options.duration || 3600);
+    }
     function openTab(id){ document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); } if(id==='architects') renderArchitects(); if(id==='complementary') renderComplementaryServices(); }
 
     function renderConfig(){
