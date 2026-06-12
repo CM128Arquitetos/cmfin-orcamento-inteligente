@@ -2192,9 +2192,193 @@ body.cmfin-authenticated .cmfin-login-screen {
   stroke-linejoin: round;
 }
 
+
+/* Remove o olho nativo do navegador para manter apenas o ícone personalizado do CMFin */
+.cmfin-login-field input[type="password"]::-ms-reveal,
+.cmfin-login-field input[type="password"]::-ms-clear,
+.cmfin-login-field input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.cmfin-password-toggle {
+  color: #60756f;
+  background: transparent;
+}
+.cmfin-password-toggle:hover {
+  color: #0c3b34;
+  background: rgba(12, 59, 52, 0.06);
+}
+.cmfin-eye-icon {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+.cmfin-eye-icon path,
+.cmfin-eye-icon circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.05;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ===== CMFin - Modal premium de suporte ===== */
+.cmfin-support-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 18, 16, .58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+.cmfin-support-modal.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.cmfin-support-card {
+  width: min(100%, 520px);
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(10, 35, 30, .24);
+  border: 1px solid rgba(15, 44, 38, .08);
+  position: relative;
+  overflow: hidden;
+}
+.cmfin-support-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #0c3b34 0%, #0e5f4f 58%, #ef233c 100%);
+}
+.cmfin-support-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.cmfin-support-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0c3b34, #0e5f4f);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 900;
+  flex: 0 0 auto;
+  box-shadow: 0 12px 28px rgba(12, 59, 52, .22);
+}
+.cmfin-support-card h3 {
+  margin: 0 0 6px;
+  color: #0f2c26;
+  font-size: 1.65rem;
+  line-height: 1.1;
+}
+.cmfin-support-card p {
+  margin: 0;
+  color: #5b6e69;
+  font-size: .95rem;
+  line-height: 1.55;
+}
+.cmfin-support-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+.cmfin-support-option {
+  text-decoration: none;
+  border: 1px solid #dbe8e3;
+  background: #f8fbfa;
+  border-radius: 18px;
+  padding: 16px;
+  color: #10251f;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-weight: 900;
+  transition: .18s ease;
+}
+.cmfin-support-option:hover {
+  transform: translateY(-2px);
+  border-color: rgba(12, 59, 52, .28);
+  box-shadow: 0 14px 30px rgba(10, 35, 30, .10);
+}
+.cmfin-support-option span {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf4ef;
+  color: #0c3b34;
+  font-size: 1.05rem;
+}
+.cmfin-support-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.cmfin-support-close {
+  border: 0;
+  border-radius: 15px;
+  padding: 12px 16px;
+  background: #eef5f1;
+  color: #123c33;
+  font-weight: 900;
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .cmfin-support-card { padding: 24px 20px; border-radius: 24px; }
+  .cmfin-support-options { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
+  <div id="cmfinSupportModal" class="cmfin-support-modal" aria-hidden="true">
+    <div class="cmfin-support-card" role="dialog" aria-modal="true" aria-labelledby="cmfinSupportTitle">
+      <div class="cmfin-support-head">
+        <div class="cmfin-support-badge">?</div>
+        <div>
+          <h3 id="cmfinSupportTitle">Suporte CMFin</h3>
+          <p>Escolha como deseja falar com o suporte do sistema.</p>
+        </div>
+      </div>
+      <div class="cmfin-support-options">
+        <a class="cmfin-support-option" href="mailto:cm128arquitetos@gmail.com?subject=Suporte%20CMFin">
+          <span>✉</span>
+          <div>E-mail</div>
+        </a>
+        <a class="cmfin-support-option" href="https://api.whatsapp.com/send/?phone=5588981402633&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" onclick="setTimeout(() => window.open('https://api.whatsapp.com/send/?phone=5588988045794&text&type=phone_number&app_absent=0', '_blank', 'noopener,noreferrer'), 350); cmfinCloseSupport();">
+          <span>☎</span>
+          <div>WhatsApp</div>
+        </a>
+      </div>
+      <div class="cmfin-support-actions">
+        <button type="button" class="cmfin-support-close" onclick="cmfinCloseSupport()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+
   <div class="cmfin-toast-host" id="cmfinToastHost" aria-live="polite" aria-atomic="true"></div>
   <script>
     if (localStorage.getItem('cmfinAuth') === 'ok') {
@@ -2399,26 +2583,23 @@ body.cmfin-authenticated .cmfin-login-screen {
       }
     }
 
-    
     function cmfinOpenSupport(event){
       if(event) event.preventDefault();
-      const links = [
-        'https://api.whatsapp.com/send/?phone=5588981402633&text&type=phone_number&app_absent=0',
-        'https://api.whatsapp.com/send/?phone=5588988045794&text&type=phone_number&app_absent=0'
-      ];
-      window.open(links[0], '_blank', 'noopener,noreferrer');
-      setTimeout(() => {
-        window.open(links[1], '_blank', 'noopener,noreferrer');
-      }, 450);
-
-      if(typeof toast === 'function'){
-        toast('Abrimos os contatos de suporte no WhatsApp. Caso o navegador bloqueie uma das abas, permita pop-ups para este site.', {
-          title: 'Suporte CMFin',
-          type: 'info',
-          icon: '☎'
-        });
+      const modal = document.getElementById('cmfinSupportModal');
+      if(modal){
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
       }
     }
+
+    function cmfinCloseSupport(){
+      const modal = document.getElementById('cmfinSupportModal');
+      if(modal){
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
 
     function toggleCmfinPassword(){
       const input = document.getElementById('cmfinLoginPassword');
