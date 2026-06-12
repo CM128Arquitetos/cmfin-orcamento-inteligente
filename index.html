@@ -2840,7 +2840,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       }
 
       const status = cmfinLower(row.status);
-      if(status && !['ativo','ativa','active','disponivel','disponível','liberado','liberada'].includes(status)){
+      if(status && !['ativo','ativa','active','disponivel','disponível','liberado','liberada','teste','test','trial','avaliacao','avaliação'].includes(status)){
         return { ok:false, message:'Este acesso não está ativo. Entre em contato com o suporte.' };
       }
 
@@ -2942,22 +2942,26 @@ body.cmfin-authenticated .cmfin-login-screen {
         cmfinCloudLoadedLicenseId = licenseId;
 
         if(typeof renderConfig === 'function'){
-          renderConfig();
-          renderVehicleDatalist();
-          renderVehicles();
-          renderComplementaryTypes();
-          renderComplementaryServices();
-          renderHistory();
-          renderSmartSuggestions();
-          renderBrandCustomizationFields();
-          applyBrandCustomization();
-          const qpLoad=document.getElementById('qtdProfissionais');
-          if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount;
-          const critLoad=document.getElementById('criterioDivisaoProfissionais');
-          if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion;
-          calculate();
-          syncProfessionalShareRows();
-          updateHistorySaveButton();
+          try {
+            renderConfig();
+            renderVehicleDatalist();
+            renderVehicles();
+            renderComplementaryTypes();
+            renderComplementaryServices();
+            renderHistory();
+            renderSmartSuggestions();
+            renderBrandCustomizationFields();
+            applyBrandCustomization();
+            const qpLoad=document.getElementById('qtdProfissionais');
+            if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount;
+            const critLoad=document.getElementById('criterioDivisaoProfissionais');
+            if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion;
+            calculate();
+            syncProfessionalShareRows();
+            updateHistorySaveButton();
+          } catch(renderErr) {
+            console.warn('Renderização após carregar nuvem ignorada:', renderErr);
+          }
         }
 
         if(options.showToast && typeof toast === 'function'){
@@ -2978,18 +2982,22 @@ body.cmfin-authenticated .cmfin-login-screen {
         cmfinPersistData({ cloud: false });
         await cmfinSalvarDadosNuvem(false);
         if(typeof renderConfig === 'function'){
-          renderConfig();
-          renderVehicleDatalist();
-          renderVehicles();
-          renderComplementaryTypes();
-          renderComplementaryServices();
-          renderHistory();
-          renderSmartSuggestions();
-          renderBrandCustomizationFields();
-          applyBrandCustomization();
-          calculate();
-          syncProfessionalShareRows();
-          updateHistorySaveButton();
+          try {
+            renderConfig();
+            renderVehicleDatalist();
+            renderVehicles();
+            renderComplementaryTypes();
+            renderComplementaryServices();
+            renderHistory();
+            renderSmartSuggestions();
+            renderBrandCustomizationFields();
+            applyBrandCustomization();
+            calculate();
+            syncProfessionalShareRows();
+            updateHistorySaveButton();
+          } catch(renderErr) {
+            console.warn('Renderização após criar dados vazios ignorada:', renderErr);
+          }
         }
       }
 
@@ -3145,9 +3153,14 @@ body.cmfin-authenticated .cmfin-login-screen {
         }
         localStorage.setItem('cmfinLastLoadedBudgetLicenseId', cmfinPendingLicenseId);
 
-        // Carrega primeiro o cache local individual desta licença e depois confirma com a nuvem.
+        // Carrega primeiro o cache local individual desta licença.
+        // A sincronização da nuvem não pode bloquear o login.
         cmfinCarregarLocalPorLicenca(cmfinPendingLicenseId);
-        await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: true });
+        try {
+          await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: false });
+        } catch(syncErr) {
+          console.warn('Sincronização em nuvem ignorada no login:', syncErr);
+        }
 
         cmfinPendingPasswordChangeUser = licenca.email || licenca.cliente || user;
 
@@ -3173,7 +3186,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       } catch(err){
         console.error(err);
         if(error){
-          error.textContent = 'Erro ao consultar o servidor de licenças.';
+          error.textContent = 'Não foi possível validar o acesso agora. Confira a conexão ou as permissões do Supabase.';
           error.classList.add('show');
         }
         return false;
