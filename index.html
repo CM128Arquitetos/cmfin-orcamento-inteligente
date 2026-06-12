@@ -3967,7 +3967,7 @@ body.cmfin-authenticated .cmfin-login-screen {
               <div><label>Serviço</label><input id="servico" list="servicoHistoryOptions" placeholder="" oninput="calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)"><datalist id="servicoHistoryOptions"></datalist></div>
               <div><label>Complexidade</label><select id="complexidade" onchange="calculate()"><option>Baixa</option><option selected>Média</option><option>Alta</option><option>Muito alta</option></select></div>
               <div><label>Padrão do projeto</label><select id="padrao" onchange="calculate()"><option>Econômico</option><option selected>Médio</option><option>Alto</option><option>Luxo</option></select></div>
-              <div><label>Prazo</label><select id="prazo" onchange="calculate()"><option selected>Normal</option><option>Urgente</option><option>Emergencial</option></select><p class="hint">Normal: sem acréscimo. Urgente: +15%. Emergencial: +20%.</p></div>
+              <div><label>Prazo</label><select id="prazo" onchange="calculate()"><option selected>Normal</option><option>Urgente</option><option>Emergencial</option></select><p class="hint">Os acréscimos de urgência são definidos nas Configurações.</p></div>
               <div><label>Endereço / Localização</label><input id="endereco" list="enderecoHistoryOptions" placeholder="" oninput="calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)"><datalist id="enderecoHistoryOptions"></datalist></div>
               <div><label>Dias trabalhados úteis</label><input id="diasUteisProjeto" type="number" step="0.5" value="10" oninput="calculate()"></div>
               <div><label>Dias trabalhados sábados</label><input id="diasSabadosProjeto" type="number" step="0.5" value="0" oninput="calculate()"></div>
@@ -3975,14 +3975,14 @@ body.cmfin-authenticated .cmfin-login-screen {
             </div>
             <div class="divider"></div>
             <div class="form-grid three">
-              <div><label>Nº de visitas</label><input id="visitas" type="number" step="1" value="4" oninput="calculate()"></div>
-              <div><label>Distância de ida (km)</label><input id="kmVisita" type="number" step="0.1" value="0" oninput="calculate()"></div>
+              <div><label>Nº de visitas</label><input id="visitas" type="number" step="1" value="0" oninput="calculate()"></div>
+              <div><label>Distância de ida (km)</label><input id="kmVisita" type="number" step="0.1" value="0" oninput="calculate()"><span class="field-help">Informe apenas a ida; o sistema calcula ida e volta.</span></div>
               <div class="vehicle-searchbox"><label>Modelo do veículo</label><input id="modeloVeiculo" list="vehicleOptions" placeholder="Selecione um veículo cadastrado" oninput="updateBudgetVehicleSuggestions(); calculate()" onchange="selectVehicleFromInput(true); calculate()"><datalist id="vehicleOptions"></datalist><span class="field-help">Aqui aparecem somente os veículos salvos na sua lista de uso.</span><div id="budgetVehicleSuggestionPanel" class="vehicle-suggestion-panel"></div></div>
               <div><label>Km/L cidade</label><input id="kmCidade" type="number" step="0.1" value="0" oninput="calculate()"></div>
               <div><label>Km/L estrada</label><input id="kmEstrada" type="number" step="0.1" value="0" oninput="calculate()"></div>
               <div><label>Tipo de trajeto</label><select id="tipoTrajeto" onchange="calculate()"><option value="cidade">Cidade</option><option value="estrada">Estrada</option><option value="misto" selected>Misto</option></select></div>
-              <div><label>Valor combustível/L</label><input id="valorCombustivel" type="number" step="0.01" value="7.19" oninput="calculate()"></div>
-              <div class="field-nowrap"><label>Manutenção/desgaste por visita</label><input id="manutencaoVisita" type="number" step="0.01" value="50" oninput="calculate()"></div>
+              <div><label>Valor combustível/L</label><input id="valorCombustivel" type="number" step="0.01" value="0" oninput="calculate()"></div>
+              <div class="field-nowrap"><label>Manutenção/desgaste por visita</label><input id="manutencaoVisita" type="number" step="0.01" value="0" oninput="calculate()"></div>
               <div><label>Valor da alimentação/visita</label><input id="valorAlimentacao" type="number" step="0.01" value="0" oninput="calculate()"></div>
               <div><label>Valor total do deslocamento</label><input id="deslocamentoSugerido" type="number" step="0.01" value="0" readonly></div>
               <div><label>Desconto comercial (%)</label><input id="desconto" type="number" step="0.5" value="0" oninput="calculate()"></div>
@@ -4623,6 +4623,8 @@ body.cmfin-authenticated .cmfin-login-screen {
         imposto: 0,
         margemAlvo: 0,
         contingenciaPadrao: 0,
+        prazoUrgente: 0,
+        prazoEmergencial: 0,
         km: 0,
         visitaHoras: 0,
         rrtProjeto: 0,
@@ -4632,7 +4634,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       },
       factors: {
         complexidade: { 'Baixa': {h:.85,r:.03}, 'Média': {h:1,r:.06}, 'Alta': {h:1.25,r:.12}, 'Muito alta': {h:1.5,r:.18} },
-        prazo: { 'Normal': {perc:0}, 'Urgente': {perc:.15}, 'Emergencial': {perc:.20} },
+        prazo: { 'Normal': {perc:0}, 'Urgente': {perc:0}, 'Emergencial': {perc:0} },
         padrao: { 'Econômico': .9, 'Médio': 1, 'Alto': 1.2, 'Luxo': 1.4 },
         localizacao: { 'Online': 1, 'Local': 1, 'Outra cidade': 1.1, 'Outro estado': 1.2 }
       },
@@ -4938,13 +4940,15 @@ body.cmfin-authenticated .cmfin-login-screen {
         ['imposto','Imposto/nota fiscal (%)', 'Percentual estimado de imposto sobre o valor cobrado. Ex.: 6 = 6%.'],
         ['margemAlvo','Margem alvo (%)', 'Lucro ideal para o projeto ser financeiramente saudável. Ex.: 20 = 20%.'],
         ['contingenciaPadrao','Contingência padrão (%)', 'Reserva para retrabalho, reuniões extras e imprevistos. Ex.: 3 = 3%.'],
+        ['prazoUrgente','Acréscimo prazo urgente (%)', 'Percentual aplicado quando o prazo for Urgente. Ex.: 15 = 15%.'],
+        ['prazoEmergencial','Acréscimo prazo emergencial (%)', 'Percentual aplicado quando o prazo for Emergencial. Ex.: 20 = 20%.'],
         ['visitaHoras','Horas por visita', 'Tempo médio gasto em cada visita, incluindo atendimento e deslocamento.'],
         ['rrtProjeto','RRT/ART projeto', 'Valor unitário previsto para responsabilidade técnica de projeto.'],
         ['rrtExecucao','RRT/ART execução', 'Valor unitário previsto para responsabilidade técnica de execução.'],
         ['placa','Placa de obra', 'Custo previsto para placa, quando inclusa no orçamento.'],
         ['brinde','Brinde/mimo', 'Custo previsto para brinde, apresentação ou mimo ao cliente.']
       ];
-      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao'];
+      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
       const box = document.getElementById('configFields'); box.innerHTML='';
       fields.forEach(([k,label,help])=>{
         if(data.config[k] === undefined) data.config[k] = 0;
@@ -4962,7 +4966,7 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
 
     function applyConfigInputs(){
-      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao'];
+      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
       document.querySelectorAll('#configFields input[id^="cfg_"]').forEach(input=>{
         const key = input.id.replace('cfg_','');
         const raw = parseFloat(input.value || 0);
@@ -5276,7 +5280,11 @@ body.cmfin-authenticated .cmfin-login-screen {
       const valorProjetoPorDias = (diasUteisProjeto * diariaUtil) + (diasSabadosProjeto * diariaSabado);
       const valorProjetoPorServico = (service.valorRef || 0);
       const valorProjetoSemPrazo = usaDiasTrabalhados ? valorProjetoPorDias : valorProjetoPorServico;
-      const prazoPercMap = { 'Normal': 0, 'Urgente': 0.15, 'Emergencial': 0.20 };
+      const prazoPercMap = {
+        'Normal': 0,
+        'Urgente': cfg.prazoUrgente || 0,
+        'Emergencial': cfg.prazoEmergencial || 0
+      };
       const prazoPerc = prazoPercMap[val('prazo')] ?? 0;
       const acrescimoPrazo = valorProjetoSemPrazo * prazoPerc;
       const valorProjetoBase = valorProjetoSemPrazo + acrescimoPrazo;
