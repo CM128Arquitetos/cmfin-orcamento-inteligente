@@ -1834,12 +1834,33 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <script>
     if (localStorage.getItem('cmfinAuth') === 'ok') {
       document.body.classList.add('cmfin-authenticated');
     }
+
+
+    // =========================================================
+    // CONFIGURAÇÃO SUPABASE
+    // Cole aqui os dados do seu projeto Supabase:
+    // Supabase > Project Settings > API
+    // =========================================================
+    const CMFIN_SUPABASE_URL = 'COLE_AQUI_A_URL_DO_SUPABASE';
+    const CMFIN_SUPABASE_ANON_KEY = 'COLE_AQUI_A_ANON_KEY_DO_SUPABASE';
+
+    const cmfinSupabaseReady =
+      CMFIN_SUPABASE_URL &&
+      CMFIN_SUPABASE_ANON_KEY &&
+      !CMFIN_SUPABASE_URL.includes('COLE_AQUI') &&
+      !CMFIN_SUPABASE_ANON_KEY.includes('COLE_AQUI') &&
+      window.supabase;
+
+    const cmfinSupabase = cmfinSupabaseReady
+      ? window.supabase.createClient(CMFIN_SUPABASE_URL, CMFIN_SUPABASE_ANON_KEY)
+      : null;
 
     let cmfinPendingPasswordChangeUser = '';
 
@@ -1848,52 +1869,118 @@ body.cmfin-authenticated .cmfin-login-screen {
       return /^CMF[-@]?\d{4,}$/i.test(value) || /^TEMP/i.test(value) || value.toLowerCase() === 'senha_temporaria';
     }
 
-    function cmfinLogin(event){
+    function cmfinSetLoginLoading(isLoading){
+      const btn = document.querySelector('#cmfinLoginView .cmfin-login-btn');
+      if(!btn) return;
+      btn.disabled = !!isLoading;
+      btn.textContent = isLoading ? 'Validando acesso...' : 'Entrar no sistema';
+    }
+
+    function cmfinSetPasswordLoading(isLoading){
+      const btn = document.querySelector('#cmfinPasswordChangeView .cmfin-login-btn');
+      if(!btn) return;
+      btn.disabled = !!isLoading;
+      btn.textContent = isLoading ? 'Salvando nova senha...' : 'Salvar nova senha e acessar';
+    }
+
+    function cmfinShowLoginError(message){
+      const error = document.getElementById('cmfinLoginError');
+      if(error){
+        error.textContent = message || 'Não foi possível validar o acesso.';
+        error.classList.add('show');
+      }
+    }
+
+    function cmfinShowPasswordError(message){
+      const error = document.getElementById('cmfinPasswordChangeError');
+      if(error){
+        error.textContent = message || 'Confira a nova senha e tente novamente.';
+        error.classList.add('show');
+      }
+    }
+
+    async function cmfinLogin(event){
       if(event) event.preventDefault();
-      const user = document.getElementById('cmfinLoginEmail')?.value.trim();
+
+      const user = document.getElementById('cmfinLoginEmail')?.value.trim().toLowerCase();
       const pass = document.getElementById('cmfinLoginPassword')?.value.trim();
       const error = document.getElementById('cmfinLoginError');
 
-      if(!user || !pass){
-        if(error){
-          error.textContent = 'Informe e-mail/usuário e senha para continuar.';
-          error.classList.add('show');
-        }
-        return false;
-      }
-
       if(error) error.classList.remove('show');
 
-      /*
-        Integração futura com Supabase:
-        1. Buscar licença pelo e-mail.
-        2. Validar senha.
-        3. Verificar status, validade, bloqueio e tipo de usuário.
-        4. Se tipo_usuario = 'administrador' ou acesso_vitalicio = true, ignorar vencimento.
-        5. Se senha_temporaria = true, chamar cmfinShowPasswordChange(user).
-        6. Se tudo estiver ativo, chamar cmfinGrantAccess(user).
-      */
-
-      if(cmfinIsTemporaryPassword(pass)){
-        cmfinShowPasswordChange(user);
+      if(!user || !pass){
+        cmfinShowLoginError('Informe e-mail/usuário e senha para continuar.');
         return false;
       }
 
-      cmfinGrantAccess(user);
-      return false;
+      if(!cmfinSupabase){
+        cmfinShowLoginError('Supabase ainda não configurado no arquivo HTML. Cole a URL e a anon key do projeto.');
+        return false;
+      }
+
+      cmfinSetLoginLoading(true);
+
+      try {
+        const { data, error: rpcError } = await cmfinSupabase.rpc('cmfin_orcamento_login', {
+          p_email: user,
+          p_senha: pass
+        });
+
+        if(rpcError){
+          console.error(rpcError);
+          cmfinShowLoginError('Erro ao consultar o Supabase. Confira a função cmfin_orcamento_login.');
+          return false;
+        }
+
+        if(!data || data.ok !== true){
+          cmfinShowLoginError(data?.message || 'E-mail ou senha inválidos.');
+          return false;
+        }
+
+        if(data.precisa_trocar_senha){
+          cmfinShowPasswordChange(user);
+          return false;
+        }
+
+        cmfinGrantAccess(user, data);
+        return false;
+      } catch(err){
+        console.error(err);
+        cmfinShowLoginError('Falha de conexão. Confira sua internet e as chaves do Supabase.');
+        return false;
+      } finally {
+        cmfinSetLoginLoading(false);
+      }
     }
 
-    function cmfinGrantAccess(user){
+    function cmfinGrantAccess(user, licenseData){
+      const sessionPayload = {
+        user: user || '',
+        cliente: licenseData?.cliente || '',
+        tipo_usuario: licenseData?.tipo_usuario || 'usuario',
+        acesso_vitalicio: !!licenseData?.acesso_vitalicio,
+        plano: licenseData?.plano || '',
+        validade: licenseData?.data_validade || '',
+        login_em: new Date().toISOString()
+      };
+
       if(document.getElementById('cmfinRemember')?.checked){
         localStorage.setItem('cmfinAuth', 'ok');
         localStorage.setItem('cmfinUser', user || '');
+        localStorage.setItem('cmfinLicense', JSON.stringify(sessionPayload));
       } else {
         sessionStorage.setItem('cmfinAuth', 'ok');
+        sessionStorage.setItem('cmfinLicense', JSON.stringify(sessionPayload));
       }
+
       document.body.classList.add('cmfin-authenticated');
       const pwd = document.getElementById('cmfinLoginPassword');
       if(pwd) pwd.value = '';
-      if(typeof toast === 'function') toast('Acesso liberado. Bem-vindo ao CMFin.');
+
+      const isAdmin = sessionPayload.tipo_usuario === 'administrador' || sessionPayload.acesso_vitalicio;
+      if(typeof toast === 'function'){
+        toast(isAdmin ? 'Acesso administrador liberado.' : 'Acesso liberado. Bem-vindo ao CMFin.');
+      }
     }
 
     function cmfinShowPasswordChange(user){
@@ -1921,7 +2008,9 @@ body.cmfin-authenticated .cmfin-login-screen {
       setTimeout(() => document.getElementById('cmfinLoginPassword')?.focus(), 80);
     }
 
-    function cmfinSaveNewPassword(){
+    async function cmfinSaveNewPassword(){
+      const email = (cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value || '').trim().toLowerCase();
+      const oldPass = document.getElementById('cmfinLoginPassword')?.value.trim();
       const newPass = document.getElementById('cmfinNewPassword')?.value.trim();
       const confirmPass = document.getElementById('cmfinConfirmPassword')?.value.trim();
       const error = document.getElementById('cmfinPasswordChangeError');
@@ -1931,42 +2020,65 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(success) success.classList.remove('show');
 
       if(!newPass || newPass.length < 6){
-        if(error){
-          error.textContent = 'A nova senha precisa ter pelo menos 6 caracteres.';
-          error.classList.add('show');
-        }
+        cmfinShowPasswordError('A nova senha precisa ter pelo menos 6 caracteres.');
         return;
       }
 
       if(newPass !== confirmPass){
-        if(error){
-          error.textContent = 'As senhas não conferem. Digite novamente.';
-          error.classList.add('show');
-        }
+        cmfinShowPasswordError('As senhas não conferem. Digite novamente.');
         return;
       }
 
-      /*
-        Integração futura com Supabase:
-        - Atualizar senha_hash.
-        - Definir senha_temporaria = false.
-        - Definir primeiro_acesso = false.
-        - Preencher senha_alterada_em = now().
-        - Manter tipo_usuario e acesso_vitalicio conforme licença cadastrada.
-      */
+      if(newPass === oldPass){
+        cmfinShowPasswordError('A nova senha precisa ser diferente da senha temporária.');
+        return;
+      }
 
-      if(success) success.classList.add('show');
-      localStorage.setItem('cmfinPasswordChangedAt', new Date().toISOString());
+      if(!cmfinSupabase){
+        cmfinShowPasswordError('Supabase ainda não configurado no arquivo HTML.');
+        return;
+      }
 
-      setTimeout(() => {
-        cmfinGrantAccess(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
-      }, 650);
+      cmfinSetPasswordLoading(true);
+
+      try {
+        const { data, error: rpcError } = await cmfinSupabase.rpc('cmfin_orcamento_alterar_senha', {
+          p_email: email,
+          p_senha_temporaria: oldPass,
+          p_nova_senha: newPass
+        });
+
+        if(rpcError){
+          console.error(rpcError);
+          cmfinShowPasswordError('Erro ao alterar a senha no Supabase.');
+          return;
+        }
+
+        if(!data || data.ok !== true){
+          cmfinShowPasswordError(data?.message || 'Não foi possível alterar a senha.');
+          return;
+        }
+
+        if(success) success.classList.add('show');
+
+        const loginData = data.licenca || {};
+        setTimeout(() => {
+          cmfinGrantAccess(email, loginData);
+        }, 650);
+      } catch(err){
+        console.error(err);
+        cmfinShowPasswordError('Falha de conexão. Tente novamente.');
+      } finally {
+        cmfinSetPasswordLoading(false);
+      }
     }
 
     function cmfinLogout(){
       localStorage.removeItem('cmfinAuth');
       localStorage.removeItem('cmfinUser');
+      localStorage.removeItem('cmfinLicense');
       sessionStorage.removeItem('cmfinAuth');
+      sessionStorage.removeItem('cmfinLicense');
       document.body.classList.remove('cmfin-authenticated');
       cmfinBackToLogin();
       setTimeout(() => {
