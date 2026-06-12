@@ -2366,6 +2366,29 @@ body.cmfin-authenticated .cmfin-login-screen {
   stroke: none;
 }
 
+
+/* Ajuste do modal de primeiro acesso: conteúdo mais limpo e profissional */
+.cmfin-first-access-info {
+  margin-top: 18px;
+  padding: 18px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbfa 0%, #eef5f2 100%);
+  border: 1px solid #dbe8e3;
+}
+.cmfin-first-access-info p {
+  margin: 0 0 12px !important;
+  color: #5f716b;
+  font-size: .94rem;
+  line-height: 1.58;
+}
+.cmfin-first-access-info p:last-child {
+  margin-bottom: 0 !important;
+}
+.cmfin-first-access-info strong {
+  color: #0c3b34;
+  font-weight: 900;
+}
+
 </style>
 </head>
 <body>
@@ -2770,7 +2793,10 @@ body.cmfin-authenticated .cmfin-login-screen {
     <div class="cmfin-first-access-card" role="dialog" aria-modal="true" aria-labelledby="cmfinFirstAccessTitle">
       <div class="cmfin-first-access-badge">✓</div>
       <h3 id="cmfinFirstAccessTitle">Primeiro acesso concluído com sucesso</h3>
-      <p>Sua conta foi ativada e a senha temporária foi substituída pela sua senha definitiva. A partir dos próximos acessos, basta entrar normalmente com a nova senha cadastrada.</p>
+      <p>
+        Seu acesso foi ativado e sua senha definitiva já está cadastrada. A partir de agora,
+        sempre que entrar no sistema, utilize este e-mail/usuário e a nova senha criada.
+      </p>
 
       <div class="cmfin-first-access-grid">
         <div class="cmfin-first-access-item">
