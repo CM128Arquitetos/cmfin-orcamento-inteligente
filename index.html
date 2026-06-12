@@ -1794,6 +1794,142 @@ body.cmfin-authenticated .cmfin-login-screen {
 .cmfin-login-note strong {
   color: #10251f;
 }
+
+.cmfin-first-access-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 18, 16, 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+  z-index: 5000;
+}
+.cmfin-first-access-modal.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.cmfin-first-access-card {
+  width: min(100%, 520px);
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 24px 80px rgba(10, 35, 30, 0.24);
+  border: 1px solid rgba(15, 44, 38, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+.cmfin-first-access-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #0c3b34 0%, #0e5f4f 52%, #ff3b30 100%);
+}
+.cmfin-first-access-badge {
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0c3b34 0%, #0e5f4f 100%);
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(12, 59, 52, 0.24);
+  margin-bottom: 16px;
+}
+.cmfin-first-access-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.9rem;
+  line-height: 1.05;
+  color: #0f2c26;
+}
+.cmfin-first-access-card p {
+  margin: 0;
+  color: #5b6e69;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.cmfin-first-access-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.cmfin-first-access-item {
+  border-radius: 18px;
+  border: 1px solid #d9e5e1;
+  background: #f7fbfa;
+  padding: 14px 12px;
+}
+.cmfin-first-access-item strong {
+  display: block;
+  font-size: .82rem;
+  font-weight: 800;
+  color: #0f2c26;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+.cmfin-first-access-item span {
+  display: block;
+  font-size: .9rem;
+  color: #58706a;
+  line-height: 1.45;
+}
+.cmfin-first-access-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e3ece9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.cmfin-first-access-caption {
+  font-size: .92rem;
+  color: #6a7d78;
+  line-height: 1.5;
+  flex: 1 1 220px;
+}
+.cmfin-first-access-action {
+  border: none;
+  border-radius: 16px;
+  padding: 15px 22px;
+  background: linear-gradient(90deg, #0c3b34 0%, #052f2a 100%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 14px 32px rgba(12, 59, 52, 0.22);
+}
+.cmfin-first-access-action:hover {
+  transform: translateY(-1px);
+}
+@media (max-width: 640px) {
+  .cmfin-first-access-card {
+    border-radius: 24px;
+    padding: 24px 20px 20px;
+  }
+  .cmfin-first-access-grid {
+    grid-template-columns: 1fr;
+  }
+  .cmfin-first-access-card h3 {
+    font-size: 1.6rem;
+  }
+}
+
 .cmfin-toast-host {
   position: fixed;
   top: 24px;
@@ -1977,7 +2113,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       return false;
     }
 
-    function cmfinGrantAccess(user){
+    function cmfinGrantAccess(user, options = {}){
       if(document.getElementById('cmfinRemember')?.checked){
         localStorage.setItem('cmfinAuth', 'ok');
         localStorage.setItem('cmfinUser', user || '');
@@ -1987,7 +2123,33 @@ body.cmfin-authenticated .cmfin-login-screen {
       document.body.classList.add('cmfin-authenticated');
       const pwd = document.getElementById('cmfinLoginPassword');
       if(pwd) pwd.value = '';
-      if(typeof toast === 'function') toast('Seu acesso foi validado com sucesso. Bem-vindo ao painel do CMFin.', { title: 'Login realizado com sucesso', type: 'success', icon: '✓' });
+      if(options.showToast && typeof toast === 'function'){
+        toast(options.message || 'Seu acesso foi validado com sucesso.', {
+          title: options.title || 'Login realizado com sucesso',
+          type: options.type || 'success',
+          icon: options.icon || '✓'
+        });
+      }
+    }
+
+    function cmfinOpenFirstAccessModal(user){
+      cmfinPendingPasswordChangeUser = user || cmfinPendingPasswordChangeUser || '';
+      const modal = document.getElementById('cmfinFirstAccessModal');
+      if(!modal) return;
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function cmfinCloseFirstAccessModal(){
+      const modal = document.getElementById('cmfinFirstAccessModal');
+      if(!modal) return;
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function cmfinCompleteFirstAccess(){
+      cmfinCloseFirstAccessModal();
+      cmfinGrantAccess(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
     }
 
     function cmfinShowPasswordChange(user){
@@ -2053,8 +2215,8 @@ body.cmfin-authenticated .cmfin-login-screen {
       localStorage.setItem('cmfinPasswordChangedAt', new Date().toISOString());
 
       setTimeout(() => {
-        cmfinGrantAccess(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
-      }, 650);
+        cmfinOpenFirstAccessModal(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
+      }, 500);
     }
 
     function cmfinLogout(){
@@ -2062,6 +2224,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       localStorage.removeItem('cmfinUser');
       sessionStorage.removeItem('cmfinAuth');
       document.body.classList.remove('cmfin-authenticated');
+      cmfinCloseFirstAccessModal();
       cmfinBackToLogin();
       setTimeout(() => {
         const email = document.getElementById('cmfinLoginEmail');
@@ -2148,7 +2311,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 
           <div class="cmfin-login-note">
             <strong>Primeiro acesso com senha temporária.</strong><br>
-            Após o primeiro login, o sistema solicitará a criação de uma senha definitiva para concluir a ativação da conta e liberar o painel com segurança.
+            No primeiro login, você deverá criar uma senha definitiva. Depois dessa etapa, os próximos acessos serão feitos normalmente com a nova senha cadastrada.
           </div>
         </div>
 
@@ -2191,6 +2354,35 @@ body.cmfin-authenticated .cmfin-login-screen {
       </form>
     </div>
   </section>
+
+
+  <div id="cmfinFirstAccessModal" class="cmfin-first-access-modal" aria-hidden="true">
+    <div class="cmfin-first-access-card" role="dialog" aria-modal="true" aria-labelledby="cmfinFirstAccessTitle">
+      <div class="cmfin-first-access-badge">✓</div>
+      <h3 id="cmfinFirstAccessTitle">Primeiro acesso concluído com sucesso</h3>
+      <p>Sua conta foi ativada e a senha temporária foi substituída pela sua senha definitiva. A partir dos próximos acessos, basta entrar normalmente com a nova senha cadastrada.</p>
+
+      <div class="cmfin-first-access-grid">
+        <div class="cmfin-first-access-item">
+          <strong>Conta ativada</strong>
+          <span>Seu acesso já está validado e pronto para uso.</span>
+        </div>
+        <div class="cmfin-first-access-item">
+          <strong>Senha definida</strong>
+          <span>A nova senha passa a ser a senha oficial da conta.</span>
+        </div>
+        <div class="cmfin-first-access-item">
+          <strong>Próximos logins</strong>
+          <span>Nas próximas entradas, essa mensagem não será exibida novamente.</span>
+        </div>
+      </div>
+
+      <div class="cmfin-first-access-footer">
+        <div class="cmfin-first-access-caption">Tudo certo. Clique no botão ao lado para acessar o painel e continuar com o uso do sistema.</div>
+        <button type="button" class="cmfin-first-access-action" onclick="cmfinCompleteFirstAccess()">Acessar painel</button>
+      </div>
+    </div>
+  </div>
 
   <header class="brand-shell">
     <div class="topbar">
