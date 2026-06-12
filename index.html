@@ -1475,9 +1475,216 @@
   margin-bottom: 8px !important;
 }
 
+
+/* ===== CMFin - Notificações e confirmação premium ===== */
+.cmfin-toast-host {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+.cmfin-toast {
+  width: min(420px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: rgba(8, 28, 23, .97);
+  color: #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,.30);
+  border: 1px solid rgba(255,255,255,.10);
+  transform: translateY(-8px) scale(.98);
+  opacity: 0;
+  transition: .22s ease;
+  pointer-events: auto;
+  overflow: hidden;
+}
+.cmfin-toast.show { transform: translateY(0) scale(1); opacity: 1; }
+.cmfin-toast::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px; width: 100%;
+  background: linear-gradient(90deg, #0f6b55, #8bf5ca);
+}
+.cmfin-toast-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0d4638, #062d26);
+  color: #8bf5ca;
+  font-weight: 900;
+  font-size: 1.15rem;
+}
+.cmfin-toast-title {
+  font-size: .98rem;
+  font-weight: 900;
+  margin: 0 0 4px;
+  color: #fff;
+}
+.cmfin-toast-message {
+  font-size: .86rem;
+  line-height: 1.45;
+  margin: 0;
+  color: rgba(255,255,255,.80);
+}
+.cmfin-toast-error::after { background: linear-gradient(90deg, #b42318, #ff958c); }
+.cmfin-toast-warning::after { background: linear-gradient(90deg, #b7791f, #ffd88a); }
+.cmfin-toast-info::after { background: linear-gradient(90deg, #2563eb, #93c5fd); }
+
+.cmfin-confirm-overlay,
+.cmfin-login-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 18, 15, .62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.cmfin-confirm-overlay.show,
+.cmfin-login-fallback.show { display: flex; }
+
+.cmfin-confirm-card,
+.cmfin-login-fallback-card {
+  width: min(100%, 500px);
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 28px 90px rgba(0,0,0,.28);
+  border: 1px solid rgba(15,44,38,.10);
+  position: relative;
+  overflow: hidden;
+}
+.cmfin-confirm-card::before,
+.cmfin-login-fallback-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #0c3b34, #0f6b55, #ef233c);
+}
+.cmfin-confirm-icon,
+.cmfin-login-fallback-icon {
+  width: 58px; height: 58px;
+  border-radius: 19px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0c3b34, #0e5f4f);
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 900;
+  box-shadow: 0 16px 32px rgba(12,59,52,.22);
+  margin-bottom: 16px;
+}
+.cmfin-confirm-card h3,
+.cmfin-login-fallback-card h3 {
+  margin: 0 0 10px;
+  color: #10251f;
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+.cmfin-confirm-card p,
+.cmfin-login-fallback-card p {
+  margin: 0;
+  color: #65746f;
+  line-height: 1.6;
+  font-size: .96rem;
+}
+.cmfin-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.cmfin-confirm-btn {
+  border: 0;
+  border-radius: 15px;
+  padding: 14px 18px;
+  font-size: .94rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.cmfin-confirm-btn.secondary {
+  background: #eef5f1;
+  color: #123c33;
+}
+.cmfin-confirm-btn.primary {
+  background: linear-gradient(135deg, #0c3b34, #062d26);
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(12,59,52,.22);
+}
+
+.cmfin-login-fallback-card input {
+  width: 100%;
+  height: 54px;
+  border-radius: 16px;
+  border: 1px solid #d6e3de;
+  background: #f8fbfa;
+  padding: 0 15px;
+  font: inherit;
+  margin-top: 14px;
+}
+.cmfin-login-fallback-card button {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0c3b34, #062d26);
+  color: #fff;
+  font-size: .98rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.cmfin-logged-out .brand-shell,
+.cmfin-logged-out main,
+.cmfin-logged-out footer,
+.cmfin-logged-out .tabs {
+  display: none !important;
+}
+@media (max-width: 640px) {
+  .cmfin-toast-host { left: 16px; right: 16px; top: 16px; }
+  .cmfin-confirm-card, .cmfin-login-fallback-card { padding: 24px 20px; border-radius: 24px; }
+}
+
 </style>
 </head>
 <body>
+  <div class="cmfin-toast-host" id="cmfinToastHost" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="cmfin-confirm-overlay" id="cmfinConfirmOverlay" aria-hidden="true">
+    <div class="cmfin-confirm-card" role="dialog" aria-modal="true" aria-labelledby="cmfinConfirmTitle">
+      <div class="cmfin-confirm-icon">↪</div>
+      <h3 id="cmfinConfirmTitle">Sair do sistema?</h3>
+      <p id="cmfinConfirmMessage">Ao sair, esta sessão será encerrada e você voltará para a tela de login.</p>
+      <div class="cmfin-confirm-actions">
+        <button type="button" class="cmfin-confirm-btn secondary" onclick="cmfinCloseConfirm()">Cancelar</button>
+        <button type="button" class="cmfin-confirm-btn primary" onclick="cmfinConfirmLogout()">Sim, sair agora</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="cmfin-login-fallback" id="cmfinLoginFallback" aria-hidden="true">
+    <div class="cmfin-login-fallback-card">
+      <div class="cmfin-login-fallback-icon">✓</div>
+      <h3>Acesso ao sistema</h3>
+      <p>Informe seus dados para acessar novamente o painel do CMFin.</p>
+      <input id="cmfinFallbackUser" type="text" autocomplete="username" placeholder="E-mail ou usuário">
+      <input id="cmfinFallbackPass" type="password" autocomplete="current-password" placeholder="Senha">
+      <button type="button" onclick="cmfinFallbackLogin()">Entrar no sistema</button>
+    </div>
+  </section>
+
   <header class="brand-shell">
     <div class="topbar">
       <div class="brand-block">
@@ -1497,7 +1704,7 @@
           <button class="menu-item" type="button" onclick="exportData(); closeActionMenu();"><span class="menu-item-icon">⇩</span><span>Exportar JSON</span></button>
           <label class="menu-item menu-import"><span class="menu-item-icon">⇧</span><span>Importar JSON</span><input type="file" accept="application/json" onchange="importData(event); closeActionMenu()"></label>
           <button class="menu-item" type="button" onclick="smartPrint(); closeActionMenu();"><span class="menu-item-icon">⌘</span><span>Imprimir PDF</span></button>
-          <button class="menu-item menu-item-logout" type="button" onclick="cmfinLogout(); closeActionMenu();"><span class="menu-item-icon">↪</span><span>Sair do sistema</span></button>
+          <button class="menu-item menu-item-logout" type="button" onclick="cmfinLogout();"><span class="menu-item-icon">↪</span><span>Sair do sistema</span></button>
         </div>
       </div>
     </div>
@@ -2299,42 +2506,92 @@
     }
 
     function cmfinLogout(){
-      const confirmar = confirm('Deseja realmente sair do sistema?');
-      if(!confirmar) return;
-
-      const keysToRemove = [];
-      for(let i = 0; i < localStorage.length; i++){
-        const key = localStorage.key(i);
-        if(key && (
-          key.toLowerCase().includes('cmfin') ||
-          key.toLowerCase().includes('licenca') ||
-          key.toLowerCase().includes('license') ||
-          key === 'cmfinAuth' ||
-          key === 'cmfinUser'
-        )){
-          keysToRemove.push(key);
-        }
+      closeActionMenu && closeActionMenu();
+      const overlay = document.getElementById('cmfinConfirmOverlay');
+      if(overlay){
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      } else {
+        cmfinConfirmLogout();
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+    }
 
-      const sessionKeysToRemove = [];
-      for(let i = 0; i < sessionStorage.length; i++){
-        const key = sessionStorage.key(i);
-        if(key && (
-          key.toLowerCase().includes('cmfin') ||
-          key.toLowerCase().includes('licenca') ||
-          key.toLowerCase().includes('license') ||
-          key === 'cmfinAuth' ||
-          key === 'cmfinUser'
-        )){
-          sessionKeysToRemove.push(key);
-        }
+    function cmfinCloseConfirm(){
+      const overlay = document.getElementById('cmfinConfirmOverlay');
+      if(overlay){
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
       }
-      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+    }
+
+    function cmfinConfirmLogout(){
+      cmfinCloseConfirm();
+
+      const removeMatching = (storage) => {
+        const keys = [];
+        for(let i = 0; i < storage.length; i++){
+          const key = storage.key(i);
+          if(key && (
+            key.toLowerCase().includes('cmfin') ||
+            key.toLowerCase().includes('auth') ||
+            key.toLowerCase().includes('licenca') ||
+            key.toLowerCase().includes('license') ||
+            key.toLowerCase().includes('usuario')
+          )){
+            keys.push(key);
+          }
+        }
+        keys.forEach(key => storage.removeItem(key));
+      };
+
+      removeMatching(localStorage);
+      removeMatching(sessionStorage);
 
       document.body.classList.remove('cmfin-authenticated');
-      window.location.reload();
+      document.body.classList.add('cmfin-logged-out');
+
+      const nativeLogin = document.getElementById('cmfinLoginScreen');
+      const fallbackLogin = document.getElementById('cmfinLoginFallback');
+
+      if(nativeLogin){
+        nativeLogin.classList.remove('hidden');
+        nativeLogin.style.display = '';
+        nativeLogin.setAttribute('aria-hidden', 'false');
+        setTimeout(() => document.getElementById('cmfinLoginEmail')?.focus(), 80);
+      } else if(fallbackLogin){
+        fallbackLogin.classList.add('show');
+        fallbackLogin.setAttribute('aria-hidden', 'false');
+        setTimeout(() => document.getElementById('cmfinFallbackUser')?.focus(), 80);
+      }
+
+      toast('Sessão encerrada com segurança. Faça login novamente para acessar o painel.', {
+        title: 'Você saiu do sistema',
+        type: 'info',
+        icon: '↪'
+      });
     }
+
+    function cmfinFallbackLogin(){
+      const user = document.getElementById('cmfinFallbackUser')?.value.trim();
+      const pass = document.getElementById('cmfinFallbackPass')?.value.trim();
+      if(!user || !pass){
+        toast('Informe usuário e senha para continuar.', { title: 'Dados obrigatórios', type: 'warning', icon: '!' });
+        return;
+      }
+      localStorage.setItem('cmfinAuth', 'ok');
+      localStorage.setItem('cmfinUser', user);
+      document.body.classList.remove('cmfin-logged-out');
+      document.body.classList.add('cmfin-authenticated');
+      const fallbackLogin = document.getElementById('cmfinLoginFallback');
+      if(fallbackLogin){
+        fallbackLogin.classList.remove('show');
+        fallbackLogin.setAttribute('aria-hidden', 'true');
+      }
+      const pwd = document.getElementById('cmfinFallbackPass');
+      if(pwd) pwd.value = '';
+      toast('Acesso liberado. Bem-vindo novamente ao CMFin.', { title: 'Login realizado', type: 'success', icon: '✓' });
+    }
+
 
 
     function toggleActionMenu(event){
@@ -2362,7 +2619,32 @@
     });
 
     function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); localStorage.setItem('precificadorEltonV1', JSON.stringify(data)); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); renderSmartSuggestions(); updateHistorySaveButton(); toast('Dados salvos neste navegador.'); }
-    function toast(msg){ alert(msg); }
+    function toast(msg, options = {}){
+      const host = document.getElementById('cmfinToastHost');
+      const type = options.type || 'success';
+      const title = options.title || (type === 'error' ? 'Atenção' : type === 'warning' ? 'Aviso do sistema' : 'Operação realizada');
+      const icon = options.icon || (type === 'error' ? '!' : type === 'warning' ? '!' : '✓');
+
+      if(!host){
+        console.log(title + ': ' + msg);
+        return;
+      }
+
+      const el = document.createElement('div');
+      el.className = `cmfin-toast cmfin-toast-${type}`;
+      el.innerHTML = `
+        <div class="cmfin-toast-icon">${icon}</div>
+        <div>
+          <div class="cmfin-toast-title">${title}</div>
+          <p class="cmfin-toast-message">${msg}</p>
+        </div>`;
+      host.appendChild(el);
+      requestAnimationFrame(() => el.classList.add('show'));
+      setTimeout(() => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 240);
+      }, options.duration || 3200);
+    }
     function openTab(id){ document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); } if(id==='architects') renderArchitects(); if(id==='complementary') renderComplementaryServices(); }
 
     function renderConfig(){
