@@ -3727,6 +3727,100 @@ body.cmfin-authenticated .cmfin-login-screen {
   .cmfin-support-card h3 { font-size: 1.55rem; }
 }
 
+
+/* ===== CMFin - Correção final do suporte ===== */
+.cmfin-login-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 12px !important;
+  min-height: 36px !important;
+  border-radius: 12px !important;
+  border: 1px solid #dce8e3 !important;
+  background: #f7fbf9 !important;
+  color: #0c3b34 !important;
+  font-weight: 900 !important;
+  font-size: .9rem !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+.cmfin-login-link:hover {
+  background: #eef5f1 !important;
+  border-color: rgba(12, 59, 52, .20) !important;
+  transform: none !important;
+}
+
+.cmfin-support-card {
+  width: min(100%, 560px) !important;
+  border-radius: 28px !important;
+  padding: 30px !important;
+}
+.cmfin-support-options {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  margin-top: 20px !important;
+}
+.cmfin-support-option {
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 92px !important;
+  padding: 18px !important;
+  border-radius: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.cmfin-support-option-icon {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  border-radius: 16px !important;
+}
+.cmfin-support-option-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+.cmfin-support-option-body {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+.cmfin-support-option-title {
+  display: block !important;
+  font-size: 1.02rem !important;
+  line-height: 1.15 !important;
+  font-weight: 900 !important;
+  color: #11332b !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.cmfin-support-option-desc {
+  display: block !important;
+  margin-top: 5px !important;
+  font-size: .76rem !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  color: #6f817a !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+@media (max-width: 640px) {
+  .cmfin-support-options {
+    grid-template-columns: 1fr !important;
+  }
+  .cmfin-support-card {
+    padding: 24px 20px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3736,7 +3830,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         <div class="cmfin-support-badge">?</div>
         <div>
           <h3 id="cmfinSupportTitle">Suporte CMFin</h3>
-          <p>Escolha o canal de atendimento e fale com nossa equipe de forma rápida e organizada.</p>
+          <p>Escolha o canal de atendimento para falar com nossa equipe.</p>
         </div>
       </div>
       <div class="cmfin-support-options">
@@ -3755,7 +3849,7 @@ body.cmfin-authenticated .cmfin-login-screen {
           </span>
           <span class="cmfin-support-option-body">
             <span class="cmfin-support-option-title">WhatsApp</span>
-            <span class="cmfin-support-option-desc">Atendimento direto em 2 números</span>
+            <span class="cmfin-support-option-desc">Atendimento direto</span>
           </span>
         </a>
       </div>
@@ -4074,7 +4168,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 
           <div class="cmfin-login-options">
             <label class="cmfin-login-check"><input id="cmfinRemember" type="checkbox" checked> Manter conectado</label>
-            <a class="cmfin-login-link" href="#" onclick="cmfinOpenSupport(event)"><span class="cmfin-login-link-icon">?</span><span class="cmfin-login-link-text"><strong>Suporte</strong><small>Ajuda e atendimento</small></span></a>
+            <a class="cmfin-login-link" href="#" onclick="cmfinOpenSupport(event)">Suporte</a>
           </div>
 
           <button class="cmfin-login-btn" type="submit">Entrar no sistema</button>
