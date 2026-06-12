@@ -2694,21 +2694,21 @@ body.cmfin-authenticated .cmfin-login-screen {
 .workspace-topbar{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:14px;
+  justify-content:flex-start;
+  gap:10px;
   margin:0 0 18px;
 }
 .workspace-topbar .tabs{
-  flex:1 1 auto;
+  flex:0 1 auto;
   margin:0;
   align-content:center;
 }
 .cmfin-user-hero{
-  flex:0 0 auto;
+  flex:0 1 430px;
   min-height:46px;
   height:46px;
   width:auto;
-  max-width:360px;
+  max-width:430px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -2756,7 +2756,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 .cmfin-user-name{
   display:block;
   min-width:0;
-  max-width:190px;
+  max-width:250px;
   color:#0f2e26;
   font-size:.86rem;
   line-height:1;
@@ -2773,7 +2773,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 .cmfin-user-validity-inline{
   display:inline-flex;
   align-items:center;
-  max-width:128px;
+  max-width:145px;
   color:#426056;
   font-size:.82rem;
   line-height:1;
@@ -2859,7 +2859,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 @media (max-width: 1280px){
   .workspace-topbar{ align-items:flex-start; }
-  .cmfin-user-hero{ max-width:320px; }
+  .cmfin-user-hero{ flex-basis:390px; max-width:390px; }
 }
 @media (max-width: 900px){
   .profile-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
