@@ -1495,7 +1495,7 @@
         <div class="action-menu" id="actionMenu" aria-hidden="true">
           <button class="menu-item" type="button" onclick="saveAll(); closeActionMenu();"><span class="menu-item-icon">✓</span><span>Salvar</span></button>
           <button class="menu-item" type="button" onclick="exportData(); closeActionMenu();"><span class="menu-item-icon">⇩</span><span>Exportar JSON</span></button>
-          <label class="menu-item menu-import" title="Selecionar arquivo de backup JSON"><span class="menu-item-icon">⇧</span><span>Importar JSON</span><input type="file" accept="application/json" onchange="importData(event); closeActionMenu()"></label>
+          <label class="menu-item menu-import"><span class="menu-item-icon">⇧</span><span>Importar JSON</span><input type="file" accept="application/json" onchange="importData(event); closeActionMenu()"></label>
           <button class="menu-item" type="button" onclick="smartPrint(); closeActionMenu();"><span class="menu-item-icon">⌘</span><span>Imprimir PDF</span></button>
           <button class="menu-item menu-item-logout" type="button" onclick="cmfinLogout(); closeActionMenu();"><span class="menu-item-icon">↪</span><span>Sair do sistema</span></button>
         </div>
@@ -4269,40 +4269,8 @@ ${p.obs}` : ''}`;
     function resetBudget(){
       document.getElementById('cliente').value=''; document.getElementById('servico').value=''; document.getElementById('endereco').value=''; document.getElementById('diasUteisProjeto').value='0'; document.getElementById('diasSabadosProjeto').value='0'; document.getElementById('visitas').value='0'; document.getElementById('kmVisita').value='0'; document.getElementById('modeloVeiculo').value=''; document.getElementById('kmCidade').value='0'; document.getElementById('kmEstrada').value='0'; document.getElementById('tipoTrajeto').value='misto'; document.getElementById('valorCombustivel').value='7.19'; document.getElementById('manutencaoVisita').value='50'; document.getElementById('deslocamentoSugerido').value='0'; document.getElementById('valorAlimentacao').value='0'; document.getElementById('horasAdicionais').value='0'; document.getElementById('desconto').value='0'; const vcm=document.getElementById('valorComercialManual'); if(vcm) vcm.value='0'; const sc=document.getElementById('statusComercial'); if(sc) sc.value='Em análise'; const qp=document.getElementById('qtdProfissionais'); if(qp) qp.value='2'; const critReset=document.getElementById('criterioDivisaoProfissionais'); if(critReset) critReset.value='Divisão manual por percentual'; data.professionalCount=2; data.professionalCriterion='Divisão manual por percentual'; data.professionalShares=[50,50]; syncProfessionalShareRows(true); syncProposalNumber(''); document.getElementById('data').valueAsDate = new Date(); data.complementaryServices = []; editingHistoryIndex = null; updateHistorySaveButton(); renderComplementaryServices(); calculate();
     }
-    async function exportData(){
-      const payload = JSON.stringify(data, null, 2);
-      const fileName = `backup-cmfin-${new Date().toISOString().slice(0,10)}.json`;
-
-      if(window.showSaveFilePicker){
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: fileName,
-            types: [{
-              description: 'Backup CMFin em JSON',
-              accept: { 'application/json': ['.json'] }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(new Blob([payload], { type: 'application/json' }));
-          await writable.close();
-          toast('Backup JSON exportado com sucesso no local escolhido.');
-          return;
-        } catch(err){
-          if(err && err.name === 'AbortError') return;
-          console.warn('Exportação com seletor de pasta falhou. Usando download padrão.', err);
-        }
-      }
-
-      const blob = new Blob([payload], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
-      toast('Backup JSON gerado. Caso o navegador não pergunte onde salvar, verifique a pasta Downloads.');
-    });
+    function exportData(){
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
       const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dados_precificador_projetos.json'; a.click(); URL.revokeObjectURL(a.href);
     }
     function importData(e){
