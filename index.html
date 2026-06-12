@@ -2297,19 +2297,45 @@
       document.getElementById('data').valueAsDate = new Date();
       renderConfig(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
     }
-    
+
     function cmfinLogout(){
-      localStorage.removeItem('cmfinAuth');
-      localStorage.removeItem('cmfinUser');
-      localStorage.removeItem('cmfinLicense');
-      sessionStorage.removeItem('cmfinAuth');
-      sessionStorage.removeItem('cmfinLicense');
+      const confirmar = confirm('Deseja realmente sair do sistema?');
+      if(!confirmar) return;
+
+      const keysToRemove = [];
+      for(let i = 0; i < localStorage.length; i++){
+        const key = localStorage.key(i);
+        if(key && (
+          key.toLowerCase().includes('cmfin') ||
+          key.toLowerCase().includes('licenca') ||
+          key.toLowerCase().includes('license') ||
+          key === 'cmfinAuth' ||
+          key === 'cmfinUser'
+        )){
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      const sessionKeysToRemove = [];
+      for(let i = 0; i < sessionStorage.length; i++){
+        const key = sessionStorage.key(i);
+        if(key && (
+          key.toLowerCase().includes('cmfin') ||
+          key.toLowerCase().includes('licenca') ||
+          key.toLowerCase().includes('license') ||
+          key === 'cmfinAuth' ||
+          key === 'cmfinUser'
+        )){
+          sessionKeysToRemove.push(key);
+        }
+      }
+      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+
       document.body.classList.remove('cmfin-authenticated');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => {
-        window.location.reload();
-      }, 180);
+      window.location.reload();
     }
+
 
     function toggleActionMenu(event){
       if(event) event.stopPropagation();
@@ -4269,10 +4295,47 @@ ${p.obs}` : ''}`;
     function resetBudget(){
       document.getElementById('cliente').value=''; document.getElementById('servico').value=''; document.getElementById('endereco').value=''; document.getElementById('diasUteisProjeto').value='0'; document.getElementById('diasSabadosProjeto').value='0'; document.getElementById('visitas').value='0'; document.getElementById('kmVisita').value='0'; document.getElementById('modeloVeiculo').value=''; document.getElementById('kmCidade').value='0'; document.getElementById('kmEstrada').value='0'; document.getElementById('tipoTrajeto').value='misto'; document.getElementById('valorCombustivel').value='7.19'; document.getElementById('manutencaoVisita').value='50'; document.getElementById('deslocamentoSugerido').value='0'; document.getElementById('valorAlimentacao').value='0'; document.getElementById('horasAdicionais').value='0'; document.getElementById('desconto').value='0'; const vcm=document.getElementById('valorComercialManual'); if(vcm) vcm.value='0'; const sc=document.getElementById('statusComercial'); if(sc) sc.value='Em análise'; const qp=document.getElementById('qtdProfissionais'); if(qp) qp.value='2'; const critReset=document.getElementById('criterioDivisaoProfissionais'); if(critReset) critReset.value='Divisão manual por percentual'; data.professionalCount=2; data.professionalCriterion='Divisão manual por percentual'; data.professionalShares=[50,50]; syncProfessionalShareRows(true); syncProposalNumber(''); document.getElementById('data').valueAsDate = new Date(); data.complementaryServices = []; editingHistoryIndex = null; updateHistorySaveButton(); renderComplementaryServices(); calculate();
     }
-    function exportData(){
-      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dados_precificador_projetos.json'; a.click(); URL.revokeObjectURL(a.href);
+    
+    async function exportData(){
+      const payload = JSON.stringify(data, null, 2);
+      const fileName = `backup-cmfin-${new Date().toISOString().slice(0,10)}.json`;
+
+      if('showSaveFilePicker' in window){
+        try{
+          const handle = await window.showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{
+              description: 'Backup CMFin (*.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(new Blob([payload], { type: 'application/json' }));
+          await writable.close();
+          toast('Backup JSON salvo no local escolhido.');
+          return;
+        }catch(err){
+          if(err && err.name === 'AbortError'){
+            toast('Exportação cancelada.');
+            return;
+          }
+          console.warn('showSaveFilePicker indisponível ou bloqueado:', err);
+        }
+      }
+
+      const blob = new Blob([payload], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 100);
+      toast('Seu navegador salvou o backup na pasta Downloads. Para escolher a pasta, ative a opção “Perguntar onde salvar cada arquivo antes de fazer download” nas configurações do navegador.');
     }
+
     function importData(e){
       const f=e.target.files[0]; if(!f) return;
       const r=new FileReader(); r.onload=()=>{ try{ data=mergeDefaults(JSON.parse(r.result), defaultData); normalizeVehicles(); renderConfig(); renderServices(); populateServices(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderDeliverableChecklist(); renderSmartSuggestions(); editingHistoryIndex = null; updateHistorySaveButton(); calculate(); saveAll(); toast('Dados importados.'); }catch(err){ toast('Arquivo inválido.'); } }; r.readAsText(f);
