@@ -2694,17 +2694,18 @@ body.cmfin-authenticated .cmfin-login-screen {
 .workspace-topbar{
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  gap:10px;
+  justify-content:space-between;
+  gap:14px;
   margin:0 0 18px;
 }
 .workspace-topbar .tabs{
-  flex:0 1 auto;
+  flex:1 1 auto;
   margin:0;
   align-content:center;
 }
 .cmfin-user-hero{
-  flex:0 1 430px;
+  flex:0 0 auto;
+  margin-left:auto;
   min-height:46px;
   height:46px;
   width:auto;
@@ -2859,7 +2860,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 @media (max-width: 1280px){
   .workspace-topbar{ align-items:flex-start; }
-  .cmfin-user-hero{ flex-basis:390px; max-width:390px; }
+  .cmfin-user-hero{ max-width:390px; }
 }
 @media (max-width: 900px){
   .profile-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
