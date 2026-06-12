@@ -2657,6 +2657,109 @@ body.cmfin-authenticated .cmfin-login-screen {
     let cmfinPendingPasswordChangeUser = '';
     let cmfinPendingTemporaryPassword = '';
 
+    let cmfinPendingLicenseId = '';
+
+    const CMFIN_SUPABASE_URL = 'https://ahpefoaspcxgntrquhej.supabase.co';
+    const CMFIN_SUPABASE_ANON_KEY = 'sb_publishable_loOmGiLkYRq1PxJaVEXLAw_haNJQsPr';
+    const CMFIN_ORCAMENTO_LICENSE_TABLE = 'cmfin_orcamento_licencas';
+
+    function cmfinOrcamentoHeaders(extra = {}){
+      return {
+        'apikey': CMFIN_SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + CMFIN_SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        ...extra
+      };
+    }
+
+    function cmfinNormalizeText(value){
+      return String(value || '').trim();
+    }
+
+    function cmfinLower(value){
+      return cmfinNormalizeText(value).toLowerCase();
+    }
+
+    function cmfinIsValidBudgetLicense(row){
+      if(!row) return { ok:false, message:'Usuário ou senha inválidos.' };
+
+      if(row.bloqueado === true){
+        return { ok:false, message:'Este acesso está bloqueado. Entre em contato com o suporte.' };
+      }
+
+      const status = cmfinLower(row.status);
+      if(status && !['ativo','ativa','active','disponivel','disponível','liberado','liberada'].includes(status)){
+        return { ok:false, message:'Este acesso não está ativo. Entre em contato com o suporte.' };
+      }
+
+      const vitalicio = row.acesso_vitalicio === true || row.tipo_usuario === 'administrador';
+      if(!vitalicio && row.data_validade){
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        const validade = new Date(String(row.data_validade) + 'T00:00:00');
+        if(!Number.isNaN(validade.getTime()) && validade < hoje){
+          return { ok:false, message:'Este acesso está vencido. Entre em contato com o suporte.' };
+        }
+      }
+
+      return { ok:true };
+    }
+
+    async function cmfinBuscarLicencaOrcamento(user){
+      const usuario = cmfinNormalizeText(user);
+      if(!usuario) return null;
+
+      const encoded = encodeURIComponent(usuario);
+      const base = `${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_LICENSE_TABLE}`;
+
+      let resp = await fetch(`${base}?select=*&email=ilike.${encoded}&limit=1`, {
+        method: 'GET',
+        headers: cmfinOrcamentoHeaders()
+      });
+
+      if(!resp.ok){
+        console.error('Erro ao consultar cmfin_orcamento_licencas por e-mail:', await resp.text());
+        throw new Error('Erro ao consultar o servidor de licenças.');
+      }
+
+      let rows = await resp.json();
+      if(Array.isArray(rows) && rows.length) return rows[0];
+
+      resp = await fetch(`${base}?select=*&cliente=ilike.${encoded}&limit=1`, {
+        method: 'GET',
+        headers: cmfinOrcamentoHeaders()
+      });
+
+      if(!resp.ok){
+        console.error('Erro ao consultar cmfin_orcamento_licencas por cliente:', await resp.text());
+        throw new Error('Erro ao consultar o servidor de licenças.');
+      }
+
+      rows = await resp.json();
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    }
+
+    async function cmfinAtualizarSenhaOrcamento(licenseId, newPass){
+      if(!licenseId) throw new Error('Licença não localizada para atualizar a senha.');
+
+      const resp = await fetch(`${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_LICENSE_TABLE}?id=eq.${encodeURIComponent(licenseId)}`, {
+        method: 'PATCH',
+        headers: cmfinOrcamentoHeaders({ 'Prefer': 'return=minimal' }),
+        body: JSON.stringify({
+          senha_hash: newPass,
+          senha_temporaria: false,
+          primeiro_acesso: false,
+          senha_alterada_em: new Date().toISOString()
+        })
+      });
+
+      if(!resp.ok){
+        console.error('Erro ao atualizar senha definitiva no Supabase:', await resp.text());
+        throw new Error('Não foi possível salvar a nova senha no servidor.');
+      }
+    }
+
+
     
     function cmfinNormalizeUser(user){
       return String(user || '').trim().toLowerCase();
@@ -2683,11 +2786,14 @@ body.cmfin-authenticated .cmfin-login-screen {
       return /^CMF[-@]?\d{4,}$/i.test(value) || /^TEMP/i.test(value) || value.toLowerCase() === 'senha_temporaria';
     }
 
-    function cmfinLogin(event){
+    async function cmfinLogin(event){
       if(event) event.preventDefault();
+
       const user = document.getElementById('cmfinLoginEmail')?.value.trim();
       const pass = document.getElementById('cmfinLoginPassword')?.value.trim();
       const error = document.getElementById('cmfinLoginError');
+      const form = event?.target;
+      const btn = form?.querySelector?.('button[type="submit"], button:not([type])');
 
       if(!user || !pass){
         if(error){
@@ -2698,25 +2804,76 @@ body.cmfin-authenticated .cmfin-login-screen {
       }
 
       if(error) error.classList.remove('show');
-
-      /*
-        Integração futura com Supabase:
-        1. Buscar licença pelo e-mail.
-        2. Validar senha.
-        3. Verificar status, validade, bloqueio e tipo de usuário.
-        4. Se tipo_usuario = 'administrador' ou acesso_vitalicio = true, ignorar vencimento.
-        5. Se senha_temporaria = true, chamar cmfinShowPasswordChange(user).
-        6. Se tudo estiver ativo, chamar cmfinGrantAccess(user).
-      */
-
-      if(cmfinIsTemporaryPassword(pass) && !cmfinIsFirstAccessDone(user)){
-        cmfinPendingTemporaryPassword = pass;
-        cmfinShowPasswordChange(user);
-        return false;
+      if(btn){
+        btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+        btn.textContent = 'Validando acesso...';
+        btn.disabled = true;
       }
 
-      cmfinGrantAccess(user, { showToast: true, message: 'Seu acesso foi validado com sucesso. Bem-vindo ao painel do CMFin.', title: 'Login realizado com sucesso', type: 'success', icon: '✓' });
-      return false;
+      try {
+        const licenca = await cmfinBuscarLicencaOrcamento(user);
+
+        if(!licenca){
+          if(error){
+            error.textContent = 'Usuário ou senha inválidos.';
+            error.classList.add('show');
+          }
+          return false;
+        }
+
+        const senhaServidor = cmfinNormalizeText(licenca.senha_hash);
+        if(senhaServidor !== cmfinNormalizeText(pass)){
+          if(error){
+            error.textContent = 'Usuário ou senha inválidos.';
+            error.classList.add('show');
+          }
+          return false;
+        }
+
+        const validacao = cmfinIsValidBudgetLicense(licenca);
+        if(!validacao.ok){
+          if(error){
+            error.textContent = validacao.message;
+            error.classList.add('show');
+          }
+          return false;
+        }
+
+        cmfinPendingLicenseId = licenca.id || '';
+        cmfinPendingPasswordChangeUser = licenca.email || licenca.cliente || user;
+
+        const exigeTrocaSenha =
+          licenca.senha_temporaria === true ||
+          licenca.primeiro_acesso === true ||
+          (cmfinIsTemporaryPassword(pass) && !cmfinIsFirstAccessDone(user));
+
+        if(exigeTrocaSenha){
+          cmfinPendingTemporaryPassword = pass;
+          cmfinShowPasswordChange(licenca.email || licenca.cliente || user);
+          return false;
+        }
+
+        cmfinGrantAccess(licenca.cliente || licenca.email || user, {
+          showToast: true,
+          message: 'Seu acesso foi validado com sucesso. Bem-vindo ao painel do CMFin.',
+          title: 'Login realizado com sucesso',
+          type: 'success',
+          icon: '✓'
+        });
+        return false;
+      } catch(err){
+        console.error(err);
+        if(error){
+          error.textContent = 'Erro ao consultar o servidor de licenças.';
+          error.classList.add('show');
+        }
+        return false;
+      } finally {
+        if(btn){
+          btn.textContent = btn.dataset.originalText || 'Entrar no sistema';
+          btn.disabled = false;
+        }
+      }
     }
 
     function cmfinGrantAccess(user, options = {}){
@@ -2758,6 +2915,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       cmfinMarkFirstAccessDone(user);
       cmfinCloseFirstAccessModal();
       cmfinGrantAccess(user);
+      cmfinPendingLicenseId = '';
     }
 
     function cmfinShowPasswordChange(user){
@@ -2786,7 +2944,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       setTimeout(() => document.getElementById('cmfinLoginPassword')?.focus(), 80);
     }
 
-    function cmfinSaveNewPassword(){
+    async function cmfinSaveNewPassword(){
       const newPass = document.getElementById('cmfinNewPassword')?.value.trim();
       const confirmPass = document.getElementById('cmfinConfirmPassword')?.value.trim();
       const error = document.getElementById('cmfinPasswordChangeError');
@@ -2820,21 +2978,22 @@ body.cmfin-authenticated .cmfin-login-screen {
         return;
       }
 
-      /*
-        Integração futura com Supabase:
-        - Atualizar senha_hash.
-        - Definir senha_temporaria = false.
-        - Definir primeiro_acesso = false.
-        - Preencher senha_alterada_em = now().
-        - Manter tipo_usuario e acesso_vitalicio conforme licença cadastrada.
-      */
+      try {
+        await cmfinAtualizarSenhaOrcamento(cmfinPendingLicenseId, newPass);
 
-      if(success) success.classList.add('show');
-      localStorage.setItem('cmfinPasswordChangedAt', new Date().toISOString());
+        if(success) success.classList.add('show');
+        localStorage.setItem('cmfinPasswordChangedAt', new Date().toISOString());
 
-      setTimeout(() => {
-        cmfinOpenFirstAccessModal(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
-      }, 500);
+        setTimeout(() => {
+          cmfinOpenFirstAccessModal(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
+        }, 500);
+      } catch(err){
+        console.error(err);
+        if(error){
+          error.textContent = err?.message || 'Não foi possível salvar a nova senha no servidor.';
+          error.classList.add('show');
+        }
+      }
     }
 
     function cmfinLogout(){
