@@ -1497,6 +1497,7 @@
           <button class="menu-item" type="button" onclick="exportData(); closeActionMenu();"><span class="menu-item-icon">⇩</span><span>Exportar JSON</span></button>
           <label class="menu-item menu-import"><span class="menu-item-icon">⇧</span><span>Importar JSON</span><input type="file" accept="application/json" onchange="importData(event); closeActionMenu()"></label>
           <button class="menu-item" type="button" onclick="smartPrint(); closeActionMenu();"><span class="menu-item-icon">⌘</span><span>Imprimir PDF</span></button>
+          <button class="menu-item menu-item-logout" type="button" onclick="cmfinLogout(); closeActionMenu();"><span class="menu-item-icon">⎋</span><span>Sair do sistema</span></button>
         </div>
       </div>
     </div>
@@ -2296,6 +2297,20 @@
       document.getElementById('data').valueAsDate = new Date();
       renderConfig(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
     }
+    
+    function cmfinLogout(){
+      localStorage.removeItem('cmfinAuth');
+      localStorage.removeItem('cmfinUser');
+      localStorage.removeItem('cmfinLicense');
+      sessionStorage.removeItem('cmfinAuth');
+      sessionStorage.removeItem('cmfinLicense');
+      document.body.classList.remove('cmfin-authenticated');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        window.location.reload();
+      }, 180);
+    }
+
     function toggleActionMenu(event){
       if(event) event.stopPropagation();
       const wrap = document.querySelector('.action-menu-wrap');
