@@ -4331,23 +4331,25 @@ body.cmfin-authenticated .cmfin-login-screen {
 
     const defaultData = {
       config: {
-        custoHoraTecnica: 75,
-        horaSabado: 80,
-        diasUteis: 22,
-        horasDia: 8,
-        horasDiaSabado: 4,
-        custoFixoMensal: 1500,
-        reservaFinanceira: 0.05,
-        taxaEstrutura: 0.10,
-        imposto: 0.06,
-        margemAlvo: 0.20,
-        contingenciaPadrao: 0.03,
-        km: 1.20,
-        visitaHoras: 2,
-        rrtProjeto: 130.64,
-        rrtExecucao: 130.64,
-        placa: 150,
-        brinde: 80
+        // Novo usuário/licença inicia com as Configurações Financeiras zeradas.
+        // Cada cliente deve preencher os próprios valores antes de usar comercialmente.
+        custoHoraTecnica: 0,
+        horaSabado: 0,
+        diasUteis: 0,
+        horasDia: 0,
+        horasDiaSabado: 0,
+        custoFixoMensal: 0,
+        reservaFinanceira: 0,
+        taxaEstrutura: 0,
+        imposto: 0,
+        margemAlvo: 0,
+        contingenciaPadrao: 0,
+        km: 0,
+        visitaHoras: 0,
+        rrtProjeto: 0,
+        rrtExecucao: 0,
+        placa: 0,
+        brinde: 0
       },
       factors: {
         complexidade: { 'Baixa': {h:.85,r:.03}, 'Média': {h:1,r:.06}, 'Alta': {h:1.25,r:.12}, 'Muito alta': {h:1.5,r:.18} },
@@ -4468,9 +4470,10 @@ body.cmfin-authenticated .cmfin-login-screen {
       }
 
       const configPreset = 'cm128_finance_v40_sem_margem_minima_2026_05_08';
-      if(!data.config || data.config._preset !== configPreset){
-        data.config = Object.assign({}, defaultData.config, { _preset: configPreset });
+      if(!data.config){
+        data.config = Object.assign({}, defaultData.config);
       }
+      data.config._preset = data.config._preset || configPreset;
       normalizeVehicles();
       cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
