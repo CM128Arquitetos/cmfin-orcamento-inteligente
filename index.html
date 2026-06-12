@@ -5394,9 +5394,67 @@ ${p.obs}` : ''}`;
     function resetBudget(){
       document.getElementById('cliente').value=''; document.getElementById('servico').value=''; document.getElementById('endereco').value=''; document.getElementById('diasUteisProjeto').value='0'; document.getElementById('diasSabadosProjeto').value='0'; document.getElementById('visitas').value='0'; document.getElementById('kmVisita').value='0'; document.getElementById('modeloVeiculo').value=''; document.getElementById('kmCidade').value='0'; document.getElementById('kmEstrada').value='0'; document.getElementById('tipoTrajeto').value='misto'; document.getElementById('valorCombustivel').value='7.19'; document.getElementById('manutencaoVisita').value='50'; document.getElementById('deslocamentoSugerido').value='0'; document.getElementById('valorAlimentacao').value='0'; document.getElementById('horasAdicionais').value='0'; document.getElementById('desconto').value='0'; const vcm=document.getElementById('valorComercialManual'); if(vcm) vcm.value='0'; const sc=document.getElementById('statusComercial'); if(sc) sc.value='Em análise'; const qp=document.getElementById('qtdProfissionais'); if(qp) qp.value='2'; const critReset=document.getElementById('criterioDivisaoProfissionais'); if(critReset) critReset.value='Divisão manual por percentual'; data.professionalCount=2; data.professionalCriterion='Divisão manual por percentual'; data.professionalShares=[50,50]; syncProfessionalShareRows(true); syncProposalNumber(''); document.getElementById('data').valueAsDate = new Date(); data.complementaryServices = []; editingHistoryIndex = null; updateHistorySaveButton(); renderComplementaryServices(); calculate();
     }
-    function exportData(){
-      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dados_precificador_projetos.json'; a.click(); URL.revokeObjectURL(a.href);
+    async function exportData(){
+      const payload = JSON.stringify(data, null, 2);
+      const fileName = `backup-cmfin-${new Date().toISOString().slice(0,10)}.json`;
+
+      /*
+        Observação importante:
+        A janela para escolher ONDE salvar depende da permissão do navegador.
+        Em navegadores compatíveis, o showSaveFilePicker abre o "Salvar como".
+        Se o navegador bloquear, cai no download padrão.
+      */
+      if(window.showSaveFilePicker){
+        try{
+          const handle = await window.showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{
+              description: 'Arquivo JSON do CMFin',
+              accept: { 'application/json': ['.json'] }
+            }],
+            excludeAcceptAllOption: false
+          });
+
+          const writable = await handle.createWritable();
+          await writable.write(new Blob([payload], { type: 'application/json;charset=utf-8' }));
+          await writable.close();
+
+          toast('Backup exportado no local escolhido.', {
+            title: 'Exportação concluída',
+            type: 'success',
+            icon: '✓'
+          });
+          return;
+        }catch(err){
+          if(err && err.name === 'AbortError'){
+            toast('Exportação cancelada pelo usuário.', {
+              title: 'Exportação cancelada',
+              type: 'info',
+              icon: '•'
+            });
+            return;
+          }
+          console.warn('Não foi possível abrir o seletor de local para salvar:', err);
+        }
+      }
+
+      const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 150);
+
+      toast('O navegador baixou o arquivo direto. Para escolher o local, ative em Configurações > Downloads a opção “Perguntar onde salvar cada arquivo antes de fazer download”.', {
+        title: 'Backup enviado para Downloads',
+        type: 'warning',
+        icon: '!'
+      });
     }
     function importData(e){
       const f=e.target.files[0]; if(!f) return;
