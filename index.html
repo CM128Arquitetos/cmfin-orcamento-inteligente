@@ -2688,6 +2688,229 @@ body.cmfin-authenticated .cmfin-login-screen {
   margin-top: 0 !important;
 }
 
+
+
+/* ===== CMFin Orçamento - Cabeçalho de usuário + Perfil ===== */
+.workspace-topbar{
+  display:flex;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:18px;
+  margin:0 0 18px;
+}
+.workspace-topbar .tabs{
+  flex:1 1 auto;
+  margin:0;
+  align-content:flex-start;
+}
+.cmfin-user-hero{
+  flex:0 0 430px;
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  background:linear-gradient(135deg, #0b3b34 0%, #0f5a4d 58%, #123e35 100%);
+  color:#fff;
+  border-radius:24px;
+  padding:16px 18px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 34px rgba(12,49,42,.16);
+  position:relative;
+  overflow:hidden;
+}
+.cmfin-user-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(255,255,255,.10), transparent 32%);
+  pointer-events:none;
+}
+.cmfin-user-hero-main,
+.cmfin-user-hero-side{ position:relative; z-index:1; }
+.cmfin-user-hero-main{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+.cmfin-user-avatar{
+  width:50px;
+  height:50px;
+  border-radius:18px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16);
+}
+.cmfin-user-eyebrow{
+  font-size:.72rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.72);
+  margin-bottom:4px;
+  font-weight:700;
+}
+.cmfin-user-name{
+  font-size:1.02rem;
+  line-height:1.2;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:210px;
+}
+.cmfin-user-meta{
+  margin-top:4px;
+  font-size:.86rem;
+  color:rgba(255,255,255,.82);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:240px;
+}
+.cmfin-user-hero-side{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+.cmfin-user-badges{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+.cmfin-user-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+  font-size:.76rem;
+  font-weight:700;
+  line-height:1;
+  backdrop-filter: blur(6px);
+}
+.cmfin-user-pill.status{ background:rgba(20,111,79,.30); }
+.cmfin-user-hero-link{
+  border:none;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:.82rem;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+  transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.cmfin-user-hero-link:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.18);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 10px 16px rgba(7,25,22,.18);
+}
+.profile-card .card-body{ padding-top:18px; }
+.profile-card .profile-intro{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+.profile-card .profile-intro .hint{ margin:0; max-width:780px; }
+.profile-shell{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap:16px;
+}
+.profile-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:14px 16px;
+}
+.profile-grid .span-2{ grid-column:span 2; }
+.profile-grid .span-3{ grid-column:span 3; }
+.profile-grid textarea{
+  min-height:92px;
+  resize:vertical;
+}
+.profile-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:4px;
+  flex-wrap:wrap;
+}
+.profile-note-soft{
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px dashed #cfdbd4;
+  background:#f8fbf9;
+  color:#50645c;
+  font-size:.92rem;
+  line-height:1.55;
+}
+.profile-pending-chip{
+  display:none;
+  color:#6c5b18;
+  background:#fff6d8;
+  border:1px solid #f0ddb0;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:700;
+}
+.profile-meta-strip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.profile-meta-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #d8e2dd;
+  background:#fbfdfc;
+  color:#204239;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:700;
+}
+@media (max-width: 1280px){
+  .workspace-topbar{ flex-direction:column; }
+  .cmfin-user-hero{ flex:1 1 auto; width:100%; }
+}
+@media (max-width: 900px){
+  .profile-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+  .profile-grid .span-3{ grid-column:span 2; }
+}
+@media (max-width: 700px){
+  .cmfin-user-hero{ padding:16px; border-radius:20px; flex-direction:column; align-items:flex-start; }
+  .cmfin-user-hero-side{ align-items:flex-start; width:100%; }
+  .cmfin-user-badges{ justify-content:flex-start; }
+  .cmfin-user-name,.cmfin-user-meta{ max-width:none; white-space:normal; }
+  .profile-grid{ grid-template-columns:1fr; }
+  .profile-grid .span-2,
+  .profile-grid .span-3{ grid-column:auto; }
+  .profile-actions{ align-items:flex-start; flex-direction:column; }
+}
+
 </style>
 </head>
 <body>
@@ -2768,6 +2991,7 @@ body.cmfin-authenticated .cmfin-login-screen {
     const CMFIN_ORCAMENTO_DATA_TABLE = 'cmfin_orcamento_dados';
     const CMFIN_BUDGET_LICENSE_ID_KEY = 'cmfinBudgetLicenseId';
     const CMFIN_BUDGET_LICENSE_USER_KEY = 'cmfinBudgetLicenseUser';
+    const CMFIN_ACTIVE_LICENSE_META_KEY = 'cmfinBudgetActiveLicenseMeta';
 
     let cmfinCloudSaveTimer = null;
     let cmfinCloudLoadedLicenseId = '';
@@ -2777,6 +3001,17 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(!id) return;
       localStorage.setItem(CMFIN_BUDGET_LICENSE_ID_KEY, id);
       localStorage.setItem(CMFIN_BUDGET_LICENSE_USER_KEY, licenca?.email || licenca?.cliente || '');
+      try {
+        localStorage.setItem(CMFIN_ACTIVE_LICENSE_META_KEY, JSON.stringify({
+          id: licenca?.id || '',
+          cliente: licenca?.cliente || '',
+          email: licenca?.email || '',
+          data_validade: licenca?.data_validade || '',
+          tipo_usuario: licenca?.tipo_usuario || '',
+          acesso_vitalicio: licenca?.acesso_vitalicio === true,
+          status: licenca?.status || ''
+        }));
+      } catch(e){ console.warn('Não foi possível salvar os metadados da licença ativa.', e); }
       cmfinCloudLoadedLicenseId = id;
     }
 
@@ -2788,6 +3023,15 @@ body.cmfin-authenticated .cmfin-login-screen {
       cmfinCloudLoadedLicenseId = '';
       localStorage.removeItem(CMFIN_BUDGET_LICENSE_ID_KEY);
       localStorage.removeItem(CMFIN_BUDGET_LICENSE_USER_KEY);
+      localStorage.removeItem(CMFIN_ACTIVE_LICENSE_META_KEY);
+    }
+
+    function cmfinGetActiveLicenseMeta(){
+      try {
+        return JSON.parse(localStorage.getItem(CMFIN_ACTIVE_LICENSE_META_KEY) || '{}');
+      } catch(e){
+        return {};
+      }
     }
 
     function cmfinDataStorageKey(licenseId){
@@ -2944,6 +3188,8 @@ body.cmfin-authenticated .cmfin-login-screen {
         if(typeof renderConfig === 'function'){
           try {
             renderConfig();
+            renderProfile();
+            cmfinUpdateUserHero();
             renderVehicleDatalist();
             renderVehicles();
             renderComplementaryTypes();
@@ -2984,6 +3230,8 @@ body.cmfin-authenticated .cmfin-login-screen {
         if(typeof renderConfig === 'function'){
           try {
             renderConfig();
+            renderProfile();
+            cmfinUpdateUserHero();
             renderVehicleDatalist();
             renderVehicles();
             renderComplementaryTypes();
@@ -3206,6 +3454,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         sessionStorage.setItem('cmfinAuth', 'ok');
       }
       document.body.classList.add('cmfin-authenticated');
+      if(typeof cmfinUpdateUserHero === 'function') cmfinUpdateUserHero();
       const pwd = document.getElementById('cmfinLoginPassword');
       if(pwd) pwd.value = '';
       if(options.showToast && typeof toast === 'function'){
@@ -3345,6 +3594,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       document.body.classList.remove('cmfin-authenticated');
       cmfinCloseFirstAccessModal();
       cmfinBackToLogin();
+      if(typeof cmfinUpdateUserHero === 'function') cmfinUpdateUserHero();
 
       const loginScreen = document.getElementById('cmfinLoginScreen');
       if(loginScreen){
@@ -3685,14 +3935,35 @@ body.cmfin-authenticated .cmfin-login-screen {
   </header>
 
   <main>
-    <div class="tabs no-print">
-      <button class="tab-btn active" data-tab="calc" onclick="openTab('calc')">Orçamento</button>
-      <button class="tab-btn" data-tab="complementary" onclick="openTab('complementary')">Complementares / Terceirizados</button>
-      <button class="tab-btn" data-tab="architects" onclick="openTab('architects')">Arquitetos</button>
-      <button class="tab-btn" data-tab="proposal" onclick="openTab('proposal')">Proposta</button>
-      <button class="tab-btn" data-tab="history" onclick="openTab('history')">Histórico</button>
-      <button class="tab-btn" data-tab="vehicles" onclick="openTab('vehicles')">Veículos</button>
-      <button class="tab-btn" data-tab="config" onclick="openTab('config')">Configurações</button>
+    <div class="workspace-topbar no-print">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="calc" onclick="openTab('calc')">Orçamento</button>
+        <button class="tab-btn" data-tab="complementary" onclick="openTab('complementary')">Complementares / Terceirizados</button>
+        <button class="tab-btn" data-tab="architects" onclick="openTab('architects')">Arquitetos</button>
+        <button class="tab-btn" data-tab="proposal" onclick="openTab('proposal')">Proposta</button>
+        <button class="tab-btn" data-tab="history" onclick="openTab('history')">Histórico</button>
+        <button class="tab-btn" data-tab="vehicles" onclick="openTab('vehicles')">Veículos</button>
+        <button class="tab-btn" data-tab="config" onclick="openTab('config')">Configurações</button>
+        <button class="tab-btn" data-tab="profile" onclick="openTab('profile')">Perfil</button>
+      </div>
+
+      <div class="cmfin-user-hero" id="cmfinUserHero">
+        <div class="cmfin-user-hero-main">
+          <div class="cmfin-user-avatar" id="cmfinUserAvatar">CM</div>
+          <div>
+            <div class="cmfin-user-eyebrow">Acesso do usuário</div>
+            <div class="cmfin-user-name" id="cmfinUserName">Usuário CMFin</div>
+            <div class="cmfin-user-meta" id="cmfinUserMeta">Faça login para visualizar seu acesso.</div>
+          </div>
+        </div>
+        <div class="cmfin-user-hero-side">
+          <div class="cmfin-user-badges">
+            <span class="cmfin-user-pill status" id="cmfinUserStatus">Aguardando login</span>
+            <span class="cmfin-user-pill" id="cmfinUserValidity">Validade —</span>
+          </div>
+          <button type="button" class="cmfin-user-hero-link" onclick="openTab('profile')">Abrir perfil</button>
+        </div>
+      </div>
     </div>
 
     <section id="calc" class="tab active">
@@ -3883,6 +4154,48 @@ body.cmfin-authenticated .cmfin-login-screen {
         <p class="hint"><strong>Margem alvo:</strong> margem ideal para o projeto ser saudável, pagar seu trabalho, cobrir custos e deixar lucro real.</p>
         <p class="hint"><strong>Contingência padrão:</strong> reserva aplicada sobre os custos para cobrir retrabalho, reuniões extras, ajustes, imprevistos e variações de escopo.</p>
         <p class="hint">Os campos desta tela são editados manualmente. Após alterar qualquer valor, clique em <strong>Salvar configurações</strong> para aplicar os novos parâmetros no orçamento.</p>
+      </div></div>
+    </section>
+
+    <section id="profile" class="tab">
+      <div class="card profile-card"><h2>Perfil do usuário</h2><div class="card-body">
+        <div class="profile-intro">
+          <p class="hint">Preencha aqui os dados do responsável ou do escritório. Essas informações ficam salvas individualmente para este usuário/licença e podem ser utilizadas como base para personalizações futuras do sistema.</p>
+          <div class="profile-meta-strip">
+            <span class="profile-meta-pill">Sincronização individual</span>
+            <span class="profile-meta-pill">Dados do perfil</span>
+          </div>
+        </div>
+
+        <div class="profile-shell">
+          <div class="profile-grid">
+            <div><label>Nome completo</label><input id="profileNome" placeholder="Ex.: Francisco Elton Carneiro Menezes" oninput="markProfilePending()"></div>
+            <div><label>Nome profissional / exibição</label><input id="profileNomeExibicao" placeholder="Ex.: Elton Menezes" oninput="markProfilePending()"></div>
+            <div><label>Cargo / função</label><input id="profileCargo" placeholder="Ex.: Arquiteto / Administrador" oninput="markProfilePending()"></div>
+
+            <div><label>CPF</label><input id="profileCpf" placeholder="000.000.000-00" oninput="markProfilePending()"></div>
+            <div><label>CNPJ</label><input id="profileCnpj" placeholder="00.000.000/0000-00" oninput="markProfilePending()"></div>
+            <div><label>CAU / CREA / registro</label><input id="profileRegistro" placeholder="Ex.: CAU A000000-0" oninput="markProfilePending()"></div>
+
+            <div class="span-2"><label>Empresa / escritório</label><input id="profileEmpresa" placeholder="Ex.: CM128 Arquitetos" oninput="markProfilePending()"></div>
+            <div><label>Cidade / UF</label><input id="profileCidade" placeholder="Ex.: Curitiba - PR" oninput="markProfilePending()"></div>
+
+            <div><label>E-mail</label><input id="profileEmail" type="email" placeholder="contato@empresa.com.br" oninput="markProfilePending()"></div>
+            <div><label>Telefone / WhatsApp</label><input id="profileTelefone" placeholder="(00) 0.0000-0000" oninput="markProfilePending()"></div>
+            <div><label>Site / Instagram</label><input id="profileSite" placeholder="@seuperfil ou www.seusite.com.br" oninput="markProfilePending()"></div>
+
+            <div class="span-3"><label>Endereço comercial</label><input id="profileEndereco" placeholder="Rua, número, bairro, cidade" oninput="markProfilePending()"></div>
+            <div class="span-3"><label>Observações</label><textarea id="profileObservacoes" placeholder="Informações complementares sobre o usuário ou o escritório." oninput="markProfilePending()"></textarea></div>
+          </div>
+
+          <div class="profile-actions no-print">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <button class="success" onclick="saveProfile()">Salvar perfil</button>
+              <span id="profilePending" class="profile-pending-chip">Alterações pendentes de salvamento</span>
+            </div>
+            <div class="profile-note-soft">Dica: o cabeçalho de acesso usa primeiro o <strong>Nome profissional / exibição</strong>. Se estiver vazio, o sistema mostra automaticamente o nome da licença.</div>
+          </div>
+        </div>
       </div></div>
     </section>
 
@@ -4426,6 +4739,21 @@ body.cmfin-authenticated .cmfin-login-screen {
         instagram: '@cm128_',
         motto: 'A FÉ é a chave para novas conquistas!'
       },
+      profile: {
+        nome: '',
+        nomeExibicao: '',
+        cargo: '',
+        cpf: '',
+        cnpj: '',
+        registro: '',
+        empresa: '',
+        cidade: '',
+        email: '',
+        telefone: '',
+        site: '',
+        endereco: '',
+        observacoes: ''
+      },
       proposalSequence: { year: new Date().getFullYear(), lastNumber: 0 }
     };
 
@@ -4490,7 +4818,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       normalizeVehicles();
       cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
-      renderConfig(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
+      renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
       if(activeLicenseId) cmfinCarregarDadosNuvem(activeLicenseId, { showError: false });
     }
     function toggleActionMenu(event){
@@ -4543,7 +4871,106 @@ body.cmfin-authenticated .cmfin-login-screen {
       };
       setTimeout(removeToast, options.duration || 3600);
     }
-    function openTab(id){ document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); } if(id==='architects') renderArchitects(); if(id==='complementary') renderComplementaryServices(); }
+    function cmfinFormatDateBR(dateValue){
+      if(!dateValue) return 'Não informado';
+      const value = String(dateValue).trim();
+      if(!value) return 'Não informado';
+      const d = value.length <= 10 ? new Date(value + 'T00:00:00') : new Date(value);
+      if(Number.isNaN(d.getTime())) return value;
+      return new Intl.DateTimeFormat('pt-BR').format(d);
+    }
+
+    function cmfinUserDisplayName(){
+      const profile = data?.profile || {};
+      const meta = typeof cmfinGetActiveLicenseMeta === 'function' ? cmfinGetActiveLicenseMeta() : {};
+      return profile.nomeExibicao || profile.nome || profile.empresa || meta.cliente || meta.email || localStorage.getItem('cmfinUser') || 'Usuário CMFin';
+    }
+
+    function cmfinUserMetaLine(){
+      const profile = data?.profile || {};
+      const meta = typeof cmfinGetActiveLicenseMeta === 'function' ? cmfinGetActiveLicenseMeta() : {};
+      return profile.cargo || profile.email || meta.email || meta.cliente || 'Acesso vinculado à sua licença ativa';
+    }
+
+    function cmfinUpdateUserHero(){
+      const meta = typeof cmfinGetActiveLicenseMeta === 'function' ? cmfinGetActiveLicenseMeta() : {};
+      const name = cmfinUserDisplayName();
+      const metaLine = cmfinUserMetaLine();
+      const avatar = document.getElementById('cmfinUserAvatar');
+      const nameEl = document.getElementById('cmfinUserName');
+      const metaEl = document.getElementById('cmfinUserMeta');
+      const statusEl = document.getElementById('cmfinUserStatus');
+      const validityEl = document.getElementById('cmfinUserValidity');
+      if(avatar){
+        const letters = String(name || 'CM').split(/\s+/).filter(Boolean).slice(0,2).map(v => v[0]).join('').toUpperCase();
+        avatar.textContent = letters || 'CM';
+      }
+      if(nameEl) nameEl.textContent = name || 'Usuário CMFin';
+      if(metaEl) metaEl.textContent = metaLine || 'Acesso vinculado à sua licença ativa';
+      const vitalicio = meta.acesso_vitalicio === true || meta.tipo_usuario === 'administrador';
+      if(statusEl){
+        const statusText = meta.id ? (vitalicio ? 'Acesso vitalício' : 'Licença ativa') : 'Aguardando login';
+        statusEl.textContent = statusText;
+      }
+      if(validityEl){
+        validityEl.textContent = meta.id ? (vitalicio ? 'Sem vencimento' : 'Válido até ' + cmfinFormatDateBR(meta.data_validade)) : 'Validade —';
+      }
+    }
+
+    function profileFieldsMap(){
+      return {
+        nome: 'profileNome',
+        nomeExibicao: 'profileNomeExibicao',
+        cargo: 'profileCargo',
+        cpf: 'profileCpf',
+        cnpj: 'profileCnpj',
+        registro: 'profileRegistro',
+        empresa: 'profileEmpresa',
+        cidade: 'profileCidade',
+        email: 'profileEmail',
+        telefone: 'profileTelefone',
+        site: 'profileSite',
+        endereco: 'profileEndereco',
+        observacoes: 'profileObservacoes'
+      };
+    }
+
+    function markProfilePending(){
+      const chip = document.getElementById('profilePending');
+      if(chip) chip.style.display = 'inline-flex';
+    }
+
+    function renderProfile(){
+      if(!data.profile || typeof data.profile !== 'object') data.profile = structuredClone(defaultData.profile);
+      const map = profileFieldsMap();
+      Object.entries(map).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if(el) el.value = data.profile?.[key] || '';
+      });
+      const chip = document.getElementById('profilePending');
+      if(chip) chip.style.display = 'none';
+      cmfinUpdateUserHero();
+    }
+
+    function saveProfile(){
+      if(!data.profile || typeof data.profile !== 'object') data.profile = structuredClone(defaultData.profile);
+      const map = profileFieldsMap();
+      Object.entries(map).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        data.profile[key] = el ? String(el.value || '').trim() : '';
+      });
+      cmfinPersistData();
+      renderProfile();
+      if(typeof toast === 'function'){
+        toast('Os dados do perfil foram salvos com sucesso.', {
+          title: 'Perfil atualizado',
+          type: 'success',
+          icon: '✓'
+        });
+      }
+    }
+
+    function openTab(id){ document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); } if(id==='architects') renderArchitects(); if(id==='complementary') renderComplementaryServices(); if(id==='profile') renderProfile(); }
 
     function renderConfig(){
       if(data.config.salarioMensal && !data.config.custoHoraTecnica){
@@ -6539,7 +6966,7 @@ ${p.obs}` : ''}`;
     }
     function importData(e){
       const f=e.target.files[0]; if(!f) return;
-      const r=new FileReader(); r.onload=()=>{ try{ data=mergeDefaults(JSON.parse(r.result), defaultData); normalizeVehicles(); renderConfig(); renderServices(); populateServices(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderDeliverableChecklist(); renderSmartSuggestions(); editingHistoryIndex = null; updateHistorySaveButton(); calculate(); saveAll(); toast('Dados importados.'); }catch(err){ toast('Arquivo inválido.'); } }; r.readAsText(f);
+      const r=new FileReader(); r.onload=()=>{ try{ data=mergeDefaults(JSON.parse(r.result), defaultData); normalizeVehicles(); renderConfig(); renderProfile(); renderServices(); populateServices(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderDeliverableChecklist(); renderSmartSuggestions(); cmfinUpdateUserHero(); editingHistoryIndex = null; updateHistorySaveButton(); calculate(); saveAll(); toast('Dados importados.'); }catch(err){ toast('Arquivo inválido.'); } }; r.readAsText(f);
     }
     function downloadCSV(){
       const rows = [['Numero','Data','Cliente','Servico','Endereco','Dias uteis','Sabados','Total ao cliente','Complementares','Minimo','Alvo','Lucro','Status financeiro','Status comercial'], ...data.history.map(h=>[h.numeroProposta||'',h.data,h.cliente,h.servico,h.endereco||'',h.diasUteis||0,h.diasSabados||0,h.valor,h.complementares||0,h.minimo,h.alvo,h.lucro,h.status,h.statusComercial||'Em análise'])];
