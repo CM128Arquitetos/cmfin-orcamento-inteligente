@@ -2765,6 +2765,32 @@ body.cmfin-authenticated .cmfin-login-screen {
     const CMFIN_SUPABASE_ANON_KEY = 'sb_publishable_loOmGiLkYRq1PxJaVEXLAw_haNJQsPr';
     const CMFIN_ORCAMENTO_LICENSE_TABLE = 'cmfin_orcamento_licencas';
 
+    const CMFIN_ORCAMENTO_DATA_TABLE = 'cmfin_orcamento_dados';
+    const CMFIN_BUDGET_LICENSE_ID_KEY = 'cmfinBudgetLicenseId';
+    const CMFIN_BUDGET_LICENSE_USER_KEY = 'cmfinBudgetLicenseUser';
+
+    let cmfinCloudSaveTimer = null;
+    let cmfinCloudLoadedLicenseId = '';
+
+    function cmfinSetActiveLicense(licenca){
+      const id = licenca?.id || '';
+      if(!id) return;
+      localStorage.setItem(CMFIN_BUDGET_LICENSE_ID_KEY, id);
+      localStorage.setItem(CMFIN_BUDGET_LICENSE_USER_KEY, licenca?.email || licenca?.cliente || '');
+      cmfinCloudLoadedLicenseId = id;
+    }
+
+    function cmfinGetActiveLicenseId(){
+      return cmfinPendingLicenseId || localStorage.getItem(CMFIN_BUDGET_LICENSE_ID_KEY) || '';
+    }
+
+    function cmfinClearActiveLicense(){
+      cmfinCloudLoadedLicenseId = '';
+      localStorage.removeItem(CMFIN_BUDGET_LICENSE_ID_KEY);
+      localStorage.removeItem(CMFIN_BUDGET_LICENSE_USER_KEY);
+    }
+
+
     function cmfinOrcamentoHeaders(extra = {}){
       return {
         'apikey': CMFIN_SUPABASE_ANON_KEY,
@@ -2863,6 +2889,125 @@ body.cmfin-authenticated .cmfin-login-screen {
 
 
     
+
+    async function cmfinCarregarDadosNuvem(licenseId, options = {}){
+      if(!licenseId) return false;
+
+      const resp = await fetch(`${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_DATA_TABLE}?select=dados,atualizado_em&licenca_id=eq.${encodeURIComponent(licenseId)}&limit=1`, {
+        method: 'GET',
+        headers: cmfinOrcamentoHeaders()
+      });
+
+      if(!resp.ok){
+        console.error('Erro ao carregar dados do orçamento na nuvem:', await resp.text());
+        if(options.showError && typeof toast === 'function'){
+          toast('Não foi possível carregar os dados da nuvem. O sistema abriu os dados locais deste navegador.', {
+            title: 'Sincronização indisponível',
+            type: 'warning',
+            icon: '!'
+          });
+        }
+        return false;
+      }
+
+      const rows = await resp.json();
+      if(Array.isArray(rows) && rows.length && rows[0]?.dados){
+        data = mergeDefaults(rows[0].dados, defaultData);
+        normalizeVehicles();
+        cmfinPersistData({ cloud: false });
+        cmfinCloudLoadedLicenseId = licenseId;
+
+        if(typeof renderConfig === 'function'){
+          renderConfig();
+          renderVehicleDatalist();
+          renderVehicles();
+          renderComplementaryTypes();
+          renderComplementaryServices();
+          renderHistory();
+          renderSmartSuggestions();
+          renderBrandCustomizationFields();
+          applyBrandCustomization();
+          const qpLoad=document.getElementById('qtdProfissionais');
+          if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount;
+          const critLoad=document.getElementById('criterioDivisaoProfissionais');
+          if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion;
+          calculate();
+          syncProfessionalShareRows();
+          updateHistorySaveButton();
+        }
+
+        if(options.showToast && typeof toast === 'function'){
+          toast('Dados carregados da nuvem com sucesso.', {
+            title: 'Sincronização concluída',
+            type: 'success',
+            icon: '✓'
+          });
+        }
+        return true;
+      }
+
+      // Nenhum dado ainda para esta licença: começa limpo para este cliente.
+      if(options.resetWhenEmpty){
+        data = structuredClone(defaultData);
+        normalizeVehicles();
+        cmfinPersistData();
+      }
+
+      return false;
+    }
+
+    async function cmfinSalvarDadosNuvem(showToast = false){
+      const licenseId = cmfinGetActiveLicenseId();
+      if(!licenseId) return false;
+
+      const payload = {
+        licenca_id: licenseId,
+        dados: data,
+        atualizado_em: new Date().toISOString()
+      };
+
+      const resp = await fetch(`${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_DATA_TABLE}?on_conflict=licenca_id`, {
+        method: 'POST',
+        headers: cmfinOrcamentoHeaders({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+        body: JSON.stringify(payload)
+      });
+
+      if(!resp.ok){
+        console.error('Erro ao salvar dados do orçamento na nuvem:', await resp.text());
+        if(showToast && typeof toast === 'function'){
+          toast('Os dados foram salvos neste navegador, mas não sincronizaram com a nuvem.', {
+            title: 'Falha na sincronização',
+            type: 'warning',
+            icon: '!'
+          });
+        }
+        return false;
+      }
+
+      if(showToast && typeof toast === 'function'){
+        toast('Dados salvos e sincronizados na nuvem.', {
+          title: 'Sincronização concluída',
+          type: 'success',
+          icon: '✓'
+        });
+      }
+      return true;
+    }
+
+    function cmfinAgendarSalvarNuvem(){
+      const licenseId = cmfinGetActiveLicenseId();
+      if(!licenseId) return;
+      clearTimeout(cmfinCloudSaveTimer);
+      cmfinCloudSaveTimer = setTimeout(() => {
+        cmfinSalvarDadosNuvem(false);
+      }, 900);
+    }
+
+    function cmfinPersistData(options = {}){
+      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      if(options.cloud !== false) cmfinAgendarSalvarNuvem();
+    }
+
     function cmfinNormalizeUser(user){
       return String(user || '').trim().toLowerCase();
     }
@@ -2942,6 +3087,19 @@ body.cmfin-authenticated .cmfin-login-screen {
         }
 
         cmfinPendingLicenseId = licenca.id || '';
+        cmfinSetActiveLicense(licenca);
+
+        const previousLicenseId = localStorage.getItem('cmfinLastLoadedBudgetLicenseId') || '';
+        const licenseChanged = previousLicenseId && previousLicenseId !== cmfinPendingLicenseId;
+        if(licenseChanged){
+          data = structuredClone(defaultData);
+          normalizeVehicles();
+          cmfinPersistData();
+        }
+        localStorage.setItem('cmfinLastLoadedBudgetLicenseId', cmfinPendingLicenseId);
+
+        await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: true });
+
         cmfinPendingPasswordChangeUser = licenca.email || licenca.cliente || user;
 
         const exigeTrocaSenha =
@@ -3121,6 +3279,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       localStorage.removeItem('cmfinAuth');
       localStorage.removeItem('cmfinUser');
       sessionStorage.removeItem('cmfinAuth');
+      cmfinClearActiveLicense();
       document.body.classList.remove('cmfin-authenticated');
       cmfinCloseFirstAccessModal();
       cmfinBackToLogin();
@@ -4253,9 +4412,11 @@ body.cmfin-authenticated .cmfin-login-screen {
         data.config = Object.assign({}, defaultData.config, { _preset: configPreset });
       }
       normalizeVehicles();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       document.getElementById('data').valueAsDate = new Date();
       renderConfig(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
+      const activeLicenseId = cmfinGetActiveLicenseId();
+      if(activeLicenseId) cmfinCarregarDadosNuvem(activeLicenseId, { showError: false });
     }
     function toggleActionMenu(event){
       if(event) event.stopPropagation();
@@ -4281,7 +4442,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(event.key === 'Escape') closeActionMenu();
     });
 
-    function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); localStorage.setItem('precificadorEltonV1', JSON.stringify(data)); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); renderSmartSuggestions(); updateHistorySaveButton(); toast('Dados salvos neste navegador.'); }
+    function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); cmfinPersistData(); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); renderSmartSuggestions(); updateHistorySaveButton(); cmfinSalvarDadosNuvem(true); }
     function toast(msg, options = {}){
       const host = document.getElementById('cmfinToastHost');
       const title = options.title || 'Notificação do sistema';
@@ -4363,10 +4524,10 @@ body.cmfin-authenticated .cmfin-login-screen {
     function saveConfig(){
       applyConfigInputs();
       calculate();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       const el = document.getElementById('configPending');
       if(el) el.style.display = 'none';
-      toast('Configurações salvas e aplicadas ao orçamento.');
+      cmfinSalvarDadosNuvem(true);
     }
 
     function populateServices(){
@@ -4611,21 +4772,21 @@ body.cmfin-authenticated .cmfin-login-screen {
       renderComplementaryTypes();
       renderComplementaryServices();
       calculate();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
     }
     function deleteComplementaryService(i){
       data.complementaryServices = Array.isArray(data.complementaryServices) ? data.complementaryServices : [];
       data.complementaryServices.splice(i, 1);
       renderComplementaryServices();
       calculate();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
     }
     function clearComplementaryServices(){
       if(confirm('Limpar todos os projetos complementares / serviços terceirizados deste orçamento?')){
         data.complementaryServices = [];
         renderComplementaryServices();
         calculate();
-        localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+        cmfinPersistData();
       }
     }
     function renderComplementaryServices(){
@@ -4891,7 +5052,7 @@ body.cmfin-authenticated .cmfin-login-screen {
             <div id="profShareValue_${i}" class="share-value-box">R$ 0,00</div>
           </div>
         </div>`).join('');
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       renderArchitects();
     }
 
@@ -4899,12 +5060,12 @@ body.cmfin-authenticated .cmfin-login-screen {
       data.professionalCount = getProfessionalCount();
       data.professionalNames = getProfessionalNamesFromInputs();
       data.professionalShares = getProfessionalSharesFromInputs();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
     }
 
     function updateProfessionalCriterion(){
       data.professionalCriterion = 'Divisão manual por percentual';
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
     }
 
     function distributeProfessionalsEqually(){
@@ -5120,7 +5281,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       setDeliverableLines(lines);
     }
     function persistDeliverables(){
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
     }
     function addCustomDeliverable(){
       const input = document.getElementById('newDeliverable');
@@ -5269,7 +5430,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       const exists = data.smartHistory[key].some(v => String(v).trim().toLowerCase() === clean.toLowerCase());
       if(!exists) data.smartHistory[key].unshift(clean);
       data.smartHistory[key] = data.smartHistory[key].slice(0, 80);
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       renderSmartSuggestions();
     }
     function renderSmartSuggestions(){
@@ -5349,7 +5510,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       set('propNumero', current);
       if(commit){
         data.proposalSequence = { year, lastNumber: next };
-        localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+        cmfinPersistData();
       }
       return current;
     }
@@ -5552,7 +5713,7 @@ body.cmfin-authenticated .cmfin-login-screen {
     function setLetterheadMode(mode){
       const lh = currentLetterhead();
       lh.mode = mode === 'custom' ? 'custom' : 'cm128';
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       applyBrandCustomization();
       buildProposal();
     }
@@ -5572,7 +5733,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         bottom: parseCmInput('letterheadMarginBottom', 4.0),
         left: parseCmInput('letterheadMarginLeft', 1.6)
       });
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       applyBrandCustomization();
       buildProposal();
     }
@@ -5639,7 +5800,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(!(lh.src && String(lh.fileType || '').startsWith('application/pdf'))) return;
       if(lh._pdfConvertedAttempted) return;
       lh._pdfConvertedAttempted = true;
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       try{
         toast('Convertendo PDF salvo para fundo de impressão...');
         const response = await fetch(lh.src);
@@ -5649,7 +5810,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         lh.fileType = 'image/jpeg';
         lh.originalFileType = 'application/pdf';
         lh.mode = 'custom';
-        localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+        cmfinPersistData();
         renderBrandCustomizationFields();
         buildProposal();
         toast('PDF salvo convertido para impressão.');
@@ -5676,7 +5837,7 @@ body.cmfin-authenticated .cmfin-login-screen {
           lh.originalFileType = 'application/pdf';
           lh.fileName = file.name || '';
           lh.mode = 'custom';
-          localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+          cmfinPersistData();
           renderBrandCustomizationFields();
           buildProposal();
           toast('PDF convertido e aplicado como papel timbrado para impressão.');
@@ -5690,7 +5851,7 @@ body.cmfin-authenticated .cmfin-login-screen {
           lh.originalFileType = file.type;
           lh.fileName = file.name || '';
           lh.mode = 'custom';
-          localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+          cmfinPersistData();
           renderBrandCustomizationFields();
           buildProposal();
           toast('Papel timbrado aplicado.');
@@ -5713,7 +5874,7 @@ body.cmfin-authenticated .cmfin-login-screen {
     function resetLetterheadCustomization(){
       const brand = ensureBrandData();
       brand.letterhead = defaultLetterheadData();
-      localStorage.setItem('precificadorEltonV1', JSON.stringify(data));
+      cmfinPersistData();
       renderBrandCustomizationFields();
       buildProposal();
       toast('Personalização removida. Timbrado padrão CM128 restaurado.');
