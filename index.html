@@ -2423,9 +2423,201 @@ body.cmfin-authenticated .cmfin-login-screen {
   pointer-events: none !important;
 }
 
+
+/* ===== CMFin - Recuperação de senha ===== */
+.cmfin-forgot-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 18, 16, .58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+.cmfin-forgot-modal.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.cmfin-forgot-card {
+  width: min(100%, 520px);
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(10, 35, 30, .24);
+  border: 1px solid rgba(15, 44, 38, .08);
+  position: relative;
+  overflow: hidden;
+}
+.cmfin-forgot-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #0c3b34 0%, #0e5f4f 58%, #ef233c 100%);
+}
+.cmfin-forgot-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.cmfin-forgot-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0c3b34, #0e5f4f);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 900;
+  flex: 0 0 auto;
+  box-shadow: 0 12px 28px rgba(12, 59, 52, .22);
+}
+.cmfin-forgot-card h3 {
+  margin: 0 0 7px;
+  color: #0f2c26;
+  font-size: 1.72rem;
+  line-height: 1.08;
+}
+.cmfin-forgot-card p {
+  margin: 0;
+  color: #61746e;
+  font-size: .96rem;
+  line-height: 1.58;
+}
+.cmfin-forgot-field {
+  margin-top: 18px;
+}
+.cmfin-forgot-field label {
+  display: block;
+  margin: 0 0 7px;
+  color: #40514a;
+  font-size: .76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cmfin-forgot-field input {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 15px;
+  border: 1px solid #d7e1dc;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbf9 100%);
+  padding: 13px 15px;
+  color: #10251f;
+  font-family: inherit;
+  font-size: .98rem;
+  outline: none;
+}
+.cmfin-forgot-field input:focus {
+  border-color: #12352d;
+  box-shadow: 0 0 0 4px rgba(17,44,37,.10);
+}
+.cmfin-forgot-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f6faf8;
+  border: 1px solid #dfe9e4;
+  color: #62736b;
+  font-size: .84rem;
+  line-height: 1.45;
+}
+.cmfin-forgot-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.cmfin-forgot-btn {
+  border: 0;
+  border-radius: 15px;
+  padding: 13px 18px;
+  font-size: .94rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.cmfin-forgot-btn.secondary {
+  background: #eef5f1;
+  color: #123c33;
+}
+.cmfin-forgot-btn.primary {
+  background: linear-gradient(135deg, #0c3b34, #062d26);
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(12,59,52,.22);
+}
+.cmfin-forgot-btn.primary:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.cmfin-forgot-error {
+  display: none;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border-radius: 13px;
+  background: #fff1f0;
+  color: #9e1620;
+  border: 1px solid #ffd0d0;
+  font-size: .86rem;
+  font-weight: 700;
+}
+.cmfin-forgot-error.show {
+  display: block;
+}
+@media (max-width: 640px) {
+  .cmfin-forgot-card {
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+  .cmfin-forgot-card h3 {
+    font-size: 1.48rem;
+  }
+}
+
 </style>
 </head>
 <body>
+  <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
+    <div class="cmfin-forgot-card" role="dialog" aria-modal="true" aria-labelledby="cmfinForgotTitle">
+      <div class="cmfin-forgot-head">
+        <div class="cmfin-forgot-badge">↺</div>
+        <div>
+          <h3 id="cmfinForgotTitle">Recuperar senha</h3>
+          <p>Informe o e-mail cadastrado para receber uma senha temporária de acesso.</p>
+        </div>
+      </div>
+
+      <div class="cmfin-forgot-field">
+        <label for="cmfinForgotEmail">E-mail cadastrado</label>
+        <input id="cmfinForgotEmail" type="email" autocomplete="email" placeholder="seu@email.com">
+      </div>
+
+      <div class="cmfin-forgot-note">
+        Por segurança, enviaremos a resposta apenas se o e-mail estiver vinculado a uma licença ativa no sistema.
+      </div>
+
+      <div class="cmfin-forgot-error" id="cmfinForgotError"></div>
+
+      <div class="cmfin-forgot-actions">
+        <button type="button" class="cmfin-forgot-btn secondary" onclick="cmfinCloseForgotPassword()">Cancelar</button>
+        <button type="button" class="cmfin-forgot-btn primary" id="cmfinForgotSubmit" onclick="cmfinRequestPasswordRecovery()">Enviar recuperação</button>
+      </div>
+    </div>
+  </div>
+
+
   <div id="cmfinSupportModal" class="cmfin-support-modal" aria-hidden="true">
     <div class="cmfin-support-card" role="dialog" aria-modal="true" aria-labelledby="cmfinSupportTitle">
       <div class="cmfin-support-head">
@@ -2463,6 +2655,28 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
 
     let cmfinPendingPasswordChangeUser = '';
+    let cmfinPendingTemporaryPassword = '';
+
+    
+    function cmfinNormalizeUser(user){
+      return String(user || '').trim().toLowerCase();
+    }
+
+    function cmfinFirstAccessKey(user){
+      return 'cmfinFirstAccessDone:' + cmfinNormalizeUser(user);
+    }
+
+    function cmfinMarkFirstAccessDone(user){
+      const normalized = cmfinNormalizeUser(user);
+      if(!normalized) return;
+      localStorage.setItem(cmfinFirstAccessKey(normalized), 'true');
+    }
+
+    function cmfinIsFirstAccessDone(user){
+      const normalized = cmfinNormalizeUser(user);
+      if(!normalized) return false;
+      return localStorage.getItem(cmfinFirstAccessKey(normalized)) === 'true';
+    }
 
     function cmfinIsTemporaryPassword(pass){
       const value = String(pass || '').trim();
@@ -2495,7 +2709,8 @@ body.cmfin-authenticated .cmfin-login-screen {
         6. Se tudo estiver ativo, chamar cmfinGrantAccess(user).
       */
 
-      if(cmfinIsTemporaryPassword(pass)){
+      if(cmfinIsTemporaryPassword(pass) && !cmfinIsFirstAccessDone(user)){
+        cmfinPendingTemporaryPassword = pass;
         cmfinShowPasswordChange(user);
         return false;
       }
@@ -2539,8 +2754,10 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
 
     function cmfinCompleteFirstAccess(){
+      const user = cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim();
+      cmfinMarkFirstAccessDone(user);
       cmfinCloseFirstAccessModal();
-      cmfinGrantAccess(cmfinPendingPasswordChangeUser || document.getElementById('cmfinLoginEmail')?.value.trim());
+      cmfinGrantAccess(user);
     }
 
     function cmfinShowPasswordChange(user){
@@ -2565,6 +2782,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       const confPwd = document.getElementById('cmfinConfirmPassword');
       if(newPwd) newPwd.value = '';
       if(confPwd) confPwd.value = '';
+      cmfinPendingTemporaryPassword = '';
       setTimeout(() => document.getElementById('cmfinLoginPassword')?.focus(), 80);
     }
 
@@ -2588,6 +2806,15 @@ body.cmfin-authenticated .cmfin-login-screen {
       if(newPass !== confirmPass){
         if(error){
           error.textContent = 'As senhas não conferem. Digite novamente.';
+          error.classList.add('show');
+        }
+        return;
+      }
+
+
+      if(cmfinPendingTemporaryPassword && newPass === cmfinPendingTemporaryPassword){
+        if(error){
+          error.textContent = 'Por segurança, a senha definitiva não pode ser igual à senha temporária. Crie uma nova senha diferente.';
           error.classList.add('show');
         }
         return;
@@ -2657,6 +2884,99 @@ body.cmfin-authenticated .cmfin-login-screen {
           type: 'info',
           icon: '↪'
         });
+      }
+    }
+
+    
+    const CMFIN_PASSWORD_RECOVERY_ENDPOINT = '';
+
+    function cmfinOpenForgotPassword(event){
+      if(event) event.preventDefault();
+      const modal = document.getElementById('cmfinForgotModal');
+      const input = document.getElementById('cmfinForgotEmail');
+      const loginEmail = document.getElementById('cmfinLoginEmail')?.value.trim();
+      const error = document.getElementById('cmfinForgotError');
+
+      if(error){
+        error.textContent = '';
+        error.classList.remove('show');
+      }
+      if(input && loginEmail) input.value = loginEmail;
+
+      if(modal){
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+      setTimeout(() => input?.focus(), 80);
+    }
+
+    function cmfinCloseForgotPassword(){
+      const modal = document.getElementById('cmfinForgotModal');
+      if(modal){
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    async function cmfinRequestPasswordRecovery(){
+      const email = document.getElementById('cmfinForgotEmail')?.value.trim().toLowerCase();
+      const error = document.getElementById('cmfinForgotError');
+      const btn = document.getElementById('cmfinForgotSubmit');
+
+      if(error){
+        error.textContent = '';
+        error.classList.remove('show');
+      }
+
+      if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        if(error){
+          error.textContent = 'Informe um e-mail válido para continuar.';
+          error.classList.add('show');
+        }
+        return;
+      }
+
+      if(!CMFIN_PASSWORD_RECOVERY_ENDPOINT){
+        if(error){
+          error.textContent = 'A recuperação por e-mail ainda precisa ser conectada ao Supabase/Edge Function.';
+          error.classList.add('show');
+        }
+        return;
+      }
+
+      try{
+        if(btn){
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+        }
+
+        const response = await fetch(CMFIN_PASSWORD_RECOVERY_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if(!response.ok){
+          throw new Error('Falha ao solicitar recuperação.');
+        }
+
+        cmfinCloseForgotPassword();
+        toast('Se o e-mail estiver cadastrado, enviaremos uma senha temporária em alguns instantes.', {
+          title: 'Recuperação solicitada',
+          type: 'success',
+          icon: '✓'
+        });
+      }catch(err){
+        console.error(err);
+        if(error){
+          error.textContent = 'Não foi possível enviar a recuperação agora. Tente novamente ou fale com o suporte.';
+          error.classList.add('show');
+        }
+      }finally{
+        if(btn){
+          btn.disabled = false;
+          btn.textContent = 'Enviar recuperação';
+        }
       }
     }
 
@@ -2764,7 +3084,7 @@ body.cmfin-authenticated .cmfin-login-screen {
 
           <div class="cmfin-login-options">
             <label class="cmfin-login-check"><input id="cmfinRemember" type="checkbox" checked> Manter conectado</label>
-            <a class="cmfin-login-link" href="#" onclick="cmfinOpenSupport(event)">Suporte</a>
+            <span style="display:inline-flex; gap:12px; align-items:center;"><a class="cmfin-login-link" href="#" onclick="cmfinOpenForgotPassword(event)">Esqueci minha senha</a><a class="cmfin-login-link" href="#" onclick="cmfinOpenSupport(event)">Suporte</a></span>
           </div>
 
           <button class="cmfin-login-btn" type="submit">Entrar no sistema</button>
