@@ -321,9 +321,22 @@
     .service-editor { display:grid; grid-template-columns: .7fr 1.5fr .7fr .8fr .8fr .8fr auto; gap:8px; align-items:end; }
     .complementary-editor { display:grid; grid-template-columns: 1.2fr 1.2fr .7fr auto; gap:8px; align-items:end; }
     .config-grid { display:grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap:12px; }
-    .checks { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:10px; }
-    .checkline { display:flex; gap:8px; align-items:center; background:#f7faf8; padding:10px; border:1px solid var(--line); border-radius: 12px; }
-    .checkline input { width:auto; }
+    .checks { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px; }
+    .checkline { display:flex; gap:8px; align-items:center; background:#f7faf8; padding:8px 10px; border:1px solid var(--line); border-radius: 12px; min-height:48px; margin:0; }
+    .checkline input { width:auto; min-height:auto; height:14px; margin:0; flex:0 0 auto; }
+    .checkline .check-content { display:flex; flex-direction:column; gap:3px; line-height:1.2; }
+    .checkline .check-help { display:block; color:var(--muted); font-size:.72rem; font-weight:700; text-transform:none; letter-spacing:0; }
+    .custom-extra-panel { margin-top:16px; padding:16px; border:1px solid var(--line); border-radius:16px; background:#fbfdfc; }
+    .custom-extra-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+    .custom-extra-head h3 { margin:0; font-size:.98rem; color:var(--brand); letter-spacing:-.01em; }
+    .custom-extra-head p { margin:4px 0 0; color:var(--muted); font-size:.82rem; line-height:1.4; }
+    .custom-extra-editor { display:grid; grid-template-columns:1fr 1.35fr .55fr auto; gap:10px; align-items:end; }
+    .custom-extra-list { margin-top:12px; display:grid; gap:8px; }
+    .custom-extra-item { display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid #dfe8e3; border-radius:14px; background:#fff; }
+    .custom-extra-item strong { display:block; color:var(--brand); font-size:.9rem; }
+    .custom-extra-item span { display:block; color:var(--muted); font-size:.78rem; margin-top:2px; line-height:1.35; }
+    .custom-extra-item .money-mini { color:var(--brand); font-weight:900; white-space:nowrap; }
+    @media (max-width: 900px){ .custom-extra-editor, .custom-extra-item { grid-template-columns:1fr; } }
     .share-box { margin:0 0 14px; border:1px solid var(--line); border-radius:16px; background:#fbfdfb; overflow:hidden; }
     .share-box-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; background:#f8faf8; border-bottom:1px solid var(--line); }
     .share-box-head h3 { margin:0; font-size:.92rem; letter-spacing:.02em; text-transform:uppercase; color:#30443c; }
@@ -3997,6 +4010,7 @@ body.cmfin-authenticated .cmfin-login-screen {
               <label class="checkline"><input id="brinde" type="checkbox" onchange="calculate()"> Incluir brinde/mimo</label>
               <label class="checkline"><input id="reserva" type="checkbox" checked onchange="calculate()"> Incluir reserva financeira</label>
             </div>
+            <div class="checks" id="customExtrasChecks" style="margin-top:8px;"></div>
           </div>
         </div>
 
@@ -4100,6 +4114,23 @@ body.cmfin-authenticated .cmfin-login-screen {
           <button class="success" onclick="saveConfig()">Salvar configurações</button>
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
         </div>
+
+        <div class="custom-extra-panel no-print">
+          <div class="custom-extra-head">
+            <div>
+              <h3>Gastos adicionais personalizados</h3>
+              <p>Cadastre outros custos do escritório para aparecerem como opção na aba Orçamento.</p>
+            </div>
+          </div>
+          <div class="custom-extra-editor">
+            <div><label>Título</label><input id="extraTitulo" placeholder="Ex.: Impressão / plotagem"></div>
+            <div><label>Descrição</label><input id="extraDescricao" placeholder="Texto curto explicando o custo"></div>
+            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"></div>
+            <button class="success" type="button" onclick="addCustomExtra()">Adicionar</button>
+          </div>
+          <div class="custom-extra-list" id="customExtrasList"></div>
+        </div>
+
         <div class="divider"></div>
         <p class="hint"><strong>Fórmula base por dias trabalhados:</strong> Diária útil = Horas p/ dia útil × Hora trabalhada útil. Diária sábado = Horas p/ dia sábado × Hora trabalhada sábado. Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado).</p>
         <p class="hint"><strong>Taxa de estrutura da empresa:</strong> aplicada sobre o valor do projeto para formar caixa de estrutura, ferramentas, marketing, melhorias e novos investimentos.</p>
@@ -4676,6 +4707,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         'PROJETO DE DRENAGEM'
       ],
       complementaryServices: [],
+      customExtras: [],
       vehicleCatalog: structuredClone(baseVehicleCatalog),
       vehicles: [],
       myVehicles: [],
@@ -4922,6 +4954,101 @@ body.cmfin-authenticated .cmfin-login-screen {
 
     function openTab(id){ document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelector(`[data-tab="${id}"]`).classList.add('active'); if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); } if(id==='architects') renderArchitects(); if(id==='complementary') renderComplementaryServices(); if(id==='profile') renderProfile(); }
 
+    
+    function ensureCustomExtras(){
+      if(!Array.isArray(data.customExtras)) data.customExtras = [];
+      data.customExtras = data.customExtras.map((item, index) => ({
+        id: item.id || ('extra_' + Date.now() + '_' + index),
+        titulo: item.titulo || item.title || '',
+        descricao: item.descricao || item.description || '',
+        valor: Number(item.valor ?? item.value ?? 0) || 0
+      })).filter(item => item.titulo);
+    }
+
+    function renderCustomExtrasChecks(){
+      ensureCustomExtras();
+      const box = document.getElementById('customExtrasChecks');
+      if(!box) return;
+      if(!data.customExtras.length){
+        box.innerHTML = '';
+        box.style.display = 'none';
+        return;
+      }
+      box.style.display = '';
+      box.innerHTML = data.customExtras.map(item => `
+        <label class="checkline">
+          <input id="customExtra_${esc(item.id)}" type="checkbox" onchange="calculate()">
+          <span class="check-content">
+            <span>Incluir ${esc(item.titulo)}</span>
+            ${item.descricao ? `<span class="check-help">${esc(item.descricao)}</span>` : ''}
+          </span>
+        </label>
+      `).join('');
+    }
+
+    function renderCustomExtrasConfig(){
+      ensureCustomExtras();
+      const list = document.getElementById('customExtrasList');
+      if(!list) return;
+      if(!data.customExtras.length){
+        list.innerHTML = '<div class="hint">Nenhum gasto adicional personalizado cadastrado.</div>';
+        return;
+      }
+      list.innerHTML = data.customExtras.map((item, index) => `
+        <div class="custom-extra-item">
+          <div><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || 'Sem descrição.')}</span></div>
+          <div class="money-mini">${money(item.valor)}</div>
+          <button type="button" class="danger mini-btn" onclick="removeCustomExtra(${index})">Excluir</button>
+        </div>
+      `).join('');
+    }
+
+    function addCustomExtra(){
+      ensureCustomExtras();
+      const titulo = val('extraTitulo');
+      const descricao = val('extraDescricao');
+      const valor = num('extraValor');
+      if(!titulo) return toast('Informe o título do gasto adicional.');
+      data.customExtras.push({
+        id: 'extra_' + Date.now(),
+        titulo,
+        descricao,
+        valor
+      });
+      ['extraTitulo','extraDescricao','extraValor'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = id === 'extraValor' ? '0' : '';
+      });
+      renderCustomExtrasConfig();
+      renderCustomExtrasChecks();
+      calculate();
+      cmfinPersistData();
+      cmfinSalvarDadosNuvem(false);
+      toast('Gasto personalizado adicionado.', { title:'Configuração atualizada', type:'success', icon:'✓' });
+    }
+
+    function removeCustomExtra(index){
+      ensureCustomExtras();
+      if(index < 0 || index >= data.customExtras.length) return;
+      const item = data.customExtras[index];
+      if(!confirm(`Excluir "${item.titulo}"?`)) return;
+      data.customExtras.splice(index, 1);
+      renderCustomExtrasConfig();
+      renderCustomExtrasChecks();
+      calculate();
+      cmfinPersistData();
+      cmfinSalvarDadosNuvem(false);
+    }
+
+    function customSelectedExtras(){
+      ensureCustomExtras();
+      return data.customExtras.filter(item => checked('customExtra_' + item.id));
+    }
+
+    function customSelectedExtrasTotal(){
+      return customSelectedExtras().reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+    }
+
     function renderConfig(){
       if(data.config.salarioMensal && !data.config.custoHoraTecnica){
         const hpMes = (data.config.diasUteis || 22) * (data.config.horasDia || 6);
@@ -4958,6 +5085,8 @@ body.cmfin-authenticated .cmfin-login-screen {
         div.innerHTML=`<label>${label}</label><input id="cfg_${k}" type="number" step="${isPercent ? '0.1' : '0.01'}" value="${displayValue}" oninput="markConfigPending()"><span class="field-help">${help}</span>`;
         box.appendChild(div);
       });
+      renderCustomExtrasConfig();
+      renderCustomExtrasChecks();
     }
 
     function markConfigPending(){
@@ -4979,6 +5108,8 @@ body.cmfin-authenticated .cmfin-login-screen {
       applyConfigInputs();
       calculate();
       cmfinPersistData();
+      renderCustomExtrasConfig();
+      renderCustomExtrasChecks();
       const el = document.getElementById('configPending');
       if(el) el.style.display = 'none';
       cmfinSalvarDadosNuvem(true);
@@ -5312,7 +5443,9 @@ body.cmfin-authenticated .cmfin-login-screen {
       const rrtExecucaoValor = checked('rrtExecucao') ? cfg.rrtExecucao : 0;
       const placaValor = checked('placa') ? cfg.placa : 0;
       const brindeValor = checked('brinde') ? cfg.brinde : 0;
-      const extras = rrtProjetoValor + rrtExecucaoValor + placaValor + brindeValor;
+      const customExtrasSelecionados = customSelectedExtras();
+      const customExtrasValor = customExtrasSelecionados.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+      const extras = rrtProjetoValor + rrtExecucaoValor + placaValor + brindeValor + customExtrasValor;
       const riscoPerc = cfg.contingenciaPadrao;
 
       // Regra CM128 revisada:
@@ -5352,7 +5485,7 @@ body.cmfin-authenticated .cmfin-login-screen {
       let cls='success', status='SAUDÁVEL', text='Orçamento com custos do escritório separados do repasse dos profissionais.';
       if(sugeridoProjetoPrincipal < precoMinimo){ cls='danger'; status='RISCO DE PREJUÍZO'; text='Valor do projeto principal abaixo do preço mínimo aceitável.'; }
       else if(sugeridoProjetoPrincipal < precoAlvo){ cls='warning'; status='ABAIXO DO ALVO'; text='Projeto principal aceitável, mas com margem apertada.'; }
-      lastCalc = { service, horasServico, custoHoraReal, custoFixoSemanal, semanasCustoFixo, custoFixoRateado, taxaEstruturaValor, reservaValor, diariaUtil, diariaSabado, valorProjetoBase, valorProjetoSemPrazo, prazoPerc, acrescimoPrazo, diasUteisProjeto, diasSabadosProjeto, endereco: val('endereco'), modeloVeiculo: val('modeloVeiculo'), kmVisita: num('kmVisita'), kmIdaVoltaPorVisita: num('kmVisita') * 2, kmTotalVisitas: num('kmVisita') * 2 * num('visitas'), kmCidade: num('kmCidade'), kmEstrada: num('kmEstrada'), tipoTrajeto: val('tipoTrajeto'), kmLitroSelecionado, valorCombustivel: num('valorCombustivel'), manutencaoVisita: num('manutencaoVisita'), deslocamentoSugerido, valorDeslocamentoVisita, valorAlimentacao, custoTecnico, margemAlvoArquitetos, totalDistribuivelArquitetos, custosEscritorioAntesContingencia, custosEscritorioTotal, custoVisitas, rrtProjetoValor, rrtExecucaoValor, placaValor, brindeValor, extras, riscoPerc, contingenciaValor, custoComRisco, impostoValor, referenciaMercado, precoMinimo, precoAlvo, valorComplementares, sugeridoProjetoPrincipalCalculado, valorComercialManual, ajusteComercial, sugeridoProjetoPrincipal, sugerido, lucro, status, text };
+      lastCalc = { service, horasServico, custoHoraReal, custoFixoSemanal, semanasCustoFixo, custoFixoRateado, taxaEstruturaValor, reservaValor, diariaUtil, diariaSabado, valorProjetoBase, valorProjetoSemPrazo, prazoPerc, acrescimoPrazo, diasUteisProjeto, diasSabadosProjeto, endereco: val('endereco'), modeloVeiculo: val('modeloVeiculo'), kmVisita: num('kmVisita'), kmIdaVoltaPorVisita: num('kmVisita') * 2, kmTotalVisitas: num('kmVisita') * 2 * num('visitas'), kmCidade: num('kmCidade'), kmEstrada: num('kmEstrada'), tipoTrajeto: val('tipoTrajeto'), kmLitroSelecionado, valorCombustivel: num('valorCombustivel'), manutencaoVisita: num('manutencaoVisita'), deslocamentoSugerido, valorDeslocamentoVisita, valorAlimentacao, custoTecnico, margemAlvoArquitetos, totalDistribuivelArquitetos, custosEscritorioAntesContingencia, custosEscritorioTotal, custoVisitas, rrtProjetoValor, rrtExecucaoValor, placaValor, brindeValor, customExtrasValor, customExtrasSelecionados, extras, riscoPerc, contingenciaValor, custoComRisco, impostoValor, referenciaMercado, precoMinimo, precoAlvo, valorComplementares, sugeridoProjetoPrincipalCalculado, valorComercialManual, ajusteComercial, sugeridoProjetoPrincipal, sugerido, lucro, status, text };
       document.getElementById('outHoras').textContent = `${horasServico.toFixed(1)} h`;
       document.getElementById('outHoraReal').textContent = money(custoHoraReal);
       document.getElementById('outDiariaUtil').textContent = money(diariaUtil);
