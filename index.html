@@ -1490,6 +1490,7 @@
     .viability-alert.warning { background:#fff7df; color:#8a6200; border:1px solid #f2dea7; }
     .viability-alert.danger { background:#fff1f0; color:#b42318; border:1px solid #f3c8c3; }
     .deadline-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+    .viability-section-body .deadline-grid + button.secondary { display:block; margin:0 auto; min-width:fit-content; padding-left:18px; padding-right:18px; text-align:center; }
     @media (max-width: 980px) { .viability-form-grid, .viability-output, .deadline-grid { grid-template-columns:1fr; } }
     @media (max-width: 640px) { .viability-price-grid, .viability-form-grid, .viability-output, .deadline-grid { grid-template-columns:1fr; } }
     @media (max-width: 760px) { .viability-head { flex-direction:column; align-items:flex-start; } }
@@ -2728,7 +2729,7 @@ body.cmfin-authenticated .cmfin-login-screen {
   justify-content:center;
   gap:10px;
   padding:0 16px;
-  border-radius:999px;
+  border-radius:18px;
   background:linear-gradient(180deg,#f5faf7 0%,#edf5f1 100%);
   color:#12352d;
   border:1px solid #cfe1d9;
