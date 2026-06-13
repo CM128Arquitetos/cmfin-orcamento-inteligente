@@ -3014,7 +3014,57 @@ body.cmfin-authenticated .cmfin-login-screen {
       box-shadow:0 10px 22px rgba(17,44,37,.18);
     }
 
-  </style>
+  
+/* ===== Correção mobile da tela inicial/login =====
+   Permite rolagem no celular e em navegadores internos, como WhatsApp/Safari. */
+body:not(.cmfin-authenticated) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+.cmfin-login-screen {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+@media (max-width: 920px) {
+  .cmfin-login-screen {
+    display: block !important;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+  .cmfin-login-brand {
+    min-height: auto !important;
+    justify-content: flex-start !important;
+    padding-top: 34px !important;
+    padding-bottom: 18px !important;
+  }
+  .cmfin-login-panel-wrap {
+    align-items: flex-start !important;
+    padding-top: 8px !important;
+    padding-bottom: 36px !important;
+  }
+}
+@media (max-width: 560px) {
+  .cmfin-login-logo {
+    width: 180px !important;
+  }
+  .cmfin-login-logo-image {
+    width: 165px !important;
+  }
+  .cmfin-login-hero h1 {
+    font-size: clamp(2.15rem, 11vw, 2.75rem) !important;
+  }
+  .cmfin-login-hero p {
+    font-size: .98rem !important;
+  }
+  .cmfin-login-metrics {
+    gap: 8px !important;
+  }
+}
+
+</style>
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
