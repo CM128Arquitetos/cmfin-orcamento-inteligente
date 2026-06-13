@@ -4312,7 +4312,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         <div class="form-grid" style="margin-bottom:14px;">
           <div>
             <label>Quantidade de profissionais envolvidos</label>
-            <input id="qtdProfissionais" type="number" min="1" step="1" value="2" oninput="syncProfessionalShareRows(); calculate(); renderArchitects()">
+            <input id="qtdProfissionais" type="number" min="1" step="1" value="1" oninput="syncProfessionalShareRows(); calculate(); renderArchitects()">
           </div>
         </div>
         <div class="share-box no-print">
@@ -4713,10 +4713,10 @@ body.cmfin-authenticated .cmfin-login-screen {
       vehicles: [],
       myVehicles: [],
       smartHistory: { cliente: [], servico: [], endereco: [] },
-      professionalCount: 2,
+      professionalCount: 1,
       professionalCriterion: 'Divisão manual por percentual',
-      professionalNames: ['Profissional 1', 'Profissional 2'],
-      professionalShares: [50, 50],
+      professionalNames: ['Profissional 1'],
+      professionalShares: [100],
       history: [],
       brand: {
         logoSrc: '',
