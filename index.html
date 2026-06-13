@@ -2951,7 +2951,70 @@ body.cmfin-authenticated .cmfin-login-screen {
   .profile-actions{ align-items:flex-start; flex-direction:column; }
 }
 
-</style>
+
+    /* Ajuste visual da Proposta Comercial: título em cima e descrição abaixo */
+    .proposal-accordion details {
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:#fff;
+      box-shadow:0 10px 24px rgba(17,44,37,.05);
+      transition:.22s ease;
+      overflow:hidden;
+    }
+    .proposal-accordion details:hover { border-color:#c7d4ce; box-shadow:0 14px 28px rgba(17,44,37,.07); }
+    .proposal-accordion details[open] { border-color:#b7c8c1; box-shadow:0 16px 32px rgba(17,44,37,.08); }
+    .proposal-accordion summary {
+      list-style:none;
+      position:relative;
+      display:block;
+      padding:18px 76px 18px 18px;
+      cursor:pointer;
+      color:var(--text);
+      background:linear-gradient(180deg,#f8fbfa 0%,#f4f8f6 100%);
+      transition:.2s ease;
+    }
+    .proposal-accordion summary:hover { background:linear-gradient(180deg,#fbfdfc 0%,#f6faf8 100%); }
+    .proposal-accordion summary::-webkit-details-marker { display:none; }
+    .proposal-accordion .summary-title {
+      display:block;
+      font-size:1.02rem;
+      line-height:1.18;
+      letter-spacing:-.01em;
+      font-weight:800;
+      color:var(--text);
+    }
+    .proposal-accordion .section-hint {
+      display:block;
+      margin-top:7px;
+      max-width:calc(100% - 8px);
+      font-size:.83rem;
+      line-height:1.42;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .proposal-accordion summary::after {
+      content:"";
+      position:absolute;
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      border:1px solid #d7e0db;
+      background:#fff center/14px 14px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23485d55' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      box-shadow:0 8px 18px rgba(17,44,37,.08);
+      transition:transform .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .proposal-accordion details[open] summary::after {
+      transform:translateY(-50%) rotate(180deg);
+      background-color:#0b4b3b;
+      border-color:#0b4b3b;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      box-shadow:0 10px 22px rgba(17,44,37,.18);
+    }
+
+  </style>
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -4406,7 +4469,7 @@ body.cmfin-authenticated .cmfin-login-screen {
             <h3></h3>
             <div class="proposal-accordion">
               <details open>
-                <summary>Dados Principais <span class="section-hint">Título, cliente, contato, objeto, valor por extenso e endereço/localização.</span></summary>
+                <summary><span class="summary-title">Dados Principais</span><span class="section-hint">Título, cliente, contato, objeto, valor por extenso e endereço/localização.</span></summary>
                 <div class="accordion-body">
                   <div class="form-grid">
                     <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA - PROJETO DE INTERIORES [REFORMA]"></div>
@@ -4423,14 +4486,14 @@ body.cmfin-authenticated .cmfin-login-screen {
               </details>
 
               <details>
-                <summary>Texto Inicial <span class="section-hint">Introdução da proposta comercial.</span></summary>
+                <summary><span class="summary-title">Texto Inicial</span><span class="section-hint">Introdução da proposta comercial.</span></summary>
                 <div class="accordion-body">
                   <label>Texto inicial</label><textarea id="propIntro" oninput="buildProposal()"></textarea>
                 </div>
               </details>
 
               <details>
-                <summary>Pranchas / Entregáveis <span class="section-hint">Checklist rápido e campo para inserir novos itens.</span></summary>
+                <summary><span class="summary-title">Pranchas / Entregáveis</span><span class="section-hint">Checklist rápido e campo para inserir novos itens.</span></summary>
                 <div class="accordion-body">
                   <label>Pranchas / Entregáveis</label>
                   <textarea id="propEscopo" oninput="buildProposal(); syncDeliverableChecks()" placeholder="Os itens marcados abaixo entram automaticamente aqui. Você também pode ajustar manualmente."></textarea>
@@ -4455,7 +4518,7 @@ body.cmfin-authenticated .cmfin-login-screen {
               </details>
 
               <details>
-                <summary>Condições Comerciais <span class="section-hint">Pagamento fixo com valores automáticos, prazo e observações.</span></summary>
+                <summary><span class="summary-title">Condições Comerciais</span><span class="section-hint">Pagamento fixo com valores automáticos, prazo e observações.</span></summary>
                 <div class="accordion-body">
                   <div><label>Forma de pagamento</label><select id="propFormaPagamento" onchange="togglePaymentFields(); buildProposal()"><option value="padrao" selected>Padrão: à vista, 50% + 50% ou cartão</option><option value="avista">À vista</option><option value="entrada_parcelas">Entrada + parcelas mensais</option><option value="manual">Texto personalizado/manual</option></select></div>
                   <div id="paymentEntryFields" class="form-grid" style="margin-top:12px; display:none;">
@@ -4471,7 +4534,7 @@ body.cmfin-authenticated .cmfin-login-screen {
               </details>
 
               <details>
-                <summary>Personalização da Proposta Comercial <span class="section-hint">Envie o papel timbrado e escolha a fonte aplicada aos textos da proposta.</span></summary>
+                <summary><span class="summary-title">Personalização da Proposta Comercial</span><span class="section-hint">Envie o papel timbrado e escolha a fonte aplicada aos textos da proposta.</span></summary>
                 <div class="accordion-body">
                   <div class="letterhead-personalization">
 
@@ -4539,7 +4602,7 @@ body.cmfin-authenticated .cmfin-login-screen {
               </details>
 
               <details open>
-                <summary>Ações da Proposta <span class="section-hint">Preencher, copiar, imprimir ou gerar PDF.</span></summary>
+                <summary><span class="summary-title">Ações da Proposta</span><span class="section-hint">Preencher, copiar, imprimir ou gerar PDF.</span></summary>
                 <div class="accordion-body">
                   <div class="actions">
                     <button class="secondary" onclick="fillProposalDefaults()">Preencher com Dados do Orçamento</button>
