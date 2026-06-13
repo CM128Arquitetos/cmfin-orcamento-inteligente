@@ -563,7 +563,7 @@
     .history-badge {
       display:inline-flex;
       align-items:center;
-      border-radius:999px;
+      border-radius:18px;
       padding:7px 10px;
       font-size:.76rem;
       font-weight:800;
@@ -4040,9 +4040,9 @@ body.cmfin-authenticated .cmfin-login-screen {
               <div><label>Nº da proposta</label><input id="numeroPropostaAtual" readonly placeholder="Gerado ao salvar no histórico"></div>
             </div>
             <div class="actions">
-              <button id="historySaveBtn" class="success" onclick="addToHistory()">Salvar no histórico</button>
-              <button class="secondary" onclick="copyProposal()">Copiar proposta</button>
-              <button class="secondary" onclick="resetBudget()">Novo orçamento</button>
+              <button id="historySaveBtn" class="success" onclick="addToHistory()">Salvar no Histórico</button>
+              <button class="secondary" onclick="copyProposal()">Copiar Proposta</button>
+              <button class="secondary" onclick="resetBudget()">Novo Orçamento</button>
             </div>
             <p class="hint">Regra principal: Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado). A margem alvo forma o repasse dos profissionais; os demais custos entram como custos do escritório e são somados ao valor cobrado do cliente.</p>
           </div>
@@ -4118,7 +4118,7 @@ body.cmfin-authenticated .cmfin-login-screen {
         <div class="custom-extra-panel no-print">
           <div class="custom-extra-head">
             <div>
-              <h3>Gastos adicionais personalizados</h3>
+              <h3>Gastos Adicionais Personalizados</h3>
               <p>Cadastre outros custos do escritório para aparecerem como opção na aba Orçamento.</p>
             </div>
           </div>
@@ -6497,7 +6497,7 @@ body.cmfin-authenticated .cmfin-login-screen {
     }
     function updateHistorySaveButton(){
       const btn = document.getElementById('historySaveBtn');
-      if(btn) btn.textContent = editingHistoryIndex === null ? 'Salvar no histórico' : 'Salvar alterações no histórico';
+      if(btn) btn.textContent = editingHistoryIndex === null ? 'Salvar no Histórico' : 'Salvar alterações no histórico';
     }
 
     function fillProposalDefaults(){
