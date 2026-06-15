@@ -3145,6 +3145,13 @@ body:not(.cmfin-authenticated) {
     const CMFIN_BUDGET_LICENSE_ID_KEY = 'cmfinBudgetLicenseId';
     const CMFIN_BUDGET_LICENSE_USER_KEY = 'cmfinBudgetLicenseUser';
     const CMFIN_ACTIVE_LICENSE_META_KEY = 'cmfinBudgetActiveLicenseMeta';
+    const CMFIN_DEVICE_ID_KEY = 'cmfinBudgetDeviceId';
+    const CMFIN_DEVICE_LIST_FIELD = 'dispositivos_autorizados';
+    const CMFIN_DEVICE_LIMIT_FIELD = 'limite_dispositivos';
+    const CMFIN_DEFAULT_DEVICE_LIMIT = 2;
+    const CMFIN_BACKUP_FORMAT = 'CMFIN_SECURE_BACKUP_V1';
+    const CMFIN_BACKUP_EXTENSION = '.cmfin';
+    const CMFIN_BACKUP_KEY_SEED = 'CMFIN_BACKUP_CM128_2026_V1';
 
     let cmfinCloudSaveTimer = null;
     let cmfinCloudLoadedLicenseId = '';
@@ -3162,7 +3169,9 @@ body:not(.cmfin-authenticated) {
           data_validade: licenca?.data_validade || '',
           tipo_usuario: licenca?.tipo_usuario || '',
           acesso_vitalicio: licenca?.acesso_vitalicio === true,
-          status: licenca?.status || ''
+          status: licenca?.status || '',
+          limite_dispositivos: licenca?.limite_dispositivos ?? licenca?.max_dispositivos ?? '',
+          dispositivos_autorizados: licenca?.dispositivos_autorizados || licenca?.dispositivos || []
         }));
       } catch(e){ console.warn('Não foi possível salvar os metadados da licença ativa.', e); }
       cmfinCloudLoadedLicenseId = id;
@@ -3209,6 +3218,232 @@ body:not(.cmfin-authenticated) {
         console.warn('Não foi possível carregar dados locais desta licença:', e);
         return false;
       }
+    }
+
+    function cmfinGetOrCreateDeviceId(){
+      let id = localStorage.getItem(CMFIN_DEVICE_ID_KEY);
+      if(!id){
+        id = (crypto?.randomUUID?.() || ('cmfin-' + Date.now() + '-' + Math.random().toString(36).slice(2)));
+        localStorage.setItem(CMFIN_DEVICE_ID_KEY, id);
+      }
+      return id;
+    }
+
+    async function cmfinSha256Hex(value){
+      const bytes = new TextEncoder().encode(String(value || ''));
+      const hash = await crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function cmfinDeviceLabel(){
+      const ua = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      const width = screen?.width || '';
+      const height = screen?.height || '';
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      const browser = ua.includes('Edg') ? 'Edge' : ua.includes('Chrome') ? 'Chrome' : ua.includes('Firefox') ? 'Firefox' : ua.includes('Safari') ? 'Safari' : 'Navegador';
+      return `${browser} • ${platform || 'Dispositivo'} • ${width}x${height} • ${tz}`;
+    }
+
+    function cmfinNormalizeDeviceList(raw){
+      if(Array.isArray(raw)) return raw.filter(Boolean);
+      if(!raw) return [];
+      if(typeof raw === 'string'){
+        try {
+          const parsed = JSON.parse(raw);
+          if(Array.isArray(parsed)) return parsed.filter(Boolean);
+        } catch(e){
+          return raw.split(',').map(id => ({ id: String(id).trim() })).filter(d => d.id);
+        }
+      }
+      if(typeof raw === 'object'){
+        if(Array.isArray(raw.items)) return raw.items.filter(Boolean);
+        if(Array.isArray(raw.devices)) return raw.devices.filter(Boolean);
+      }
+      return [];
+    }
+
+    function cmfinLicenseDeviceList(licenca){
+      return cmfinNormalizeDeviceList(
+        licenca?.dispositivos_autorizados ??
+        licenca?.dispositivos ??
+        licenca?.devices ??
+        licenca?.aparelhos_autorizados
+      );
+    }
+
+    function cmfinLicenseDeviceLimit(licenca){
+      const raw = licenca?.limite_dispositivos ?? licenca?.max_dispositivos ?? licenca?.dispositivos_limite ?? licenca?.qtd_dispositivos;
+      const n = Number(raw);
+      if(Number.isFinite(n) && n > 0) return n;
+      if(licenca?.tipo_usuario === 'administrador') return 999;
+      return CMFIN_DEFAULT_DEVICE_LIMIT;
+    }
+
+    async function cmfinEnsureDeviceAllowed(licenca){
+      if(!licenca?.id) return { ok:false, message:'Licença não localizada para validar o dispositivo.' };
+      if(licenca.tipo_usuario === 'administrador') return { ok:true, licenca };
+
+      const limit = cmfinLicenseDeviceLimit(licenca);
+      const localId = cmfinGetOrCreateDeviceId();
+      const deviceHash = await cmfinSha256Hex(`${licenca.id}|${localId}|CMFIN_DEVICE_V1`);
+      const now = new Date().toISOString();
+      let devices = cmfinLicenseDeviceList(licenca).map(d => typeof d === 'string' ? { id: d } : { ...d });
+      const existingIndex = devices.findIndex(d => String(d.id || d.hash || '') === deviceHash);
+
+      if(existingIndex >= 0){
+        devices[existingIndex] = {
+          ...devices[existingIndex],
+          id: deviceHash,
+          nome: devices[existingIndex].nome || devices[existingIndex].label || cmfinDeviceLabel(),
+          ultimo_acesso_em: now
+        };
+      } else {
+        if(devices.length >= limit){
+          return {
+            ok:false,
+            message:`Limite de dispositivos atingido para esta licença. Permitido: ${limit}. Entre em contato com o suporte para liberar ou remover um dispositivo antigo.`
+          };
+        }
+        devices.push({
+          id: deviceHash,
+          nome: cmfinDeviceLabel(),
+          criado_em: now,
+          ultimo_acesso_em: now
+        });
+      }
+
+      const patchPayloads = [
+        { [CMFIN_DEVICE_LIST_FIELD]: devices, ultimo_acesso_em: now },
+        { dispositivos: devices, ultimo_acesso_em: now }
+      ];
+
+      for(const payload of patchPayloads){
+        const resp = await fetch(`${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_LICENSE_TABLE}?id=eq.${encodeURIComponent(licenca.id)}`, {
+          method: 'PATCH',
+          headers: cmfinOrcamentoHeaders({ 'Prefer': 'return=representation' }),
+          body: JSON.stringify(payload)
+        });
+        if(resp.ok){
+          const rows = await resp.json().catch(() => []);
+          const updated = Array.isArray(rows) && rows.length ? rows[0] : { ...licenca, ...payload };
+          return { ok:true, licenca: updated };
+        }
+        const errText = await resp.text().catch(() => '');
+        if(!/column|schema|PGRST204|disposit/i.test(errText)){
+          console.warn('Falha ao atualizar dispositivo da licença:', errText);
+          return { ok:false, message:'Não foi possível registrar este dispositivo na licença. Tente novamente ou contate o suporte.' };
+        }
+      }
+
+      console.warn('Controle de dispositivos pendente: crie no Supabase a coluna JSONB "dispositivos_autorizados" e a coluna numérica "limite_dispositivos" na tabela de licenças.');
+      return { ok:true, licenca, warning:'Controle de dispositivos ainda não configurado no Supabase.' };
+    }
+
+    function cmfinRequireActiveLicense(actionName = 'continuar'){
+      const licenseId = cmfinGetActiveLicenseId();
+      if(!licenseId || !document.body.classList.contains('cmfin-authenticated')){
+        if(typeof toast === 'function'){
+          toast(`Faça login com uma licença ativa para ${actionName}.`, {
+            title: 'Acesso protegido',
+            type: 'warning',
+            icon: '!'
+          });
+        }
+        return '';
+      }
+      return licenseId;
+    }
+
+    function cmfinBytesToBase64(bytes){
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return btoa(binary);
+    }
+
+    function cmfinBase64ToBytes(value){
+      const binary = atob(String(value || ''));
+      const bytes = new Uint8Array(binary.length);
+      for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+
+    async function cmfinDeriveBackupKeys(licenseId, saltBytes){
+      if(!crypto?.subtle) throw new Error('Este navegador não oferece suporte à criptografia segura do backup.');
+      const enc = new TextEncoder();
+      const secret = `${CMFIN_BACKUP_KEY_SEED}|${CMFIN_SUPABASE_URL}|${licenseId}`;
+      const baseKey = await crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveKey']);
+      const aesKey = await crypto.subtle.deriveKey(
+        { name:'PBKDF2', salt:saltBytes, iterations:150000, hash:'SHA-256' },
+        baseKey,
+        { name:'AES-GCM', length:256 },
+        false,
+        ['encrypt','decrypt']
+      );
+      const hmacSalt = new Uint8Array([...saltBytes, 67, 77, 70, 73, 78]);
+      const hmacKey = await crypto.subtle.deriveKey(
+        { name:'PBKDF2', salt:hmacSalt, iterations:150000, hash:'SHA-256' },
+        baseKey,
+        { name:'HMAC', hash:'SHA-256', length:256 },
+        false,
+        ['sign','verify']
+      );
+      return { aesKey, hmacKey };
+    }
+
+    async function cmfinSignBackupEnvelope(envelope, hmacKey){
+      const clone = { ...envelope };
+      delete clone.signature;
+      const raw = new TextEncoder().encode(JSON.stringify(clone));
+      const sig = await crypto.subtle.sign('HMAC', hmacKey, raw);
+      return cmfinBytesToBase64(new Uint8Array(sig));
+    }
+
+    async function cmfinEncryptBackupObject(obj){
+      const licenseId = cmfinRequireActiveLicense('exportar o backup');
+      if(!licenseId) throw new Error('Licença ativa obrigatória para exportar.');
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const { aesKey, hmacKey } = await cmfinDeriveBackupKeys(licenseId, salt);
+      const aad = new TextEncoder().encode(`${CMFIN_BACKUP_FORMAT}|${licenseId}`);
+      const plain = new TextEncoder().encode(JSON.stringify(obj));
+      const cipher = await crypto.subtle.encrypt({ name:'AES-GCM', iv, additionalData:aad }, aesKey, plain);
+      const envelope = {
+        format: CMFIN_BACKUP_FORMAT,
+        app: 'CMFin',
+        encrypted: true,
+        version: 1,
+        createdAt: new Date().toISOString(),
+        licenseHash: await cmfinSha256Hex(licenseId),
+        salt: cmfinBytesToBase64(salt),
+        iv: cmfinBytesToBase64(iv),
+        data: cmfinBytesToBase64(new Uint8Array(cipher))
+      };
+      envelope.signature = await cmfinSignBackupEnvelope(envelope, hmacKey);
+      return envelope;
+    }
+
+    async function cmfinDecryptBackupEnvelope(envelope){
+      const licenseId = cmfinRequireActiveLicense('importar o backup');
+      if(!licenseId) throw new Error('Licença ativa obrigatória para importar.');
+      if(!envelope || envelope.format !== CMFIN_BACKUP_FORMAT || envelope.encrypted !== true){
+        throw new Error('Formato de backup seguro inválido.');
+      }
+      const expectedHash = await cmfinSha256Hex(licenseId);
+      if(envelope.licenseHash && envelope.licenseHash !== expectedHash){
+        throw new Error('Este backup pertence a outra licença e não pode ser importado neste usuário.');
+      }
+      const salt = cmfinBase64ToBytes(envelope.salt);
+      const iv = cmfinBase64ToBytes(envelope.iv);
+      const { aesKey, hmacKey } = await cmfinDeriveBackupKeys(licenseId, salt);
+      const expectedSig = await cmfinSignBackupEnvelope(envelope, hmacKey);
+      if(envelope.signature !== expectedSig){
+        throw new Error('A assinatura do backup não confere. O arquivo pode ter sido alterado manualmente.');
+      }
+      const aad = new TextEncoder().encode(`${CMFIN_BACKUP_FORMAT}|${licenseId}`);
+      const cipher = cmfinBase64ToBytes(envelope.data);
+      const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv, additionalData:aad }, aesKey, cipher);
+      return JSON.parse(new TextDecoder().decode(plain));
     }
 
 
@@ -3285,6 +3520,22 @@ body:not(.cmfin-authenticated) {
       }
 
       rows = await resp.json();
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    }
+
+    async function cmfinBuscarLicencaPorId(licenseId){
+      const id = cmfinNormalizeText(licenseId);
+      if(!id) return null;
+      const base = `${CMFIN_SUPABASE_URL}/rest/v1/${CMFIN_ORCAMENTO_LICENSE_TABLE}`;
+      const resp = await fetch(`${base}?select=*&id=eq.${encodeURIComponent(id)}&limit=1`, {
+        method: 'GET',
+        headers: cmfinOrcamentoHeaders()
+      });
+      if(!resp.ok){
+        console.error('Erro ao consultar cmfin_orcamento_licencas por ID:', await resp.text());
+        throw new Error('Erro ao consultar o servidor de licenças.');
+      }
+      const rows = await resp.json();
       return Array.isArray(rows) && rows.length ? rows[0] : null;
     }
 
@@ -3514,7 +3765,7 @@ body:not(.cmfin-authenticated) {
       }
 
       try {
-        const licenca = await cmfinBuscarLicencaOrcamento(user);
+        let licenca = await cmfinBuscarLicencaOrcamento(user);
 
         if(!licenca){
           if(error){
@@ -3541,6 +3792,16 @@ body:not(.cmfin-authenticated) {
           }
           return false;
         }
+
+        const deviceCheck = await cmfinEnsureDeviceAllowed(licenca);
+        if(!deviceCheck.ok){
+          if(error){
+            error.textContent = deviceCheck.message;
+            error.classList.add('show');
+          }
+          return false;
+        }
+        if(deviceCheck.licenca) licenca = deviceCheck.licenca;
 
         cmfinPendingLicenseId = licenca.id || '';
         cmfinSetActiveLicense(licenca);
@@ -3616,6 +3877,51 @@ body:not(.cmfin-authenticated) {
           type: options.type || 'success',
           icon: options.icon || '✓'
         });
+      }
+    }
+
+    function cmfinBloquearSessao(message){
+      localStorage.removeItem('cmfinAuth');
+      localStorage.removeItem('cmfinUser');
+      sessionStorage.removeItem('cmfinAuth');
+      cmfinClearActiveLicense();
+      document.body.classList.remove('cmfin-authenticated');
+      if(typeof cmfinUpdateUserHero === 'function') cmfinUpdateUserHero();
+      if(typeof cmfinBackToLogin === 'function') cmfinBackToLogin();
+      if(typeof toast === 'function'){
+        toast(message || 'Faça login novamente para continuar.', {
+          title: 'Acesso protegido',
+          type: 'warning',
+          icon: '!'
+        });
+      }
+    }
+
+    async function cmfinValidateStoredSession(){
+      const hasSession = localStorage.getItem('cmfinAuth') === 'ok' || sessionStorage.getItem('cmfinAuth') === 'ok';
+      if(!hasSession) return;
+      const licenseId = cmfinGetActiveLicenseId();
+      if(!licenseId){
+        cmfinBloquearSessao('Sessão sem licença vinculada. Faça login novamente.');
+        return;
+      }
+      try {
+        let licenca = await cmfinBuscarLicencaPorId(licenseId);
+        const validacao = cmfinIsValidBudgetLicense(licenca);
+        if(!validacao.ok){
+          cmfinBloquearSessao(validacao.message);
+          return;
+        }
+        const deviceCheck = await cmfinEnsureDeviceAllowed(licenca);
+        if(!deviceCheck.ok){
+          cmfinBloquearSessao(deviceCheck.message);
+          return;
+        }
+        if(deviceCheck.licenca) licenca = deviceCheck.licenca;
+        cmfinSetActiveLicense(licenca);
+      } catch(err){
+        console.error('Não foi possível renovar a sessão licenciada:', err);
+        cmfinBloquearSessao('Não foi possível validar a licença agora. Faça login novamente com internet para continuar.');
       }
     }
 
@@ -4079,7 +4385,7 @@ body:not(.cmfin-authenticated) {
         <div class="action-menu" id="actionMenu" aria-hidden="true">
           <button class="menu-item" type="button" onclick="saveAll(); closeActionMenu();"><span class="menu-item-icon">✓</span><span>Salvar</span></button>
           <button class="menu-item" type="button" onclick="exportData(); closeActionMenu();"><span class="menu-item-icon">⇩</span><span>Exportar</span></button>
-          <label class="menu-item menu-import"><span class="menu-item-icon">⇧</span><span>Importar</span><input type="file" accept="application/json" onchange="importData(event); closeActionMenu()"></label>
+          <label class="menu-item menu-import"><span class="menu-item-icon">⇧</span><span>Importar</span><input type="file" accept=".cmfin,.cm128,application/json" onchange="importData(event); closeActionMenu()"></label>
           <button class="menu-item" type="button" onclick="smartPrint(); closeActionMenu();"><span class="menu-item-icon">⌘</span><span>Imprimir PDF</span></button>
           <button class="menu-item" type="button" onclick="cmfinLogout(); closeActionMenu();"><span class="menu-item-icon">↪</span><span>Sair do sistema</span></button>
         </div>
@@ -4466,13 +4772,13 @@ body:not(.cmfin-authenticated) {
             <div class="history-panel-head">
               <div>
                 <h3>Ações do Histórico</h3>
-                <p>Exporte relatórios, salve cópias de segurança e faça importações de forma mais organizada.</p>
+                <p>Exporte relatórios, salve backups seguros e faça importações vinculadas à licença ativa.</p>
               </div>
             </div>
             <div class="history-actions-bar">
               <button class="history-action-btn secondary" onclick="downloadCSV()"><span class="history-action-icon">⬇</span><span>Baixar CSV</span></button>
               <button class="history-action-btn secondary" onclick="exportData()"><span class="history-action-icon">⤓</span><span>Exportar backup completo</span></button>
-              <label class="file-btn secondary history-action-btn"><span class="history-action-icon">⤴</span><span>Importar backup</span><input type="file" accept="application/json" onchange="importData(event)"></label>
+              <label class="file-btn secondary history-action-btn"><span class="history-action-icon">⤴</span><span>Importar backup</span><input type="file" accept=".cmfin,.cm128,application/json" onchange="importData(event)"></label>
               <button class="history-action-btn danger" onclick="clearHistory()"><span class="history-action-icon">✕</span><span>Limpar histórico</span></button>
             </div>
           </div>
@@ -7289,70 +7595,129 @@ ${p.obs}` : ''}`;
       document.getElementById('cliente').value=''; document.getElementById('servico').value=''; document.getElementById('endereco').value=''; document.getElementById('diasUteisProjeto').value='0'; document.getElementById('diasSabadosProjeto').value='0'; document.getElementById('visitas').value='0'; document.getElementById('kmVisita').value='0'; document.getElementById('modeloVeiculo').value=''; document.getElementById('kmCidade').value='0'; document.getElementById('kmEstrada').value='0'; document.getElementById('tipoTrajeto').value='misto'; document.getElementById('valorCombustivel').value='7.19'; document.getElementById('manutencaoVisita').value='50'; document.getElementById('deslocamentoSugerido').value='0'; document.getElementById('valorAlimentacao').value='0'; document.getElementById('horasAdicionais').value='0'; document.getElementById('desconto').value='0'; const vcm=document.getElementById('valorComercialManual'); if(vcm) vcm.value='0'; const sc=document.getElementById('statusComercial'); if(sc) sc.value='Em análise'; const qp=document.getElementById('qtdProfissionais'); if(qp) qp.value='2'; const critReset=document.getElementById('criterioDivisaoProfissionais'); if(critReset) critReset.value='Divisão manual por percentual'; data.professionalCount=2; data.professionalCriterion='Divisão manual por percentual'; data.professionalShares=[50,50]; syncProfessionalShareRows(true); syncProposalNumber(''); document.getElementById('data').valueAsDate = new Date(); data.complementaryServices = []; editingHistoryIndex = null; updateHistorySaveButton(); renderComplementaryServices(); calculate();
     }
     async function exportData(){
-      const payload = JSON.stringify(data, null, 2);
-      const fileName = `backup-cmfin-${new Date().toISOString().slice(0,10)}.json`;
+      try{
+        const licenseId = cmfinRequireActiveLicense('exportar o backup');
+        if(!licenseId) return;
 
-      /*
-        Observação importante:
-        A janela para escolher ONDE salvar depende da permissão do navegador.
-        Em navegadores compatíveis, o showSaveFilePicker abre o "Salvar como".
-        Se o navegador bloquear, cai no download padrão.
-      */
-      if(window.showSaveFilePicker){
-        try{
-          const handle = await window.showSaveFilePicker({
-            suggestedName: fileName,
-            types: [{
-              description: 'Arquivo JSON do CMFin',
-              accept: { 'application/json': ['.json'] }
-            }],
-            excludeAcceptAllOption: false
-          });
+        const envelope = await cmfinEncryptBackupObject(data);
+        const payload = JSON.stringify(envelope, null, 2);
+        const fileName = `backup-cmfin-${new Date().toISOString().slice(0,10)}${CMFIN_BACKUP_EXTENSION}`;
 
-          const writable = await handle.createWritable();
-          await writable.write(new Blob([payload], { type: 'application/json;charset=utf-8' }));
-          await writable.close();
+        if(window.showSaveFilePicker){
+          try{
+            const handle = await window.showSaveFilePicker({
+              suggestedName: fileName,
+              types: [{
+                description: 'Backup seguro do CMFin',
+                accept: { 'application/octet-stream': ['.cmfin'], 'application/json': ['.cmfin'] }
+              }],
+              excludeAcceptAllOption: false
+            });
 
-          toast('Backup exportado no local escolhido.', {
-            title: 'Exportação concluída',
-            type: 'success',
-            icon: '✓'
-          });
-          return;
-        }catch(err){
-          if(err && err.name === 'AbortError'){
-            toast('Exportação cancelada pelo usuário.', {
-              title: 'Exportação cancelada',
-              type: 'info',
-              icon: '•'
+            const writable = await handle.createWritable();
+            await writable.write(new Blob([payload], { type: 'application/octet-stream' }));
+            await writable.close();
+
+            toast('Backup seguro exportado no local escolhido.', {
+              title: 'Exportação concluída',
+              type: 'success',
+              icon: '✓'
             });
             return;
+          }catch(err){
+            if(err && err.name === 'AbortError'){
+              toast('Exportação cancelada pelo usuário.', {
+                title: 'Exportação cancelada',
+                type: 'info',
+                icon: '•'
+              });
+              return;
+            }
+            console.warn('Não foi possível abrir o seletor de local para salvar:', err);
           }
-          console.warn('Não foi possível abrir o seletor de local para salvar:', err);
         }
+
+        const blob = new Blob([payload], { type: 'application/octet-stream' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(a.href);
+          a.remove();
+        }, 150);
+
+        toast('Backup seguro enviado para a pasta de Downloads.', {
+          title: 'Exportação concluída',
+          type: 'success',
+          icon: '✓'
+        });
+      } catch(err){
+        console.error(err);
+        toast(err?.message || 'Não foi possível exportar o backup seguro.', {
+          title: 'Falha na exportação',
+          type: 'danger',
+          icon: '!'
+        });
       }
-
-      const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-
-      setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 150);
-
-      toast('O navegador baixou o arquivo direto. Para escolher o local, ative em Configurações > Downloads a opção “Perguntar onde salvar cada arquivo antes de fazer download”.', {
-        title: 'Backup enviado para Downloads',
-        type: 'warning',
-        icon: '!'
-      });
     }
-    function importData(e){
-      const f=e.target.files[0]; if(!f) return;
-      const r=new FileReader(); r.onload=()=>{ try{ data=mergeDefaults(JSON.parse(r.result), defaultData); normalizeVehicles(); renderConfig(); renderProfile(); renderServices(); populateServices(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderDeliverableChecklist(); renderSmartSuggestions(); cmfinUpdateUserHero(); editingHistoryIndex = null; updateHistorySaveButton(); calculate(); saveAll(); toast('Dados importados.'); }catch(err){ toast('Arquivo inválido.'); } }; r.readAsText(f);
+
+    async function importData(e){
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      try{
+        const licenseId = cmfinRequireActiveLicense('importar o backup');
+        if(!licenseId){ e.target.value = ''; return; }
+
+        const raw = await f.text();
+        const parsed = JSON.parse(raw);
+        let importedData;
+
+        if(parsed?.format === CMFIN_BACKUP_FORMAT && parsed?.encrypted === true){
+          importedData = await cmfinDecryptBackupEnvelope(parsed);
+        } else {
+          const ok = confirm('Este arquivo parece ser um backup antigo em JSON aberto. Ele será importado, mas o ideal é exportar novamente no novo formato seguro .cmfin. Deseja continuar?');
+          if(!ok){ e.target.value = ''; return; }
+          importedData = parsed;
+        }
+
+        data = mergeDefaults(importedData, defaultData);
+        normalizeVehicles();
+        renderConfig();
+        renderProfile();
+        renderServices();
+        populateServices();
+        renderVehicleDatalist();
+        renderVehicles();
+        renderComplementaryTypes();
+        renderComplementaryServices();
+        renderHistory();
+        renderDeliverableChecklist();
+        renderSmartSuggestions();
+        renderBrandCustomizationFields();
+        applyBrandCustomization();
+        cmfinUpdateUserHero();
+        editingHistoryIndex = null;
+        updateHistorySaveButton();
+        calculate();
+        saveAll();
+        toast('Backup importado e salvo nesta licença.', {
+          title: 'Importação concluída',
+          type: 'success',
+          icon: '✓'
+        });
+      }catch(err){
+        console.error(err);
+        toast(err?.message || 'Arquivo inválido ou incompatível com esta licença.', {
+          title: 'Falha na importação',
+          type: 'danger',
+          icon: '!'
+        });
+      } finally {
+        e.target.value = '';
+      }
     }
     function downloadCSV(){
       const rows = [['Numero','Data','Cliente','Servico','Endereco','Dias uteis','Sabados','Total ao cliente','Complementares','Minimo','Alvo','Lucro','Status financeiro','Status comercial'], ...data.history.map(h=>[h.numeroProposta||'',h.data,h.cliente,h.servico,h.endereco||'',h.diasUteis||0,h.diasSabados||0,h.valor,h.complementares||0,h.minimo,h.alvo,h.lucro,h.status,h.statusComercial||'Em análise'])];
@@ -7361,6 +7726,7 @@ ${p.obs}` : ''}`;
     }
     window.addEventListener('beforeunload', () => cmfinSalvarLocalPorLicenca()); 
     loadAll();
+    cmfinValidateStoredSession();
     const pd = document.getElementById('propData'); if(pd && !pd.value) pd.value = val('data') || todayISO();
     renderDeliverableChecklist();
     renderSmartSuggestions();
