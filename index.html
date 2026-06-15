@@ -29,7 +29,7 @@
 
 
 <script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
-    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
       --card: #ffffff;
@@ -960,6 +960,12 @@
     .proposal-editor h3 { margin:0 0 12px; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; color:#112c25; letter-spacing:-.02em; }
     .proposal-editor textarea { min-height:90px; }
     .proposal-editor .mini { min-height:64px; }
+    .proposal-template-panel { margin-top:12px; display:grid; gap:12px; }
+    .proposal-template-toolbar { display:flex; flex-wrap:wrap; gap:8px; padding:10px; border:1px solid #dce8e2; border-radius:14px; background:#fbfdfc; }
+    .proposal-template-toolbar button { min-height:36px; padding:8px 10px; border-radius:12px; font-size:.78rem; box-shadow:none; }
+    .proposal-template-help { padding:12px 14px; border-radius:14px; border:1px dashed #cbdad3; background:#f7faf8; color:#62736b; font-size:.8rem; line-height:1.5; }
+    .proposal-template-help code { display:inline-flex; margin:2px 3px 2px 0; padding:3px 6px; border-radius:7px; background:#fff; border:1px solid #dce8e2; color:#10251f; font-size:.76rem; }
+    #proposalTemplateText { min-height:260px; font-family:"Consolas","Courier New",monospace; font-size:.88rem; line-height:1.5; }
     .proposal-accordion { display:flex; flex-direction:column; gap:12px; }
     .proposal-accordion details { border:1px solid var(--line); border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 10px 24px rgba(17,44,37,.05); transition:.22s ease; }
     .proposal-accordion details:hover { border-color:#c7d4ce; box-shadow:0 14px 28px rgba(17,44,37,.07); }
@@ -1221,14 +1227,14 @@
     .proposal-paper-company-head { font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; text-align:right; color:#5f6466; padding-top:18px; min-width:310px; }
     .proposal-paper-company-head strong { display:block; font-weight:700; font-size:1.52rem; letter-spacing:.01em; color:#62676a; line-height:1.05; }
     .proposal-paper-company-head span { display:block; margin-top:6px; font-weight:400; font-size:.82rem; letter-spacing:.01em; }
-    .proposal-title-doc { margin:0 0 26px; text-align:center; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; font-size:1.02rem; letter-spacing:.01em; text-transform:uppercase; color:#000; }
+    .proposal-title-doc { margin:0 0 26px; text-align:center; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:700; font-size:1.02rem; letter-spacing:.01em; text-transform:uppercase; color:#000; }
     .proposal-company { display:none; }
-    .proposal-client-line { display:grid; grid-template-columns: 1.15fr .95fr .72fr; gap:18px; margin:0 0 22px; font-size:.9rem; line-height:1.35; }
+    .proposal-client-line { display:grid; grid-template-columns: 1.15fr .95fr .72fr; gap:18px; margin:0 0 22px; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-size:.9rem; line-height:1.35; }
     .proposal-meta-line { display:grid; grid-template-columns: 58px 1fr; column-gap:4px; row-gap:3px; align-items:baseline; justify-content:start; }
     .proposal-meta-line span { display:block; }
     .proposal-meta-line strong { white-space:nowrap; }
-    .proposal-body { font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:400; font-size:.92rem; line-height:1.55; text-align:justify; }
-    .proposal-body h4 { margin:18px 0 8px; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; font-size:.95rem; text-transform:uppercase; color:#111; }
+    .proposal-body { font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:400; font-size:.92rem; line-height:1.55; text-align:justify; }
+    .proposal-body h4 { margin:18px 0 8px; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:700; font-size:.95rem; text-transform:uppercase; color:#111; }
     .proposal-body p { margin:0 0 10px; }
     .proposal-payment-note { margin:4px 0 0 !important; font-size:.76rem; line-height:1.22; white-space:nowrap; letter-spacing:-.012em; text-align:left; }
     .proposal-body ul { margin:6px 0 10px 20px; padding:0; }
@@ -4849,6 +4855,33 @@ body:not(.cmfin-authenticated) {
               </details>
 
               <details>
+                <summary><span class="summary-title">Modelo de Texto da Proposta</span><span class="section-hint">Personalize a ordem, títulos e textos com variáveis automáticas.</span></summary>
+                <div class="accordion-body">
+                  <div class="proposal-template-panel">
+                    <div class="form-grid">
+                      <div class="full"><label>Modelo utilizado</label><select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()"><option value="standard">Padrão CM128</option><option value="custom">Modelo personalizado</option></select></div>
+                    </div>
+                    <label>Texto/modelo personalizado</label>
+                    <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
+                    <div class="proposal-template-toolbar">
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
+                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
+                      <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
+                    </div>
+                    <div class="proposal-template-help">
+                      Use as variáveis para puxar dados automaticamente: <code>{{titulo}}</code> <code>{{numero}}</code> <code>{{cliente}}</code> <code>{{contato}}</code> <code>{{data}}</code> <code>{{objeto}}</code> <code>{{endereco}}</code> <code>{{valor}}</code> <code>{{valor_extenso}}</code> <code>{{intro}}</code> <code>{{entregaveis}}</code> <code>{{pagamento}}</code> <code>{{prazo}}</code> <code>{{observacoes_bloco}}</code>.<br>
+                      Dica: linhas iniciadas com <code>##</code> viram títulos de seção; linhas com <code>-</code> ou <code>•</code> viram itens destacados.
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details>
                 <summary><span class="summary-title">Pranchas / Entregáveis</span><span class="section-hint">Checklist rápido e campo para inserir novos itens.</span></summary>
                 <div class="accordion-body">
                   <label>Pranchas / Entregáveis</label>
@@ -5228,7 +5261,8 @@ body:not(.cmfin-authenticated) {
         whatsapp: '',
         instagram: '',
         motto: '',
-        proposalFont: { family: 'Montserrat', customName: '', customSrc: '', customFileName: '' }
+        proposalFont: { family: 'Montserrat', customName: '', customSrc: '', customFileName: '' },
+        proposalTemplate: { mode: 'standard', text: '' }
       },
       profile: {
         nome: '',
@@ -6629,6 +6663,32 @@ body:not(.cmfin-authenticated) {
     function defaultProposalFontData(){
       return { family: 'Montserrat', customName: '', customSrc: '', customFileName: '' };
     }
+    function defaultProposalTemplateText(){
+      return `{{titulo}}
+
+Cliente: {{cliente}}
+Contato: {{contato}}
+Data: {{data}}
+Nº: {{numero}}
+
+{{intro}}
+
+## 1. DA PROPOSTA
+A proposta contempla exclusivamente o(a) {{objeto}}, com as seguintes pranchas/entregáveis:
+
+{{entregaveis}}
+
+## 2. DO INVESTIMENTO E FORMA DE PAGAMENTO
+{{pagamento}}
+
+## 3. PRAZOS
+{{prazo}}
+
+{{observacoes_bloco}}`;
+    }
+    function defaultProposalTemplateData(){
+      return { mode: 'standard', text: defaultProposalTemplateText() };
+    }
     function defaultBrandData(){
       return {
         logoSrc: '',
@@ -6638,7 +6698,8 @@ body:not(.cmfin-authenticated) {
         whatsapp: '',
         instagram: '',
         motto: '',
-        proposalFont: defaultProposalFontData()
+        proposalFont: defaultProposalFontData(),
+        proposalTemplate: defaultProposalTemplateData()
       };
     }
     function defaultLetterheadData(){
@@ -6656,6 +6717,8 @@ body:not(.cmfin-authenticated) {
       window.__defaultProposalLogoSrc = window.__defaultProposalLogoSrc || document.querySelector('.proposal-paper-logo img')?.getAttribute('src') || '';
       data.brand = Object.assign(defaultBrandData(), data.brand || {});
       data.brand.proposalFont = mergeDefaults(data.brand.proposalFont || {}, defaultProposalFontData());
+      data.brand.proposalTemplate = mergeDefaults(data.brand.proposalTemplate || {}, defaultProposalTemplateData());
+      if(!String(data.brand.proposalTemplate.text || '').trim()) data.brand.proposalTemplate.text = defaultProposalTemplateText();
       data.brand.letterhead = mergeDefaults(data.brand.letterhead || {}, defaultLetterheadData());
       if(data.brand.letterhead.mode === 'cm128' && !data.brand.letterhead.src) data.brand.letterhead.mode = 'none';
       data.brand.letterhead.margins = normalizeLetterheadMargins(Object.assign({}, defaultLetterheadData().margins, data.brand.letterhead.margins || {}));
@@ -6846,6 +6909,11 @@ body:not(.cmfin-authenticated) {
       set('proposalFontFamily', font.family || 'Montserrat');
       const fontFileName = document.getElementById('proposalFontFileName');
       if(fontFileName) fontFileName.textContent = font.customFileName ? `Fonte enviada: ${font.customFileName}` : 'Nenhuma fonte personalizada enviada.';
+      const template = ensureBrandData().proposalTemplate || defaultProposalTemplateData();
+      set('proposalTemplateMode', template.mode || 'standard');
+      set('proposalTemplateText', template.text || defaultProposalTemplateText());
+      const templateTextEl = document.getElementById('proposalTemplateText');
+      if(templateTextEl) templateTextEl.disabled = (template.mode || 'standard') !== 'custom';
       applyBrandCustomization();
       convertStoredPdfLetterheadIfNeeded();
     }
@@ -7015,6 +7083,51 @@ body:not(.cmfin-authenticated) {
       cmfinPersistData();
       applyBrandCustomization();
       buildProposal();
+    }
+    function proposalTemplateData(){
+      const brand = ensureBrandData();
+      brand.proposalTemplate = mergeDefaults(brand.proposalTemplate || {}, defaultProposalTemplateData());
+      if(!String(brand.proposalTemplate.text || '').trim()) brand.proposalTemplate.text = defaultProposalTemplateText();
+      return brand.proposalTemplate;
+    }
+    function updateProposalTemplateFromInputs(){
+      const tpl = proposalTemplateData();
+      const mode = document.getElementById('proposalTemplateMode')?.value || 'standard';
+      const textEl = document.getElementById('proposalTemplateText');
+      tpl.mode = mode;
+      if(textEl) tpl.text = textEl.value || defaultProposalTemplateText();
+      if(textEl) textEl.disabled = mode !== 'custom';
+      cmfinPersistData();
+      buildProposal();
+    }
+    function resetProposalTemplateText(){
+      const tpl = proposalTemplateData();
+      tpl.text = defaultProposalTemplateText();
+      tpl.mode = 'custom';
+      const modeEl = document.getElementById('proposalTemplateMode');
+      const textEl = document.getElementById('proposalTemplateText');
+      if(modeEl) modeEl.value = 'custom';
+      if(textEl){ textEl.value = tpl.text; textEl.disabled = false; textEl.focus(); }
+      cmfinPersistData();
+      buildProposal();
+      toast('Modelo de texto restaurado.');
+    }
+    function insertProposalTemplateToken(token){
+      const modeEl = document.getElementById('proposalTemplateMode');
+      const textEl = document.getElementById('proposalTemplateText');
+      if(modeEl && modeEl.value !== 'custom') modeEl.value = 'custom';
+      if(textEl){
+        textEl.disabled = false;
+        const start = textEl.selectionStart ?? textEl.value.length;
+        const end = textEl.selectionEnd ?? textEl.value.length;
+        const before = textEl.value.slice(0, start);
+        const after = textEl.value.slice(end);
+        textEl.value = before + token + after;
+        const next = start + token.length;
+        textEl.focus();
+        textEl.setSelectionRange(next, next);
+      }
+      updateProposalTemplateFromInputs();
     }
     function handleProposalFontUpload(event){
       const file = event?.target?.files?.[0];
@@ -7315,6 +7428,72 @@ body:not(.cmfin-authenticated) {
       return `<p>Prazo de entrega dos serviços: <u>até ${dias} (${esc(extenso)}) dias úteis</u> a partir da assinatura do contrato da proposta de serviço, desconsiderando períodos de aprovação pelo cliente e eventuais ajustes de escopo.</p>`;
     }
 
+    function replaceProposalTemplateTokens(template, ctx){
+      const map = {
+        titulo: ctx.titulo,
+        numero: ctx.numero,
+        cliente: ctx.cliente,
+        contato: ctx.contato,
+        data: formatDateBR(ctx.dataProp),
+        objeto: String(ctx.objeto || '').toUpperCase(),
+        endereco: ctx.endereco,
+        valor: money(ctx.valorTotal),
+        valor_extenso: ctx.valorExtenso,
+        intro: ctx.intro,
+        entregaveis: ctx.escopo,
+        pagamento: paymentPlainText(ctx.objeto, ctx.valorTotal, ctx.valorExtenso),
+        prazo: ctx.prazo,
+        prazo_dias: String(prazoDiasValue()),
+        prazo_extenso: numeroPorExtensoBR(prazoDiasValue()),
+        observacoes: ctx.obs || '',
+        observacoes_bloco: ctx.obs ? `## 4. OBSERVAÇÕES\n${ctx.obs}` : ''
+      };
+      let out = String(template || '').replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (all, key) => map[key] ?? '');
+      out = out.replace(/^Nº:\s*$/gmi, '');
+      return out;
+    }
+
+    function proposalCustomTextBlocks(text){
+      const blocks = [];
+      let paragraph = [];
+      let firstContent = true;
+      const flush = () => {
+        const clean = paragraph.join(' ').trim();
+        if(clean) blocks.push(`<p>${esc(clean)}</p>`);
+        paragraph = [];
+      };
+      String(text || '').split(/\r?\n/).forEach(raw => {
+        const line = raw.trim();
+        if(!line){ flush(); return; }
+        if(firstContent && !/^##+\s+/.test(line) && !/^[-•]\s+/.test(line)){
+          firstContent = false;
+          flush();
+          blocks.push(`<h3 class="proposal-title-doc">${esc(line)}</h3>`);
+          return;
+        }
+        firstContent = false;
+        if(/^##+\s+/.test(line)){
+          flush();
+          blocks.push(`<h4>${esc(line.replace(/^##+\s+/, ''))}</h4>`);
+          return;
+        }
+        if(/^[-•]\s+/.test(line)){
+          flush();
+          blocks.push(`<div class="proposal-list-row">${esc(line.replace(/^[-•]\s+/, ''))}</div>`);
+          return;
+        }
+        if(/^[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ0-9 .:;ºª()/-]{8,}$/.test(line) && line.length < 120){
+          flush();
+          blocks.push(`<h4>${esc(line)}</h4>`);
+          return;
+        }
+        paragraph.push(line);
+      });
+      flush();
+      return blocks.length ? blocks : [`<p>${esc(text)}</p>`];
+    }
+
+
     function buildProposal(){
       const valorTotal = proposalTotalValue();
       const valorExtenso = moedaPorExtensoBR(valorTotal);
@@ -7332,6 +7511,17 @@ body:not(.cmfin-authenticated) {
       const escopo = prop('propEscopo', 'PLANTA BAIXA - EXECUTIVA DE OBRA\nPLANTA BAIXA - HUMANIZADA\nPLANTA DE PONTOS ELÉTRICOS\nPLANTA DE FORRO\nPLANTA DE PAGINAÇÃO DE PISO\nCORTES/ELEVAÇÕES\nDETALHAMENTOS');
       const prazo = prazoText();
       const obs = prop('propObs', '');
+      const ctx = {titulo, numero, cliente, contato, dataProp, objeto, endereco, intro, escopo, prazo, obs, valorTotal, valorExtenso};
+      const tpl = proposalTemplateData();
+      if((tpl.mode || 'standard') === 'custom'){
+        const customText = replaceProposalTemplateTokens(tpl.text || defaultProposalTemplateText(), ctx)
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        const blocks = proposalCustomTextBlocks(customText);
+        renderProposalPages(blocks);
+        applyBrandCustomization();
+        return customText;
+      }
       const blocks = [
         ...(numero ? [`<div class="proposal-number-between">Nº: ${esc(numero)}</div>`] : []),
         `<h3 class="proposal-title-doc">${esc(titulo)}</h3>`,
@@ -7348,7 +7538,7 @@ body:not(.cmfin-authenticated) {
       ];
       renderProposalPages(blocks);
       applyBrandCustomization();
-      return proposalPlainText({titulo, numero, cliente, contato, dataProp, objeto, endereco, intro, escopo, prazo, obs, valorTotal, valorExtenso});
+      return proposalPlainText(ctx);
     }
     function proposalPlainText(p){
       return `${p.titulo}
