@@ -4068,6 +4068,65 @@ body .proposal-template-simple .template-block-buttons button.secondary {
 }
 </style>
 
+
+<style>
+/* Padronização dos toggles de Variáveis e Blocos Rápidos */
+body .proposal-template-simple .proposal-mini-card-head {
+  grid-template-columns: minmax(0,1fr) 50px !important;
+  gap: 10px !important;
+}
+
+body .proposal-template-simple .proposal-mini-toggle {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  border-radius: 999px !important;
+  border: 1px solid #d8e2dd !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
+  color: #5d6f67 !important;
+  box-shadow:
+    0 8px 18px rgba(16,37,31,.08),
+    inset 0 1px 0 rgba(255,255,255,.95) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease !important;
+}
+
+body .proposal-template-simple .proposal-mini-toggle:hover {
+  transform: translateY(-1px) !important;
+  border-color: #cad8d1 !important;
+  box-shadow:
+    0 12px 22px rgba(16,37,31,.11),
+    inset 0 1px 0 rgba(255,255,255,.98) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f8f5 100%) !important;
+}
+
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle {
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
+  color: #5d6f67 !important;
+  border-color: #d8e2dd !important;
+}
+
+body .proposal-template-simple .proposal-mini-card-head {
+  border-bottom: 1px solid #e5eee8 !important;
+  padding-bottom: 14px !important;
+  margin-bottom: 18px !important;
+}
+
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -5916,7 +5975,7 @@ body .proposal-template-simple .template-block-buttons button.secondary {
                     <div class="template-simple-card proposal-mini-card proposal-mini-card-blocks">
                       <div class="template-simple-card-head proposal-mini-card-head">
                         <div>
-                          <strong>Blocos rápidos</strong>
+                          <strong>Blocos Rápidos</strong>
                           <span>Insira estruturas prontas no editor.</span>
                         </div>
                         <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="true" title="Minimizar/expandir">⌃</button>
