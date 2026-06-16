@@ -6097,7 +6097,7 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-c
                     <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
 
                     <div class="template-actions-row template-simple-actions">
-                      <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar padrão CM128</button>
+                      <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar Padrão CM128</button>
                       <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
                     </div>
 
@@ -7675,6 +7675,15 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-c
       }else{
         lines = lines.filter(line => normalizeDeliverableText(line) !== target);
       }
+
+      const tpl = proposalTemplateData();
+      if(tpl.editorType === 'visual' && String(tpl.visualHtml || '').trim()){
+        tpl.editorType = 'text';
+        tpl.visualHtml = '';
+        if(!String(tpl.text || '').includes('{{entregaveis}}')) tpl.text = defaultProposalTemplateText();
+        cmfinPersistData();
+      }
+
       setDeliverableLines(lines);
     }
     function persistDeliverables(){
@@ -8430,6 +8439,31 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
       if(!String(brand.proposalTemplate.text || '').trim()) brand.proposalTemplate.text = defaultProposalTemplateText();
       return brand.proposalTemplate;
     }
+
+    function restoreStandardCM128ProposalTemplate(showToast = true){
+      const tpl = proposalTemplateData();
+      tpl.mode = 'standard';
+      tpl.text = defaultProposalTemplateText();
+      tpl.editorType = 'text';
+      tpl.visualHtml = '';
+
+      const modeEl = document.getElementById('proposalTemplateMode');
+      const textEl = document.getElementById('proposalTemplateText');
+
+      if(modeEl) modeEl.value = 'standard';
+      if(textEl){
+        textEl.value = tpl.text;
+        textEl.disabled = true;
+      }
+
+      updateProposalTemplateDesignerState();
+      cmfinPersistData();
+      buildProposal();
+      syncDeliverableChecks();
+
+      if(showToast) toast('Padrão CM128 restaurado. Checklist de entregáveis voltou a controlar a proposta.');
+    }
+
     function updateProposalTemplateDesignerState(){
       const mode = document.getElementById('proposalTemplateMode')?.value || 'standard';
       const textEl = document.getElementById('proposalTemplateText');
@@ -8453,17 +8487,34 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
     }
     function loadProposalTemplatePreset(preset){
       const presets = proposalTemplatePresets();
+
+      if(preset === 'standard'){
+        restoreStandardCM128ProposalTemplate(true);
+        return;
+      }
+
       const value = presets[preset] || presets.standard || defaultProposalTemplateText();
+      const tpl = proposalTemplateData();
       const modeEl = document.getElementById('proposalTemplateMode');
       const textEl = document.getElementById('proposalTemplateText');
-      if(modeEl) modeEl.value = preset === 'standard' ? 'custom' : 'custom';
+
+      tpl.mode = 'custom';
+      tpl.text = value;
+      tpl.editorType = 'text';
+      tpl.visualHtml = '';
+
+      if(modeEl) modeEl.value = 'custom';
       if(textEl){
         textEl.disabled = false;
         textEl.value = value;
         textEl.focus();
       }
-      updateProposalTemplateFromInputs();
-      toast(preset === 'standard' ? 'Texto padrão CM128 carregado no editor.' : 'Modelo pronto aplicado ao editor.');
+
+      updateProposalTemplateDesignerState();
+      cmfinPersistData();
+      buildProposal();
+      syncDeliverableChecks();
+      toast('Modelo pronto aplicado ao editor.');
     }
     function insertProposalTemplateText(content){
       const modeEl = document.getElementById('proposalTemplateMode');
@@ -8503,26 +8554,31 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const tpl = proposalTemplateData();
       const mode = document.getElementById('proposalTemplateMode')?.value || 'standard';
       const textEl = document.getElementById('proposalTemplateText');
-      tpl.mode = mode;
-      if(textEl) tpl.text = textEl.value || defaultProposalTemplateText();
-      tpl.editorType = 'text';
-      tpl.visualHtml = '';
+
+      if(mode === 'standard'){
+        tpl.mode = 'standard';
+        tpl.text = defaultProposalTemplateText();
+        tpl.editorType = 'text';
+        tpl.visualHtml = '';
+        if(textEl){
+          textEl.value = tpl.text;
+          textEl.disabled = true;
+        }
+      }else{
+        tpl.mode = 'custom';
+        if(textEl) tpl.text = textEl.value || defaultProposalTemplateText();
+        tpl.editorType = 'text';
+        tpl.visualHtml = '';
+        if(textEl) textEl.disabled = false;
+      }
+
       updateProposalTemplateDesignerState();
       cmfinPersistData();
       buildProposal();
+      syncDeliverableChecks();
     }
     function resetProposalTemplateText(){
-      const tpl = proposalTemplateData();
-      tpl.text = defaultProposalTemplateText();
-      tpl.mode = 'custom';
-      const modeEl = document.getElementById('proposalTemplateMode');
-      const textEl = document.getElementById('proposalTemplateText');
-      if(modeEl) modeEl.value = 'custom';
-      if(textEl){ textEl.value = tpl.text; textEl.disabled = false; textEl.focus(); }
-      updateProposalTemplateDesignerState();
-      cmfinPersistData();
-      buildProposal();
-      toast('Modelo padrão restaurado no editor.');
+      restoreStandardCM128ProposalTemplate(true);
     }
     function insertProposalTemplateToken(token){
       insertProposalTemplateText(token);
