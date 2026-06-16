@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -1274,14 +1275,14 @@
     .proposal-paper-company-head { font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; text-align:right; color:#5f6466; padding-top:18px; min-width:310px; }
     .proposal-paper-company-head strong { display:block; font-weight:700; font-size:1.52rem; letter-spacing:.01em; color:#62676a; line-height:1.05; }
     .proposal-paper-company-head span { display:block; margin-top:6px; font-weight:400; font-size:.82rem; letter-spacing:.01em; }
-    .proposal-title-doc { margin:0 0 26px; text-align:center; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:700; font-size:1.02rem; letter-spacing:.01em; text-transform:uppercase; color:#000; }
+    .proposal-title-doc { margin:0 0 26px; text-align:center; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; font-size:1.02rem; letter-spacing:.01em; text-transform:uppercase; color:#000; }
     .proposal-company { display:none; }
-    .proposal-client-line { display:grid; grid-template-columns: 1.15fr .95fr .72fr; gap:18px; margin:0 0 22px; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-size:.9rem; line-height:1.35; }
+    .proposal-client-line { display:grid; grid-template-columns: 1.15fr .95fr .72fr; gap:18px; margin:0 0 22px; font-size:.9rem; line-height:1.35; }
     .proposal-meta-line { display:grid; grid-template-columns: 58px 1fr; column-gap:4px; row-gap:3px; align-items:baseline; justify-content:start; }
     .proposal-meta-line span { display:block; }
     .proposal-meta-line strong { white-space:nowrap; }
-    .proposal-body { font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:400; font-size:.92rem; line-height:1.55; text-align:justify; }
-    .proposal-body h4 { margin:18px 0 8px; font-family:var(--proposal-font, "Montserrat", Inter, Segoe UI, Arial, sans-serif); font-weight:700; font-size:.95rem; text-transform:uppercase; color:#111; }
+    .proposal-body { font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:400; font-size:.92rem; line-height:1.55; text-align:justify; }
+    .proposal-body h4 { margin:18px 0 8px; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; font-size:.95rem; text-transform:uppercase; color:#111; }
     .proposal-body p { margin:0 0 10px; }
     .proposal-payment-note { margin:4px 0 0 !important; font-size:.76rem; line-height:1.22; white-space:nowrap; letter-spacing:-.012em; text-align:left; }
     .proposal-body ul { margin:6px 0 10px 20px; padding:0; }
@@ -8446,6 +8447,9 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
       tpl.text = defaultProposalTemplateText();
       tpl.editorType = 'text';
       tpl.visualHtml = '';
+      const brand = ensureBrandData();
+      brand.proposalFont = mergeDefaults(brand.proposalFont || {}, defaultProposalFontData());
+      brand.proposalFont.family = 'Montserrat';
 
       const modeEl = document.getElementById('proposalTemplateMode');
       const textEl = document.getElementById('proposalTemplateText');
