@@ -3815,90 +3815,177 @@ body #proposalVisualToolbar.cmfin-mini-toolbar {
 
 </style>
 
+
+
+
 <style>
-#cmfinWordSelectionToolbar {
+#cmfinWordSelectionToolbar.cmfin-word-toolbar{
   position: fixed;
   left: -9999px;
   top: -9999px;
   z-index: 2147483647;
   display: none;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  width: auto;
-  max-width: min(860px, calc(100vw - 20px));
-  padding: 10px;
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(18,27,24,.98);
-  box-shadow: 0 28px 72px rgba(0,0,0,.35);
-  backdrop-filter: blur(18px) saturate(1.1);
+  width: min(1040px, calc(100vw - 28px));
+  max-width: min(1040px, calc(100vw - 28px));
+  padding: 0;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(circle at top left, rgba(33,48,43,.98), rgba(13,20,18,.98) 72%);
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(18px) saturate(1.08);
+  overflow: hidden;
   font-family: Montserrat, Inter, Arial, sans-serif;
 }
-#cmfinWordSelectionToolbar.is-visible {
+#cmfinWordSelectionToolbar.cmfin-word-toolbar.is-visible{
+  display: block;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
   display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  padding: 16px 18px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
+  display: grid;
+  gap: 10px;
+  padding: 0 14px;
+  min-width: 0;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__group--font{
+  min-width: 300px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__group--actions{
+  min-width: 120px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__group-title{
+  color: rgba(255,255,255,.62);
+  font-size: .69rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__controls{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
+  width: 1px;
+  margin: 0 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.16), rgba(255,255,255,.04));
+  align-self: stretch;
 }
 #cmfinWordSelectionToolbar select,
 #cmfinWordSelectionToolbar button,
-#cmfinWordSelectionToolbar label {
-  min-height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.13);
-  background: rgba(255,255,255,.07);
+#cmfinWordSelectionToolbar label{
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.055));
   color: #fff;
-  box-shadow: none;
-  font-size: .77rem;
-  font-weight: 750;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 10px 24px rgba(0,0,0,.14);
+  font-size: .82rem;
+  font-weight: 700;
   font-family: inherit;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
 }
-#cmfinWordSelectionToolbar select {
-  padding: 8px 10px;
+#cmfinWordSelectionToolbar select:hover,
+#cmfinWordSelectionToolbar button:hover,
+#cmfinWordSelectionToolbar label:hover{
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.08));
+  border-color: rgba(255,255,255,.22);
+  transform: translateY(-1px);
 }
-#cmfinWordSelectionToolbar select option {
+#cmfinWordSelectionToolbar select{
+  padding: 0 14px;
+  appearance: auto;
+}
+#cmfinWordSelectionToolbar select option{
   color: #10251f;
   background: #ffffff;
 }
-#cmfinWordSelectionToolbar button {
-  min-width: 38px;
-  padding: 8px 10px;
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
+  min-width: 190px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
+  min-width: 110px;
+}
+#cmfinWordSelectionToolbar button{
+  min-width: 46px;
+  padding: 0 14px;
   cursor: pointer;
 }
-#cmfinWordSelectionToolbar button:hover,
-#cmfinWordSelectionToolbar label:hover,
-#cmfinWordSelectionToolbar select:hover {
-  background: rgba(255,255,255,.13);
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{
+  min-width: 88px;
 }
-#cmfinWordSelectionToolbar label {
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip{
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: 10px;
+  padding: 0 14px;
   cursor: pointer;
 }
-#cmfinWordSelectionToolbar input[type="color"] {
-  width: 18px;
-  height: 18px;
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip span{
+  font-size: .8rem;
+  font-weight: 800;
+  color: #fff;
+}
+#cmfinWordSelectionToolbar input[type="color"]{
+  width: 20px;
+  height: 20px;
   border: 0;
   background: transparent;
   padding: 0;
 }
-#cmfinWordSelectionToolbar .cmfin-word-sep {
-  width: 1px;
-  align-self: stretch;
-  min-height: 30px;
-  background: rgba(255,255,255,.15);
+#cmfinWordSelectionToolbar .cmfin-word-save{
+  min-width: 110px;
+  background: linear-gradient(135deg,#1e9d73 0%,#165b44 100%);
+  border-color: rgba(255,255,255,.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 14px 24px rgba(18,93,68,.28);
 }
-#cmfinWordSelectionToolbar .cmfin-word-save {
-  background: linear-gradient(135deg,#1f8f68 0%,#16674d 100%);
+#cmfinWordSelectionToolbar .cmfin-word-save:hover{
+  background: linear-gradient(135deg,#28ad80 0%,#1a6a4f 100%);
 }
-@media(max-width: 760px){
-  #cmfinWordSelectionToolbar {
+@media (max-width: 900px){
+  #cmfinWordSelectionToolbar.cmfin-word-toolbar{
+    width: calc(100vw - 20px);
     max-width: calc(100vw - 20px);
-    gap: 5px;
-    padding: 8px;
   }
-  #cmfinWordSelectionToolbar .cmfin-word-sep {
-    display: none;
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
+    padding: 14px;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
+    display:none;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
+    width: 100%;
+    padding: 0;
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 640px){
+  #cmfinWordSelectionToolbar select,
+  #cmfinWordSelectionToolbar button,
+  #cmfinWordSelectionToolbar label{
+    min-height: 42px;
+    font-size: .78rem;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
+    min-width: 100%;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
+    min-width: 120px;
+    flex: 1 1 120px;
   }
 }
 </style>
@@ -9414,45 +9501,93 @@ ${p.obs}` : ''}`;
 
   function toolbarHTML(){
     return `
-      <div id="${TOOLBAR_ID}" aria-label="Mini barra de edição">
-        <select data-cmd="fontName" title="Fonte">
-          <option value="Montserrat">Montserrat</option>
-          <option value="Inter">Inter</option>
-          <option value="Poppins">Poppins</option>
-          <option value="Arial">Arial</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Times New Roman">Times</option>
-          <option value="Courier New">Courier</option>
-        </select>
-        <select data-cmd="fontSize" title="Tamanho">
-          <option value="">Tam.</option>
-          <option value="1">10</option>
-          <option value="2">12</option>
-          <option value="3">14</option>
-          <option value="4">16</option>
-          <option value="5">18</option>
-          <option value="6">24</option>
-          <option value="7">32</option>
-        </select>
-        <span class="cmfin-word-sep"></span>
-        <button type="button" data-cmd="bold" title="Negrito"><b>N</b></button>
-        <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
-        <button type="button" data-cmd="underline" title="Sublinhado"><u>S</u></button>
-        <button type="button" data-cmd="strikeThrough" title="Tachado"><s>abc</s></button>
-        <span class="cmfin-word-sep"></span>
-        <button type="button" data-cmd="justifyLeft" title="Alinhar à esquerda">☰</button>
-        <button type="button" data-cmd="justifyCenter" title="Centralizar">≡</button>
-        <button type="button" data-cmd="justifyRight" title="Alinhar à direita">☷</button>
-        <button type="button" data-cmd="justifyFull" title="Justificar">▤</button>
-        <span class="cmfin-word-sep"></span>
-        <button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
-        <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
-        <span class="cmfin-word-sep"></span>
-        <label title="Cor do texto">A <input type="color" data-cmd="foreColor" value="#111111"></label>
-        <label title="Marca-texto">Marca <input type="color" data-cmd="hiliteColor" value="#fff3a3"></label>
-        <button type="button" data-cmd="removeFormat" title="Limpar formatação">⌫</button>
-        <span class="cmfin-word-sep"></span>
-        <button type="button" class="cmfin-word-save" data-action="save">Salvar</button>
+      <div id="${TOOLBAR_ID}" class="cmfin-word-toolbar" aria-label="Mini barra de edição premium">
+        <div class="cmfin-word-toolbar__surface">
+          <div class="cmfin-word-toolbar__group cmfin-word-toolbar__group--font">
+            <div class="cmfin-word-toolbar__group-title">Fonte</div>
+            <div class="cmfin-word-toolbar__controls">
+              <select class="cmfin-word-toolbar__font-family" data-cmd="fontName" title="Fonte">
+                <option value="Montserrat">Montserrat</option>
+                <option value="Inter">Inter</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+              </select>
+              <select class="cmfin-word-toolbar__font-size" data-cmd="fontSize" title="Tamanho">
+                <option value="">Tamanho</option>
+                <option value="1">10</option>
+                <option value="2">12</option>
+                <option value="3">14</option>
+                <option value="4">16</option>
+                <option value="5">18</option>
+                <option value="6">24</option>
+                <option value="7">32</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cmfin-word-toolbar__divider"></div>
+
+          <div class="cmfin-word-toolbar__group">
+            <div class="cmfin-word-toolbar__group-title">Estilo</div>
+            <div class="cmfin-word-toolbar__controls">
+              <button type="button" data-cmd="bold" title="Negrito"><b>N</b></button>
+              <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
+              <button type="button" data-cmd="underline" title="Sublinhado"><u>S</u></button>
+              <button type="button" data-cmd="strikeThrough" title="Tachado"><s>abc</s></button>
+              <button type="button" data-cmd="removeFormat" title="Limpar formatação">⌫</button>
+            </div>
+          </div>
+
+          <div class="cmfin-word-toolbar__divider"></div>
+
+          <div class="cmfin-word-toolbar__group">
+            <div class="cmfin-word-toolbar__group-title">Parágrafo</div>
+            <div class="cmfin-word-toolbar__controls">
+              <button type="button" data-cmd="justifyLeft" title="Alinhar à esquerda">☰</button>
+              <button type="button" data-cmd="justifyCenter" title="Centralizar">≡</button>
+              <button type="button" data-cmd="justifyRight" title="Alinhar à direita">☷</button>
+              <button type="button" data-cmd="justifyFull" title="Justificar">▤</button>
+            </div>
+          </div>
+
+          <div class="cmfin-word-toolbar__divider"></div>
+
+          <div class="cmfin-word-toolbar__group">
+            <div class="cmfin-word-toolbar__group-title">Listas</div>
+            <div class="cmfin-word-toolbar__controls">
+              <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertUnorderedList" title="Lista com marcadores">• Lista</button>
+              <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+            </div>
+          </div>
+
+          <div class="cmfin-word-toolbar__divider"></div>
+
+          <div class="cmfin-word-toolbar__group">
+            <div class="cmfin-word-toolbar__group-title">Cores</div>
+            <div class="cmfin-word-toolbar__controls">
+              <label class="cmfin-word-toolbar__color-chip" title="Cor do texto">
+                <span>A</span>
+                <input type="color" data-cmd="foreColor" value="#111111">
+              </label>
+              <label class="cmfin-word-toolbar__color-chip" title="Marca-texto">
+                <span>Marca</span>
+                <input type="color" data-cmd="hiliteColor" value="#fff3a3">
+              </label>
+            </div>
+          </div>
+
+          <div class="cmfin-word-toolbar__divider"></div>
+
+          <div class="cmfin-word-toolbar__group cmfin-word-toolbar__group--actions">
+            <div class="cmfin-word-toolbar__group-title">Ações</div>
+            <div class="cmfin-word-toolbar__controls">
+              <button type="button" class="cmfin-word-save" data-action="save">Salvar</button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
