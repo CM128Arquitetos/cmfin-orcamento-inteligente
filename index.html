@@ -3523,6 +3523,21 @@ body .cmfin-mini-toolbar.active {
   pointer-events: auto !important;
 }
 
+
+/* Mini barra contextual — ajuste de visibilidade final */
+body .cmfin-mini-toolbar {
+  width: auto !important;
+  max-width: min(760px, calc(100vw - 20px)) !important;
+  z-index: 2147483640 !important;
+}
+
+body .cmfin-mini-toolbar.active {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -5334,7 +5349,7 @@ body .cmfin-mini-toolbar.active {
                         <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
                       </div>
 
-                      <p class="visual-paper-hint">Dica: após ativar, selecione qualquer trecho do texto na folha. A mini barra aparecerá próxima da seleção, como no Word.</p>
+                      <p class="visual-paper-hint">Dica: após ativar, selecione um trecho do texto na folha. A mini barra aparece próxima do trecho selecionado, como no Word.</p>
                     </div>
 
                     <div id="proposalTemplateStandardNotice" class="template-simple-notice">
@@ -8236,23 +8251,52 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if(toolbar) toolbar.classList.remove('active');
     }
 
+    let proposalVisualLastPointer = { x: 0, y: 0 };
+
     function selectionInsideProposal(){
       const sel = window.getSelection();
       if(!sel || !sel.rangeCount || sel.isCollapsed) return null;
+
+      const selectedText = String(sel.toString() || '').trim();
+      if(!selectedText) return null;
 
       const range = sel.getRangeAt(0);
       let node = range.commonAncestorContainer;
 
       if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      if(!node || !node.closest) {
+        node = sel.anchorNode;
+        if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      }
       if(!node || !node.closest) return null;
 
       const area = node.closest('.proposal-page-dynamic');
       if(!area) return null;
 
-      const selectedText = String(sel.toString() || '').trim();
-      if(!selectedText) return null;
-
       return { sel, range, area };
+    }
+
+    function showProposalMiniToolbarAt(x, y){
+      const toolbar = ensureProposalFloatingToolbar();
+      if(!proposalVisualEditEnabled || !toolbar) return;
+
+      toolbar.classList.add('active');
+
+      // Aguarda o navegador calcular o tamanho real da barra.
+      requestAnimationFrame(() => {
+        const rect = toolbar.getBoundingClientRect();
+        const margin = 12;
+
+        let left = x - (rect.width / 2);
+        let top = y - rect.height - margin;
+
+        if(top < 72) top = y + margin;
+        left = Math.max(10, Math.min(left, window.innerWidth - rect.width - 10));
+        top = Math.max(70, Math.min(top, window.innerHeight - rect.height - 10));
+
+        toolbar.style.left = `${left}px`;
+        toolbar.style.top = `${top}px`;
+      });
     }
 
     function updateProposalVisualToolbarPosition(){
@@ -8262,37 +8306,42 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       }
 
       const ctx = selectionInsideProposal();
-      const toolbar = ensureProposalFloatingToolbar();
-
-      if(!ctx || !toolbar){
+      if(!ctx){
         hideProposalVisualToolbar();
         return;
       }
 
-      toolbar.classList.add('active');
-
       const rects = Array.from(ctx.range.getClientRects()).filter(r => r.width || r.height);
       const rect = rects.length ? rects[0] : ctx.area.getBoundingClientRect();
 
-      // mede depois de ativar
-      const toolbarRect = toolbar.getBoundingClientRect();
-      const margin = 10;
-
-      let top = rect.top - toolbarRect.height - margin;
-      if(top < 74) top = rect.bottom + margin;
-
-      let left = rect.left + (rect.width / 2) - (toolbarRect.width / 2);
-      left = Math.max(10, Math.min(left, window.innerWidth - toolbarRect.width - 10));
-      top = Math.max(70, Math.min(top, window.innerHeight - toolbarRect.height - 10));
-
-      toolbar.style.top = `${top}px`;
-      toolbar.style.left = `${left}px`;
+      if(rect && (rect.width || rect.height)){
+        showProposalMiniToolbarAt(rect.left + (rect.width / 2), rect.top);
+      } else if(proposalVisualLastPointer.x && proposalVisualLastPointer.y){
+        showProposalMiniToolbarAt(proposalVisualLastPointer.x, proposalVisualLastPointer.y);
+      }
     }
 
-    function proposalVisualSelectionHandler(){
+    function proposalVisualSelectionHandler(event){
+      if(event && typeof event.clientX === 'number'){
+        proposalVisualLastPointer = { x: event.clientX, y: event.clientY };
+      }
       if(!proposalVisualEditEnabled) return;
+
+      // O navegador pode demorar alguns ms para consolidar a seleção.
       setTimeout(updateProposalVisualToolbarPosition, 0);
-      setTimeout(updateProposalVisualToolbarPosition, 90);
+      setTimeout(updateProposalVisualToolbarPosition, 80);
+      setTimeout(updateProposalVisualToolbarPosition, 180);
+    }
+
+    function proposalVisualDocumentClickHandler(event){
+      if(!proposalVisualEditEnabled) return;
+      const target = event.target;
+      if(target?.closest?.('#proposalVisualToolbar')) return;
+      if(target?.closest?.('.proposal-page-dynamic')){
+        proposalVisualSelectionHandler(event);
+        return;
+      }
+      hideProposalVisualToolbar();
     }
 
     let proposalVisualWatchTimer = null;
@@ -8303,6 +8352,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       document.removeEventListener('keyup', proposalVisualSelectionHandler, true);
       document.removeEventListener('pointerup', proposalVisualSelectionHandler, true);
       document.removeEventListener('touchend', proposalVisualSelectionHandler, true);
+      document.removeEventListener('mousedown', proposalVisualDocumentClickHandler, true);
       window.removeEventListener('scroll', proposalVisualSelectionHandler, true);
       window.removeEventListener('resize', proposalVisualSelectionHandler);
 
@@ -8318,8 +8368,18 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       document.addEventListener('keyup', proposalVisualSelectionHandler, true);
       document.addEventListener('pointerup', proposalVisualSelectionHandler, true);
       document.addEventListener('touchend', proposalVisualSelectionHandler, true);
+      document.addEventListener('mousedown', proposalVisualDocumentClickHandler, true);
       window.addEventListener('scroll', proposalVisualSelectionHandler, true);
       window.addEventListener('resize', proposalVisualSelectionHandler);
+
+      document.querySelectorAll('.proposal-page-dynamic').forEach(area => {
+        area.removeEventListener('mouseup', proposalVisualSelectionHandler);
+        area.removeEventListener('pointerup', proposalVisualSelectionHandler);
+        area.removeEventListener('keyup', proposalVisualSelectionHandler);
+        area.addEventListener('mouseup', proposalVisualSelectionHandler);
+        area.addEventListener('pointerup', proposalVisualSelectionHandler);
+        area.addEventListener('keyup', proposalVisualSelectionHandler);
+      });
 
       proposalVisualWatchTimer = setInterval(() => {
         if(!proposalVisualEditEnabled){
@@ -8328,7 +8388,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         }
         const ctx = selectionInsideProposal();
         if(ctx) updateProposalVisualToolbarPosition();
-      }, 350);
+      }, 250);
     }
 
     function applyProposalVisualEditState(){
