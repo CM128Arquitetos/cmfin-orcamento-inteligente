@@ -4281,6 +4281,97 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-c
 }
 </style>
 
+
+<style>
+/* ===== Variáveis / Blocos Rápidos com o mesmo botão circular dos demais cards ===== */
+body .proposal-template-simple .proposal-mini-card-head{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 42px !important;
+  align-items:center !important;
+  gap:12px !important;
+  border-bottom:1px solid #e4ece7 !important;
+  padding-bottom:14px !important;
+  margin-bottom:18px !important;
+}
+body .proposal-template-simple .proposal-mini-card-head > div{
+  min-width:0 !important;
+}
+body .proposal-template-simple .proposal-mini-card-head strong{
+  display:block !important;
+}
+body .proposal-template-simple .proposal-mini-card-head span{
+  display:block !important;
+  margin-top:4px !important;
+}
+
+body .proposal-template-simple .proposal-mini-toggle{
+  position:relative !important;
+  width:36px !important;
+  height:36px !important;
+  min-width:36px !important;
+  min-height:36px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  cursor:pointer !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  transition:transform .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease !important;
+}
+
+/* Estado minimizado: igual aos cards fechados */
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]{
+  background:linear-gradient(180deg,#ffffff 0%,#f7faf8 100%) !important;
+  border:1px solid #d8e0dc !important;
+  box-shadow:0 8px 18px rgba(17,44,37,.08), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]::before{
+  content:"";
+  width:14px !important;
+  height:14px !important;
+  display:block !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:14px 14px !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%23697972' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+/* Estado expandido: igual aos cards abertos */
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]{
+  background:linear-gradient(180deg,#0f5b49 0%,#0b4c3c 100%) !important;
+  border:1px solid #0e5a47 !important;
+  box-shadow:0 10px 22px rgba(17,44,37,.18), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::before{
+  content:"";
+  width:14px !important;
+  height:14px !important;
+  display:block !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:14px 14px !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 12l5-5 5 5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+body .proposal-template-simple .proposal-mini-toggle:hover{
+  transform:translateY(-1px) !important;
+}
+
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-content{
+  display:none !important;
+}
+body .proposal-template-simple .proposal-mini-card.is-collapsed{
+  padding-bottom:18px !important;
+}
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head{
+  border-bottom:0 !important;
+  padding-bottom:0 !important;
+  margin-bottom:0 !important;
+}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -6102,13 +6193,13 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-c
                       <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
                     </div>
 
-                    <div class="template-simple-card proposal-mini-card proposal-mini-card-variables">
+                    <div class="template-simple-card proposal-mini-card proposal-mini-card-variables is-collapsed">
                       <div class="template-simple-card-head proposal-mini-card-head">
                         <div>
                           <strong>Variáveis</strong>
                           <span>Clique para inserir no texto.</span>
                         </div>
-                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="true" title="Minimizar/expandir"></button>
+                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="false" title="Minimizar/expandir"></button>
                       </div>
                       <div class="template-token-grid proposal-mini-content">
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
@@ -6126,13 +6217,13 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-c
                       </div>
                     </div>
 
-                    <div class="template-simple-card proposal-mini-card proposal-mini-card-blocks">
+                    <div class="template-simple-card proposal-mini-card proposal-mini-card-blocks is-collapsed">
                       <div class="template-simple-card-head proposal-mini-card-head">
                         <div>
                           <strong>Blocos Rápidos</strong>
                           <span>Insira estruturas prontas no editor.</span>
                         </div>
-                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="true" title="Minimizar/expandir"></button>
+                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="false" title="Minimizar/expandir"></button>
                       </div>
                       <div class="template-block-buttons proposal-mini-content">
                         <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('section')">Inserir Título de Seção</button>
