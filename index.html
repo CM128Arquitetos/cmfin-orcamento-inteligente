@@ -3818,24 +3818,23 @@ body #proposalVisualToolbar.cmfin-mini-toolbar {
 
 
 
+
 <style>
+/* Mini barra compacta estilo Word */
 #cmfinWordSelectionToolbar.cmfin-word-toolbar{
   position: fixed;
   left: -9999px;
   top: -9999px;
   z-index: 2147483647;
   display: none;
-  width: min(1040px, calc(100vw - 28px));
-  max-width: min(1040px, calc(100vw - 28px));
+  width: auto;
+  max-width: min(920px, calc(100vw - 20px));
   padding: 0;
-  border-radius: 24px;
-  border: 1px solid rgba(255,255,255,.12);
-  background:
-    radial-gradient(circle at top left, rgba(33,48,43,.98), rgba(13,20,18,.98) 72%);
-  box-shadow:
-    0 28px 80px rgba(0,0,0,.34),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  backdrop-filter: blur(18px) saturate(1.08);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(135deg, rgba(22,33,29,.98) 0%, rgba(10,17,15,.98) 100%);
+  box-shadow: 0 22px 60px rgba(0,0,0,.30);
+  backdrop-filter: blur(14px) saturate(1.06);
   overflow: hidden;
   font-family: Montserrat, Inter, Arial, sans-serif;
 }
@@ -3845,25 +3844,22 @@ body #proposalVisualToolbar.cmfin-mini-toolbar {
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
-  gap: 0;
-  padding: 16px 18px;
+  align-items: end;
+  gap: 10px 12px;
+  padding: 12px 14px;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
   display: grid;
-  gap: 10px;
-  padding: 0 14px;
+  gap: 6px;
+  padding: 0 6px;
   min-width: 0;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__group--font{
-  min-width: 300px;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group--actions{
-  min-width: 120px;
+  min-width: 250px;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__group-title{
   color: rgba(255,255,255,.62);
-  font-size: .69rem;
+  font-size: .64rem;
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -3877,118 +3873,112 @@ body #proposalVisualToolbar.cmfin-mini-toolbar {
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
   width: 1px;
+  min-height: 58px;
   margin: 0 2px;
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.16), rgba(255,255,255,.04));
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.14), rgba(255,255,255,.03));
   align-self: stretch;
 }
 #cmfinWordSelectionToolbar select,
 #cmfinWordSelectionToolbar button,
 #cmfinWordSelectionToolbar label{
-  min-height: 46px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.055));
+  min-height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
   color: #fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 10px 24px rgba(0,0,0,.14);
-  font-size: .82rem;
-  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  font-size: .78rem;
+  font-weight: 650;
   font-family: inherit;
-  transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
 }
 #cmfinWordSelectionToolbar select:hover,
 #cmfinWordSelectionToolbar button:hover,
 #cmfinWordSelectionToolbar label:hover{
   background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.08));
-  border-color: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.18);
   transform: translateY(-1px);
 }
 #cmfinWordSelectionToolbar select{
-  padding: 0 14px;
+  padding: 0 12px;
   appearance: auto;
 }
 #cmfinWordSelectionToolbar select option{
   color: #10251f;
-  background: #ffffff;
+  background: #fff;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-  min-width: 190px;
+  min-width: 170px;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
   min-width: 110px;
 }
 #cmfinWordSelectionToolbar button{
-  min-width: 46px;
-  padding: 0 14px;
+  min-width: 44px;
+  padding: 0 12px;
   cursor: pointer;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{
-  min-width: 88px;
+  min-width: 80px;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip{
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 14px;
+  gap: 8px;
+  padding: 0 12px;
   cursor: pointer;
 }
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip span{
-  font-size: .8rem;
-  font-weight: 800;
+  font-size: .76rem;
+  font-weight: 700;
   color: #fff;
 }
 #cmfinWordSelectionToolbar input[type="color"]{
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 0;
   background: transparent;
   padding: 0;
 }
-#cmfinWordSelectionToolbar .cmfin-word-save{
-  min-width: 110px;
-  background: linear-gradient(135deg,#1e9d73 0%,#165b44 100%);
-  border-color: rgba(255,255,255,.10);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.12),
-    0 14px 24px rgba(18,93,68,.28);
-}
-#cmfinWordSelectionToolbar .cmfin-word-save:hover{
-  background: linear-gradient(135deg,#28ad80 0%,#1a6a4f 100%);
-}
 @media (max-width: 900px){
   #cmfinWordSelectionToolbar.cmfin-word-toolbar{
-    width: calc(100vw - 20px);
-    max-width: calc(100vw - 20px);
+    max-width: calc(100vw - 18px);
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-    padding: 14px;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-    display:none;
+    padding: 10px 12px;
+    gap: 8px 10px;
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
-    width: 100%;
-    padding: 0;
-    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
+    display: none;
   }
 }
 @media (max-width: 640px){
-  #cmfinWordSelectionToolbar select,
-  #cmfinWordSelectionToolbar button,
-  #cmfinWordSelectionToolbar label{
-    min-height: 42px;
-    font-size: .78rem;
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
+    width: 100%;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group--font{
+    min-width: 100%;
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
     min-width: 100%;
+    flex: 1 1 100%;
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
-    min-width: 120px;
-    flex: 1 1 120px;
+    min-width: 110px;
+    flex: 1 1 110px;
+  }
+  #cmfinWordSelectionToolbar select,
+  #cmfinWordSelectionToolbar button,
+  #cmfinWordSelectionToolbar label{
+    min-height: 36px;
+    font-size: .76rem;
   }
 }
 </style>
+
 
 
 <style>
@@ -9672,15 +9662,6 @@ ${p.obs}` : ''}`;
               </label>
             </div>
           </div>
-
-          <div class="cmfin-word-toolbar__divider"></div>
-
-          <div class="cmfin-word-toolbar__group cmfin-word-toolbar__group--actions">
-            <div class="cmfin-word-toolbar__group-title">Ações</div>
-            <div class="cmfin-word-toolbar__controls">
-              <button type="button" class="cmfin-word-save" data-action="save">Salvar</button>
-            </div>
-          </div>
         </div>
       </div>
     `;
@@ -9698,15 +9679,6 @@ ${p.obs}` : ''}`;
     bar.addEventListener('click', ev => {
       const btn = ev.target.closest('[data-cmd], [data-action]');
       if(!btn) return;
-
-      const action = btn.getAttribute('data-action');
-      if(action === 'save'){
-        if(typeof window.saveProposalVisualEditToTemplate === 'function') {
-          window.saveProposalVisualEditToTemplate();
-        }
-        hideToolbar();
-        return;
-      }
 
       const cmd = btn.getAttribute('data-cmd');
       if(cmd && btn.tagName !== 'SELECT' && btn.tagName !== 'INPUT'){
