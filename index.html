@@ -3506,6 +3506,23 @@ body .template-simple-help {
   }
 }
 
+
+/* Garantia final da mini barra contextual */
+body .cmfin-mini-toolbar {
+  z-index: 2147483000 !important;
+  opacity: 0 !important;
+  transform: translateY(4px) scale(.98) !important;
+  transition: opacity .12s ease, transform .12s ease !important;
+}
+
+body .cmfin-mini-toolbar.active {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  display: flex !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -5317,7 +5334,7 @@ body .template-simple-help {
                         <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
                       </div>
 
-                      <p class="visual-paper-hint">Dica: após ativar, selecione um trecho do texto na folha para abrir a mini barra de edição.</p>
+                      <p class="visual-paper-hint">Dica: após ativar, selecione qualquer trecho do texto na folha. A mini barra aparecerá próxima da seleção, como no Word.</p>
                     </div>
 
                     <div id="proposalTemplateStandardNotice" class="template-simple-notice">
@@ -8222,61 +8239,96 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     function selectionInsideProposal(){
       const sel = window.getSelection();
       if(!sel || !sel.rangeCount || sel.isCollapsed) return null;
+
       const range = sel.getRangeAt(0);
       let node = range.commonAncestorContainer;
-      if(node && node.nodeType === 3) node = node.parentElement;
+
+      if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
       if(!node || !node.closest) return null;
+
       const area = node.closest('.proposal-page-dynamic');
-      return area ? {sel, range, area} : null;
+      if(!area) return null;
+
+      const selectedText = String(sel.toString() || '').trim();
+      if(!selectedText) return null;
+
+      return { sel, range, area };
     }
 
     function updateProposalVisualToolbarPosition(){
-      const toolbar = ensureProposalFloatingToolbar();
-      if(!proposalVisualEditEnabled || !toolbar){
+      if(!proposalVisualEditEnabled){
         hideProposalVisualToolbar();
         return;
       }
+
       const ctx = selectionInsideProposal();
-      if(!ctx){
+      const toolbar = ensureProposalFloatingToolbar();
+
+      if(!ctx || !toolbar){
         hideProposalVisualToolbar();
         return;
       }
-      const rect = ctx.range.getBoundingClientRect();
-      const baseRect = (!rect || (!rect.width && !rect.height)) ? ctx.area.getBoundingClientRect() : rect;
+
       toolbar.classList.add('active');
+
+      const rects = Array.from(ctx.range.getClientRects()).filter(r => r.width || r.height);
+      const rect = rects.length ? rects[0] : ctx.area.getBoundingClientRect();
+
+      // mede depois de ativar
       const toolbarRect = toolbar.getBoundingClientRect();
-      const margin = 12;
-      let top = baseRect.top - toolbarRect.height - margin;
-      if(top < 70){
-        top = baseRect.bottom + margin;
-      }
-      let left = baseRect.left + (baseRect.width / 2) - (toolbarRect.width / 2);
+      const margin = 10;
+
+      let top = rect.top - toolbarRect.height - margin;
+      if(top < 74) top = rect.bottom + margin;
+
+      let left = rect.left + (rect.width / 2) - (toolbarRect.width / 2);
       left = Math.max(10, Math.min(left, window.innerWidth - toolbarRect.width - 10));
       top = Math.max(70, Math.min(top, window.innerHeight - toolbarRect.height - 10));
+
       toolbar.style.top = `${top}px`;
       toolbar.style.left = `${left}px`;
     }
 
     function proposalVisualSelectionHandler(){
-      window.requestAnimationFrame(updateProposalVisualToolbarPosition);
+      if(!proposalVisualEditEnabled) return;
+      setTimeout(updateProposalVisualToolbarPosition, 0);
+      setTimeout(updateProposalVisualToolbarPosition, 90);
     }
+
+    let proposalVisualWatchTimer = null;
 
     function bindProposalVisualSelectionEvents(){
       document.removeEventListener('selectionchange', proposalVisualSelectionHandler);
+      document.removeEventListener('mouseup', proposalVisualSelectionHandler, true);
+      document.removeEventListener('keyup', proposalVisualSelectionHandler, true);
+      document.removeEventListener('pointerup', proposalVisualSelectionHandler, true);
+      document.removeEventListener('touchend', proposalVisualSelectionHandler, true);
       window.removeEventListener('scroll', proposalVisualSelectionHandler, true);
       window.removeEventListener('resize', proposalVisualSelectionHandler);
+
+      if(proposalVisualWatchTimer){
+        clearInterval(proposalVisualWatchTimer);
+        proposalVisualWatchTimer = null;
+      }
+
       if(!proposalVisualEditEnabled) return;
+
       document.addEventListener('selectionchange', proposalVisualSelectionHandler);
+      document.addEventListener('mouseup', proposalVisualSelectionHandler, true);
+      document.addEventListener('keyup', proposalVisualSelectionHandler, true);
+      document.addEventListener('pointerup', proposalVisualSelectionHandler, true);
+      document.addEventListener('touchend', proposalVisualSelectionHandler, true);
       window.addEventListener('scroll', proposalVisualSelectionHandler, true);
       window.addEventListener('resize', proposalVisualSelectionHandler);
-      document.querySelectorAll('.proposal-page-dynamic').forEach(area => {
-        area.removeEventListener('mouseup', proposalVisualSelectionHandler);
-        area.removeEventListener('keyup', proposalVisualSelectionHandler);
-        area.removeEventListener('touchend', proposalVisualSelectionHandler);
-        area.addEventListener('mouseup', proposalVisualSelectionHandler);
-        area.addEventListener('keyup', proposalVisualSelectionHandler);
-        area.addEventListener('touchend', proposalVisualSelectionHandler);
-      });
+
+      proposalVisualWatchTimer = setInterval(() => {
+        if(!proposalVisualEditEnabled){
+          hideProposalVisualToolbar();
+          return;
+        }
+        const ctx = selectionInsideProposal();
+        if(ctx) updateProposalVisualToolbarPosition();
+      }, 350);
     }
 
     function applyProposalVisualEditState(){
