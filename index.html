@@ -4928,49 +4928,6 @@ body:not(.cmfin-authenticated) {
                         <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
                       </div>
 
-                      <div class="visual-editor-toolbar" id="proposalVisualToolbar" aria-label="Ferramentas de edição visual">
-                        <div class="visual-toolbar-row">
-                          <select id="visualFontFamily" onchange="applyProposalVisualCommand('fontName', this.value)" title="Fonte">
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Inter">Inter</option>
-                            <option value="Poppins">Poppins</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Georgia">Georgia</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Courier New">Courier New</option>
-                          </select>
-                          <select id="visualFontSize" onchange="applyProposalVisualFontSize(this.value)" title="Tamanho da fonte">
-                            <option value="">Tamanho</option>
-                            <option value="1">10</option>
-                            <option value="2">12</option>
-                            <option value="3">14</option>
-                            <option value="4">16</option>
-                            <option value="5">18</option>
-                            <option value="6">24</option>
-                            <option value="7">32</option>
-                          </select>
-                        </div>
-                        <div class="visual-toolbar-row">
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('bold')" title="Negrito"><b>N</b></button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('italic')" title="Itálico"><i>I</i></button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('underline')" title="Sublinhado"><u>S</u></button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('strikeThrough')" title="Tachado"><s>abc</s></button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('removeFormat')" title="Limpar formatação">⌫</button>
-                        </div>
-                        <div class="visual-toolbar-row">
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyLeft')" title="Alinhar à esquerda">☰</button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyCenter')" title="Centralizar">≡</button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyRight')" title="Alinhar à direita">☷</button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyFull')" title="Justificar">▤</button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertUnorderedList')" title="Lista com marcadores">• Lista</button>
-                          <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertOrderedList')" title="Lista numerada">1. Lista</button>
-                        </div>
-                        <div class="visual-toolbar-row">
-                          <label class="visual-color-control">Texto <input type="color" value="#111111" onchange="applyProposalVisualCommand('foreColor', this.value)"></label>
-                          <label class="visual-color-control">Marca <input type="color" value="#fff3a3" onchange="applyProposalVisualCommand('hiliteColor', this.value)"></label>
-                        </div>
-                      </div>
-
                       <p class="visual-paper-hint">Dica: ative a edição, selecione um trecho do texto na folha e use os botões acima para formatar como no Word/Canva/Corel.</p>
                     </div>
 
@@ -7797,6 +7754,73 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return area;
     }
 
+
+    function proposalVisualToolbarHTML(){
+      return `
+        <div class="visual-editor-toolbar visual-floating-toolbar" id="proposalVisualToolbar" aria-label="Ferramentas de edição visual">
+          <div class="visual-toolbar-title">
+            <strong>Editor visual da proposta</strong>
+            <span>Selecione o texto no papel timbrado e aplique a formatação.</span>
+          </div>
+          <div class="visual-toolbar-row visual-toolbar-selects">
+            <select id="visualFontFamily" onchange="applyProposalVisualCommand('fontName', this.value)" title="Fonte">
+              <option value="Montserrat">Montserrat</option>
+              <option value="Inter">Inter</option>
+              <option value="Poppins">Poppins</option>
+              <option value="Arial">Arial</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Courier New">Courier New</option>
+            </select>
+            <select id="visualFontSize" onchange="applyProposalVisualFontSize(this.value)" title="Tamanho da fonte">
+              <option value="">Tamanho</option>
+              <option value="1">10</option>
+              <option value="2">12</option>
+              <option value="3">14</option>
+              <option value="4">16</option>
+              <option value="5">18</option>
+              <option value="6">24</option>
+              <option value="7">32</option>
+            </select>
+          </div>
+          <div class="visual-toolbar-row">
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('bold')" title="Negrito"><b>N</b></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('italic')" title="Itálico"><i>I</i></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('underline')" title="Sublinhado"><u>S</u></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('strikeThrough')" title="Tachado"><s>abc</s></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('removeFormat')" title="Limpar formatação">⌫</button>
+            <span class="visual-toolbar-separator"></span>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyLeft')" title="Alinhar à esquerda">☰</button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyCenter')" title="Centralizar">≡</button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyRight')" title="Alinhar à direita">☷</button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyFull')" title="Justificar">▤</button>
+            <span class="visual-toolbar-separator"></span>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertUnorderedList')" title="Lista com marcadores">• Lista</button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertOrderedList')" title="Lista numerada">1. Lista</button>
+          </div>
+          <div class="visual-toolbar-row">
+            <label class="visual-color-control">Texto <input type="color" value="#111111" onchange="applyProposalVisualCommand('foreColor', this.value)"></label>
+            <label class="visual-color-control">Marca <input type="color" value="#fff3a3" onchange="applyProposalVisualCommand('hiliteColor', this.value)"></label>
+          </div>
+        </div>`;
+    }
+
+    function ensureProposalFloatingToolbar(){
+      const wrap = document.querySelector('.proposal-paper-wrap');
+      let toolbar = document.getElementById('proposalVisualToolbar');
+      if(proposalVisualEditEnabled){
+        if(!toolbar && wrap){
+          wrap.insertAdjacentHTML('afterbegin', proposalVisualToolbarHTML());
+          toolbar = document.getElementById('proposalVisualToolbar');
+        } else if(toolbar && wrap && toolbar.parentElement !== wrap){
+          wrap.prepend(toolbar);
+        }
+        if(toolbar) toolbar.classList.add('active', 'visual-floating-toolbar');
+      } else if(toolbar){
+        toolbar.remove();
+      }
+    }
+
     function applyProposalVisualEditState(){
       const areas = document.querySelectorAll('.proposal-page-dynamic');
       document.body.classList.toggle('proposal-visual-edit-on', !!proposalVisualEditEnabled);
@@ -7807,6 +7831,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       });
       const toggleBtn = document.getElementById('proposalVisualEditToggle');
       const saveBtn = document.getElementById('proposalVisualEditSave');
+      ensureProposalFloatingToolbar();
       const toolbar = document.getElementById('proposalVisualToolbar');
       if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Desativar edição visual' : 'Editar no papel timbrado';
       if(saveBtn) saveBtn.disabled = !proposalVisualEditEnabled;
