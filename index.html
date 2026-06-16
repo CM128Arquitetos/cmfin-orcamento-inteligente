@@ -4904,112 +4904,70 @@ body:not(.cmfin-authenticated) {
               <details>
                 <summary><span class="summary-title">Modelo de Texto da Proposta</span><span class="section-hint">Personalize a ordem, títulos e textos com variáveis automáticas.</span></summary>
                 <div class="accordion-body">
-                  <div class="proposal-template-panel proposal-template-shell">
-                    <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()" style="display:none"><option value="standard">Padrão CM128</option><option value="custom">Modelo personalizado</option></select>
-                    <div class="template-hero">
-                      <div>
-                        <strong>Personalização premium do texto da proposta</strong>
-                        <span>Escolha entre o padrão CM128 ou um modelo personalizado com presets prontos e variáveis automáticas.</span>
-                      </div>
-                      <div id="proposalTemplateModeBadge" class="template-hero-badge">Padrão CM128 ativo</div>
+                  <div class="proposal-template-panel proposal-template-simple">
+                    <div class="template-simple-head">
+                      <strong>Personalização do texto da proposta</strong>
+                      <span>Escolha o modelo, edite o texto e use variáveis automáticas sem avançar a margem da aba.</span>
                     </div>
 
-                    <div class="template-mode-grid">
-                      <button type="button" class="template-mode-card" data-mode="standard" onclick="setProposalTemplateMode('standard')">
-                        <div class="template-mode-icon">📄</div>
-                        <div>
-                          <strong>Padrão CM128</strong>
-                          <span>Usa o modelo institucional pronto, com a estrutura original e linguagem padrão do sistema.</span>
-                        </div>
-                      </button>
-                      <button type="button" class="template-mode-card" data-mode="custom" onclick="setProposalTemplateMode('custom')">
-                        <div class="template-mode-icon">✨</div>
-                        <div>
-                          <strong>Modelo personalizado</strong>
-                          <span>Permite criar um texto próprio, reorganizando títulos, blocos e variáveis do jeito que o usuário quiser.</span>
-                        </div>
-                      </button>
+                    <div class="template-simple-mode">
+                      <label>Modelo utilizado</label>
+                      <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()">
+                        <option value="standard">Padrão CM128</option>
+                        <option value="custom">Modelo personalizado</option>
+                      </select>
                     </div>
 
-                    <div class="template-editor-grid">
-                      <div class="template-editor-main">
-                        <div class="template-card">
-                          <div class="template-card-head">
-                            <div>
-                              <strong>Editor do modelo</strong>
-                              <span>Escreva o texto-base da proposta e use as variáveis para preencher automaticamente os dados.</span>
-                            </div>
-                            <div class="template-status-chip" id="proposalTemplateStatusChip">Modo padrão</div>
-                          </div>
-                          <div class="template-card-body">
-                            <div id="proposalTemplateStandardNotice" class="template-empty-state">
-                              <strong>O modelo padrão está ativo.</strong>
-                              Para editar o texto de forma livre, clique em <b>Modelo personalizado</b>. Você também pode começar por um dos modelos prontos ao lado.
-                            </div>
-                            <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
-                            <div class="template-actions-row">
-                              <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar texto padrão CM128</button>
-                              <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
-                            </div>
-                          </div>
-                        </div>
+                    <div id="proposalTemplateStandardNotice" class="template-simple-notice">
+                      <strong>O modelo padrão está ativo.</strong>
+                      Para editar livremente, selecione <b>Modelo personalizado</b>.
+                    </div>
 
-                        <div class="template-card">
-                          <div class="template-card-head">
-                            <div>
-                              <strong>Variáveis e blocos rápidos</strong>
-                              <span>Insira dados automáticos e blocos estruturais sem precisar digitar tudo manualmente.</span>
-                            </div>
-                          </div>
-                          <div class="template-card-body">
-                            <div class="proposal-template-toolbar">
-                              <div class="template-toolbar-group">
-                                <div class="template-toolbar-label">Variáveis principais</div>
-                                <div class="template-chip-row">
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{contato}}')">Contato</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por extenso</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{observacoes_bloco}}')">Observações</button>
-                                </div>
-                              </div>
-                              <div class="template-toolbar-group">
-                                <div class="template-toolbar-label">Blocos rápidos</div>
-                                <div class="template-quick-actions">
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('section')">Inserir título de seção</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('paragraph')">Inserir parágrafo-base</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('bullet')">Inserir item em lista</button>
-                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('divider')">Inserir espaçamento</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                    <label>Editor do modelo</label>
+                    <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
+
+                    <div class="template-actions-row template-simple-actions">
+                      <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar padrão CM128</button>
+                      <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
+                    </div>
+
+                    <div class="template-simple-card">
+                      <div class="template-simple-card-head">
+                        <strong>Variáveis</strong>
+                        <span>Clique para inserir no texto.</span>
                       </div>
+                      <div class="template-token-grid">
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{contato}}')">Contato</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{data}}')">Data</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por extenso</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{intro}}')">Intro</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{observacoes_bloco}}')">Observações</button>
+                      </div>
+                    </div>
 
-                      <aside class="template-sidebar">
-                        <div class="template-card">
-                          <div class="template-card-head">
-                            <div>
-                              <strong>Guia rápido</strong>
-                              <span>Como montar o texto sem complicação.</span>
-                            </div>
-                          </div>
-                          <div class="template-card-body">
-                            <div class="proposal-template-help">
-                              Use as variáveis para preencher dados automaticamente: <code>{{titulo}}</code> <code>{{numero}}</code> <code>{{cliente}}</code> <code>{{contato}}</code> <code>{{data}}</code> <code>{{objeto}}</code> <code>{{endereco}}</code> <code>{{valor}}</code> <code>{{valor_extenso}}</code> <code>{{intro}}</code> <code>{{entregaveis}}</code> <code>{{pagamento}}</code> <code>{{prazo}}</code> <code>{{observacoes_bloco}}</code>.<br><br>
-                              <b>Dicas:</b><br>
-                              • Linhas iniciadas com <code>##</code> viram títulos de seção.<br>
-                              • Linhas iniciadas com <code>-</code> ou <code>•</code> viram itens destacados.<br>
-                            </div>
-                          </div>
-                        </div>
-                      </aside>
+                    <div class="template-simple-card">
+                      <div class="template-simple-card-head">
+                        <strong>Blocos rápidos</strong>
+                        <span>Insira estruturas prontas no editor.</span>
+                      </div>
+                      <div class="template-block-buttons">
+                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('section')">Inserir título de seção</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('paragraph')">Inserir parágrafo-base</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('bullet')">Inserir item em lista</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('divider')">Inserir espaçamento</button>
+                      </div>
+                    </div>
+
+                    <div class="template-simple-help">
+                      <strong>Guia rápido</strong>
+                      <p>Use <code>##</code> no início da linha para criar títulos de seção. Use <code>-</code> ou <code>•</code> para criar itens de lista.</p>
                     </div>
                   </div>
                 </div>
