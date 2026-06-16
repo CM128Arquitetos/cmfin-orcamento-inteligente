@@ -4921,14 +4921,14 @@ body:not(.cmfin-authenticated) {
                     <div class="template-simple-card visual-paper-editor-card">
                       <div class="template-simple-card-head">
                         <strong>Editor visual no papel timbrado</strong>
-                        <span>Ative a edição e use o painel flutuante sobre a folha para formatar a proposta.</span>
+                        <span>Ative a edição e use o painel flutuante fixo para formatar a proposta enquanto rola a folha.</span>
                       </div>
                       <div class="visual-paper-actions">
                         <button type="button" class="secondary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Editar no papel timbrado</button>
                         <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
                       </div>
 
-                      <p class="visual-paper-hint">Dica: após ativar, o painel de formatação fica flutuando na área da folha e acompanha a rolagem.</p>
+                      <p class="visual-paper-hint">Dica: após ativar, o painel premium fica fixo na tela e acompanha a rolagem da proposta.</p>
                     </div>
 
                     <div id="proposalTemplateStandardNotice" class="template-simple-notice">
@@ -7757,22 +7757,22 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
 
     function proposalVisualToolbarHTML(){
       return `
-        <div class="visual-editor-toolbar visual-floating-toolbar visual-pro-toolbar" id="proposalVisualToolbar" aria-label="Ferramentas de edição visual">
-          <div class="visual-pro-top">
-            <div class="visual-pro-title">
-              <span class="visual-pro-kicker">Editor visual</span>
-              <strong>Formatação da proposta</strong>
+        <div class="cmfin-floating-editor" id="proposalVisualToolbar" aria-label="Painel premium de edição da proposta">
+          <div class="cmfin-floating-editor__header">
+            <div>
+              <span>Editor premium</span>
+              <strong>Formatação do papel timbrado</strong>
             </div>
-            <div class="visual-pro-actions">
-              <button type="button" class="visual-pro-save" onmousedown="event.preventDefault()" onclick="saveProposalVisualEditToTemplate()">Salvar edição</button>
-              <button type="button" class="visual-pro-close" onmousedown="event.preventDefault()" onclick="toggleProposalVisualEdit(false)">Sair</button>
+            <div class="cmfin-floating-editor__actions">
+              <button type="button" class="cmfin-editor-save" onmousedown="event.preventDefault()" onclick="saveProposalVisualEditToTemplate()">Salvar edição</button>
+              <button type="button" class="cmfin-editor-close" onmousedown="event.preventDefault()" onclick="toggleProposalVisualEdit(false)">Sair</button>
             </div>
           </div>
 
-          <div class="visual-pro-grid">
-            <div class="visual-pro-group visual-pro-group-font">
-              <span class="visual-pro-label">Fonte</span>
-              <div class="visual-pro-fields">
+          <div class="cmfin-floating-editor__body">
+            <div class="cmfin-editor-section cmfin-editor-section--font">
+              <label>Fonte</label>
+              <div class="cmfin-editor-fields">
                 <select id="visualFontFamily" onchange="applyProposalVisualCommand('fontName', this.value)" title="Fonte">
                   <option value="Montserrat">Montserrat</option>
                   <option value="Inter">Inter</option>
@@ -7795,9 +7795,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
               </div>
             </div>
 
-            <div class="visual-pro-group">
-              <span class="visual-pro-label">Texto</span>
-              <div class="visual-pro-buttons">
+            <div class="cmfin-editor-section">
+              <label>Texto</label>
+              <div class="cmfin-editor-buttons">
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('bold')" title="Negrito"><b>N</b></button>
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('italic')" title="Itálico"><i>I</i></button>
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('underline')" title="Sublinhado"><u>S</u></button>
@@ -7806,9 +7806,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
               </div>
             </div>
 
-            <div class="visual-pro-group">
-              <span class="visual-pro-label">Parágrafo</span>
-              <div class="visual-pro-buttons visual-pro-buttons-wide">
+            <div class="cmfin-editor-section cmfin-editor-section--paragraph">
+              <label>Parágrafo</label>
+              <div class="cmfin-editor-buttons">
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyLeft')" title="Alinhar à esquerda">☰</button>
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyCenter')" title="Centralizar">≡</button>
                 <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyRight')" title="Alinhar à direita">☷</button>
@@ -7818,17 +7818,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
               </div>
             </div>
 
-            <div class="visual-pro-group">
-              <span class="visual-pro-label">Cores</span>
-              <div class="visual-pro-buttons">
-                <label class="visual-pro-color" title="Cor do texto">
-                  <span>A</span>
-                  <input type="color" value="#111111" onchange="applyProposalVisualCommand('foreColor', this.value)">
-                </label>
-                <label class="visual-pro-color visual-pro-highlight" title="Marca-texto">
-                  <span>Marca</span>
-                  <input type="color" value="#fff3a3" onchange="applyProposalVisualCommand('hiliteColor', this.value)">
-                </label>
+            <div class="cmfin-editor-section cmfin-editor-section--colors">
+              <label>Cores</label>
+              <div class="cmfin-editor-buttons">
+                <label class="cmfin-color-pill" title="Cor do texto"><span>A</span><input type="color" value="#111111" onchange="applyProposalVisualCommand('foreColor', this.value)"></label>
+                <label class="cmfin-color-pill" title="Marca-texto"><span>Marca</span><input type="color" value="#fff3a3" onchange="applyProposalVisualCommand('hiliteColor', this.value)"></label>
               </div>
             </div>
           </div>
@@ -7836,16 +7830,13 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
     function ensureProposalFloatingToolbar(){
-      const wrap = document.querySelector('.proposal-paper-wrap');
       let toolbar = document.getElementById('proposalVisualToolbar');
       if(proposalVisualEditEnabled){
-        if(!toolbar && wrap){
-          wrap.insertAdjacentHTML('afterbegin', proposalVisualToolbarHTML());
+        if(!toolbar){
+          document.body.insertAdjacentHTML('beforeend', proposalVisualToolbarHTML());
           toolbar = document.getElementById('proposalVisualToolbar');
-        } else if(toolbar && wrap && toolbar.parentElement !== wrap){
-          wrap.prepend(toolbar);
         }
-        if(toolbar) toolbar.classList.add('active', 'visual-floating-toolbar');
+        if(toolbar) toolbar.classList.add('active');
       } else if(toolbar){
         toolbar.remove();
       }
