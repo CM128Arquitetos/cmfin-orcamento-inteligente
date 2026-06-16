@@ -960,12 +960,50 @@
     .proposal-editor h3 { margin:0 0 12px; font-family:"Articulat CF", Inter, Segoe UI, Arial, sans-serif; font-weight:700; color:#112c25; letter-spacing:-.02em; }
     .proposal-editor textarea { min-height:90px; }
     .proposal-editor .mini { min-height:64px; }
-    .proposal-template-panel { margin-top:12px; display:grid; gap:12px; }
-    .proposal-template-toolbar { display:flex; flex-wrap:wrap; gap:8px; padding:10px; border:1px solid #dce8e2; border-radius:14px; background:#fbfdfc; }
-    .proposal-template-toolbar button { min-height:36px; padding:8px 10px; border-radius:12px; font-size:.78rem; box-shadow:none; }
-    .proposal-template-help { padding:12px 14px; border-radius:14px; border:1px dashed #cbdad3; background:#f7faf8; color:#62736b; font-size:.8rem; line-height:1.5; }
-    .proposal-template-help code { display:inline-flex; margin:2px 3px 2px 0; padding:3px 6px; border-radius:7px; background:#fff; border:1px solid #dce8e2; color:#10251f; font-size:.76rem; }
-    #proposalTemplateText { min-height:260px; font-family:"Consolas","Courier New",monospace; font-size:.88rem; line-height:1.5; }
+    .proposal-template-panel { margin-top:12px; display:grid; gap:14px; }
+    .proposal-template-shell { border:1px solid #dce7e1; border-radius:20px; background:linear-gradient(180deg,#ffffff 0%,#f7fbf9 100%); padding:16px; box-shadow:0 18px 34px rgba(17,44,37,.06); }
+    .template-hero { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:16px 18px; border-radius:18px; background:linear-gradient(135deg,#0f3d33 0%,#1d5649 100%); color:#fff; box-shadow:0 18px 34px rgba(15,61,51,.18); }
+    .template-hero strong { display:block; font-size:1rem; letter-spacing:-.02em; }
+    .template-hero span { display:block; margin-top:6px; color:rgba(255,255,255,.82); font-size:.84rem; line-height:1.5; max-width:720px; }
+    .template-hero-badge { display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; min-height:38px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.16); font-size:.75rem; font-weight:800; letter-spacing:.03em; text-transform:uppercase; }
+    .template-mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .template-mode-card { width:100%; text-align:left; border:1px solid #d7e2dc; border-radius:18px; background:#fff; padding:16px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; transition:.22s ease; box-shadow:0 12px 24px rgba(17,44,37,.05); }
+    .template-mode-card:hover { transform:translateY(-1px); border-color:#b8cbc3; box-shadow:0 16px 28px rgba(17,44,37,.08); }
+    .template-mode-card.active { border-color:var(--brand); background:linear-gradient(180deg,#f7fcfa 0%,#eef7f3 100%); box-shadow:0 20px 34px rgba(17,44,37,.10); }
+    .template-mode-icon { width:44px; height:44px; border-radius:14px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:1.2rem; background:#edf4f0; color:#143c31; }
+    .template-mode-card.active .template-mode-icon { background:var(--brand); color:#fff; }
+    .template-mode-card strong { display:block; font-size:.92rem; color:#10251f; letter-spacing:-.01em; }
+    .template-mode-card span { display:block; margin-top:4px; color:#5d6f67; font-size:.8rem; line-height:1.45; }
+    .template-editor-grid { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(280px,.95fr); gap:14px; align-items:start; }
+    .template-editor-main, .template-sidebar { display:grid; gap:14px; }
+    .template-card { border:1px solid #dce7e1; border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 12px 28px rgba(17,44,37,.05); }
+    .template-card-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; background:linear-gradient(180deg,#f9fcfb 0%,#f2f8f5 100%); border-bottom:1px solid #e3ece7; }
+    .template-card-head strong { display:block; font-size:.88rem; color:#10251f; letter-spacing:-.01em; }
+    .template-card-head span { display:block; font-size:.77rem; color:#62736b; line-height:1.4; }
+    .template-card-body { padding:14px; }
+    .template-status-chip { display:inline-flex; align-items:center; justify-content:center; min-height:30px; padding:6px 10px; border-radius:999px; background:#e8f1ec; color:#143c31; border:1px solid #d6e4dd; font-size:.72rem; font-weight:800; letter-spacing:.03em; text-transform:uppercase; }
+    .template-empty-state { display:none; margin-bottom:12px; padding:14px; border-radius:16px; border:1px dashed #c8d7d0; background:linear-gradient(180deg,#fbfdfc 0%,#f4f9f7 100%); color:#5f7068; font-size:.83rem; line-height:1.5; }
+    .template-empty-state strong { display:block; margin-bottom:4px; color:#10251f; }
+    #proposalTemplateText { min-height:310px; font-family:"Consolas","Courier New",monospace; font-size:.89rem; line-height:1.55; border-radius:16px; background:#fbfdfc; }
+    .proposal-template-toolbar { display:grid; gap:12px; }
+    .template-toolbar-group { display:grid; gap:8px; }
+    .template-toolbar-label { font-size:.72rem; font-weight:800; color:#5d6f67; text-transform:uppercase; letter-spacing:.05em; }
+    .template-chip-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .template-chip-row button { min-height:36px; padding:8px 10px; border-radius:999px; font-size:.78rem; box-shadow:none; }
+    .template-quick-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .template-quick-actions button { width:100%; min-height:40px; border-radius:12px; box-shadow:none; font-size:.78rem; }
+    .proposal-template-help { padding:14px; border-radius:16px; border:1px dashed #cbdad3; background:#f7faf8; color:#62736b; font-size:.8rem; line-height:1.55; }
+    .proposal-template-help code { display:inline-flex; margin:2px 4px 4px 0; padding:4px 7px; border-radius:8px; background:#fff; border:1px solid #dce8e2; color:#10251f; font-size:.76rem; }
+    .template-preset-list { display:grid; gap:10px; }
+    .template-preset-card { width:100%; text-align:left; border:1px solid #dbe6e1; border-radius:16px; background:#fff; padding:14px; cursor:pointer; transition:.2s ease; box-shadow:none; }
+    .template-preset-card:hover { border-color:#b9cbc3; background:#f8fbf9; }
+    .template-preset-card strong { display:block; color:#10251f; font-size:.88rem; letter-spacing:-.01em; }
+    .template-preset-card span { display:block; margin-top:4px; color:#607169; font-size:.79rem; line-height:1.45; }
+    .template-preset-card small { display:inline-flex; align-items:center; gap:6px; margin-top:8px; color:#143c31; font-weight:800; text-transform:uppercase; letter-spacing:.04em; font-size:.68rem; }
+    .template-actions-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .template-actions-row button { min-height:38px; border-radius:12px; box-shadow:none; font-size:.78rem; }
+    @media (max-width: 1120px){ .template-editor-grid { grid-template-columns:1fr; } }
+    @media (max-width: 720px){ .template-mode-grid, .template-quick-actions { grid-template-columns:1fr; } .template-hero { flex-direction:column; } }
     .proposal-accordion { display:flex; flex-direction:column; gap:12px; }
     .proposal-accordion details { border:1px solid var(--line); border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 10px 24px rgba(17,44,37,.05); transition:.22s ease; }
     .proposal-accordion details:hover { border-color:#c7d4ce; box-shadow:0 14px 28px rgba(17,44,37,.07); }
@@ -4857,25 +4895,141 @@ body:not(.cmfin-authenticated) {
               <details>
                 <summary><span class="summary-title">Modelo de Texto da Proposta</span><span class="section-hint">Personalize a ordem, títulos e textos com variáveis automáticas.</span></summary>
                 <div class="accordion-body">
-                  <div class="proposal-template-panel">
-                    <div class="form-grid">
-                      <div class="full"><label>Modelo utilizado</label><select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()"><option value="standard">Padrão CM128</option><option value="custom">Modelo personalizado</option></select></div>
+                  <div class="proposal-template-panel proposal-template-shell">
+                    <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()" style="display:none"><option value="standard">Padrão CM128</option><option value="custom">Modelo personalizado</option></select>
+                    <div class="template-hero">
+                      <div>
+                        <strong>Personalização premium do texto da proposta</strong>
+                        <span>Agora o usuário pode montar o texto com mais liberdade, escolhendo entre o padrão CM128 ou um modelo totalmente personalizado, com presets prontos, variáveis automáticas e atalhos rápidos de edição.</span>
+                      </div>
+                      <div id="proposalTemplateModeBadge" class="template-hero-badge">Padrão CM128 ativo</div>
                     </div>
-                    <label>Texto/modelo personalizado</label>
-                    <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
-                    <div class="proposal-template-toolbar">
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
-                      <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
-                      <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
+
+                    <div class="template-mode-grid">
+                      <button type="button" class="template-mode-card" data-mode="standard" onclick="setProposalTemplateMode('standard')">
+                        <div class="template-mode-icon">📄</div>
+                        <div>
+                          <strong>Padrão CM128</strong>
+                          <span>Usa o modelo institucional pronto, com a estrutura original e linguagem padrão do sistema.</span>
+                        </div>
+                      </button>
+                      <button type="button" class="template-mode-card" data-mode="custom" onclick="setProposalTemplateMode('custom')">
+                        <div class="template-mode-icon">✨</div>
+                        <div>
+                          <strong>Modelo personalizado</strong>
+                          <span>Permite criar um texto próprio, reorganizando títulos, blocos e variáveis do jeito que o usuário quiser.</span>
+                        </div>
+                      </button>
                     </div>
-                    <div class="proposal-template-help">
-                      Use as variáveis para puxar dados automaticamente: <code>{{titulo}}</code> <code>{{numero}}</code> <code>{{cliente}}</code> <code>{{contato}}</code> <code>{{data}}</code> <code>{{objeto}}</code> <code>{{endereco}}</code> <code>{{valor}}</code> <code>{{valor_extenso}}</code> <code>{{intro}}</code> <code>{{entregaveis}}</code> <code>{{pagamento}}</code> <code>{{prazo}}</code> <code>{{observacoes_bloco}}</code>.<br>
-                      Dica: linhas iniciadas com <code>##</code> viram títulos de seção; linhas com <code>-</code> ou <code>•</code> viram itens destacados.
+
+                    <div class="template-editor-grid">
+                      <div class="template-editor-main">
+                        <div class="template-card">
+                          <div class="template-card-head">
+                            <div>
+                              <strong>Editor do modelo</strong>
+                              <span>Escreva o texto-base da proposta e use as variáveis para preencher automaticamente os dados.</span>
+                            </div>
+                            <div class="template-status-chip" id="proposalTemplateStatusChip">Modo padrão</div>
+                          </div>
+                          <div class="template-card-body">
+                            <div id="proposalTemplateStandardNotice" class="template-empty-state">
+                              <strong>O modelo padrão está ativo.</strong>
+                              Para editar o texto de forma livre, clique em <b>Modelo personalizado</b>. Você também pode começar por um dos modelos prontos ao lado.
+                            </div>
+                            <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
+                            <div class="template-actions-row">
+                              <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar texto padrão CM128</button>
+                              <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="template-card">
+                          <div class="template-card-head">
+                            <div>
+                              <strong>Variáveis e blocos rápidos</strong>
+                              <span>Insira dados automáticos e blocos estruturais sem precisar digitar tudo manualmente.</span>
+                            </div>
+                          </div>
+                          <div class="template-card-body">
+                            <div class="proposal-template-toolbar">
+                              <div class="template-toolbar-group">
+                                <div class="template-toolbar-label">Variáveis principais</div>
+                                <div class="template-chip-row">
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{contato}}')">Contato</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por extenso</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{observacoes_bloco}}')">Observações</button>
+                                </div>
+                              </div>
+                              <div class="template-toolbar-group">
+                                <div class="template-toolbar-label">Blocos rápidos</div>
+                                <div class="template-quick-actions">
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('section')">Inserir título de seção</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('paragraph')">Inserir parágrafo-base</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('bullet')">Inserir item em lista</button>
+                                  <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('divider')">Inserir espaçamento</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <aside class="template-sidebar">
+                        <div class="template-card">
+                          <div class="template-card-head">
+                            <div>
+                              <strong>Modelos prontos</strong>
+                              <span>Escolha um ponto de partida mais profissional e ajuste apenas o necessário.</span>
+                            </div>
+                          </div>
+                          <div class="template-card-body">
+                            <div class="template-preset-list">
+                              <button type="button" class="template-preset-card" onclick="loadProposalTemplatePreset('commercial')">
+                                <strong>Comercial elegante</strong>
+                                <span>Modelo mais objetivo e comercial, ideal para propostas limpas e de leitura rápida.</span>
+                                <small>Preset pronto</small>
+                              </button>
+                              <button type="button" class="template-preset-card" onclick="loadProposalTemplatePreset('technical')">
+                                <strong>Técnica formal</strong>
+                                <span>Estrutura mais técnica e institucional, ótima para escritórios que desejam uma linguagem mais formal.</span>
+                                <small>Preset pronto</small>
+                              </button>
+                              <button type="button" class="template-preset-card" onclick="loadProposalTemplatePreset('premium')">
+                                <strong>Premium consultiva</strong>
+                                <span>Modelo com tom mais sofisticado, enfatizando escopo, investimento e experiência profissional.</span>
+                                <small>Preset pronto</small>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="template-card">
+                          <div class="template-card-head">
+                            <div>
+                              <strong>Guia rápido</strong>
+                              <span>Como montar o texto sem complicação.</span>
+                            </div>
+                          </div>
+                          <div class="template-card-body">
+                            <div class="proposal-template-help">
+                              Use as variáveis para preencher dados automaticamente: <code>{{titulo}}</code> <code>{{numero}}</code> <code>{{cliente}}</code> <code>{{contato}}</code> <code>{{data}}</code> <code>{{objeto}}</code> <code>{{endereco}}</code> <code>{{valor}}</code> <code>{{valor_extenso}}</code> <code>{{intro}}</code> <code>{{entregaveis}}</code> <code>{{pagamento}}</code> <code>{{prazo}}</code> <code>{{observacoes_bloco}}</code>.<br><br>
+                              <b>Dicas:</b><br>
+                              • Linhas iniciadas com <code>##</code> viram títulos de seção.<br>
+                              • Linhas iniciadas com <code>-</code> ou <code>•</code> viram itens destacados.<br>
+                              • Use os presets ao lado para começar com um modelo mais refinado.
+                            </div>
+                          </div>
+                        </div>
+                      </aside>
                     </div>
                   </div>
                 </div>
@@ -6689,6 +6843,79 @@ A proposta contempla exclusivamente o(a) {{objeto}}, com as seguintes pranchas/e
     function defaultProposalTemplateData(){
       return { mode: 'standard', text: defaultProposalTemplateText() };
     }
+    function proposalTemplatePresets(){
+      return {
+        standard: defaultProposalTemplateText(),
+        commercial: `{{titulo}}
+
+Segue a proposta comercial referente ao serviço de {{objeto}}, a ser desenvolvido para {{cliente}}, no endereço {{endereco}}.
+
+{{intro}}
+
+## Escopo da proposta
+A presente proposta contempla os seguintes entregáveis e etapas de desenvolvimento:
+
+{{entregaveis}}
+
+## Investimento
+O investimento total para a execução do serviço é de {{valor}} ({{valor_extenso}}).
+
+## Condições de pagamento
+{{pagamento}}
+
+## Prazo estimado
+{{prazo}}
+
+{{observacoes_bloco}}`,
+        technical: `{{titulo}}
+
+Em atendimento à solicitação de {{cliente}}, apresenta-se a proposta técnico-comercial para a elaboração de {{objeto}}, situada em {{endereco}}.
+
+Nº da proposta: {{numero}}
+Data: {{data}}
+Contato: {{contato}}
+
+## 1. Objeto da contratação
+Esta proposta contempla, exclusivamente, os seguintes itens, serviços e entregáveis:
+
+{{entregaveis}}
+
+## 2. Investimento e forma de pagamento
+O valor global da proposta corresponde a {{valor}} ({{valor_extenso}}).
+
+{{pagamento}}
+
+## 3. Prazo de execução
+{{prazo}}
+
+## 4. Considerações finais
+{{observacoes_bloco}}`,
+        premium: `{{titulo}}
+
+É com satisfação que apresentamos a proposta para o desenvolvimento de {{objeto}}, elaborada para {{cliente}}.
+
+O serviço será realizado considerando o endereço {{endereco}} e as premissas alinhadas previamente.
+
+{{intro}}
+
+## Escopo e entregáveis
+A proposta contempla as seguintes etapas e entregas:
+
+{{entregaveis}}
+
+## Investimento proposto
+O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando o escopo aqui descrito.
+
+## Condições de pagamento
+{{pagamento}}
+
+## Cronograma previsto
+{{prazo}}
+
+## Observações
+{{observacoes_bloco}}`
+      };
+    }
     function defaultBrandData(){
       return {
         logoSrc: '',
@@ -6912,8 +7139,7 @@ A proposta contempla exclusivamente o(a) {{objeto}}, com as seguintes pranchas/e
       const template = ensureBrandData().proposalTemplate || defaultProposalTemplateData();
       set('proposalTemplateMode', template.mode || 'standard');
       set('proposalTemplateText', template.text || defaultProposalTemplateText());
-      const templateTextEl = document.getElementById('proposalTemplateText');
-      if(templateTextEl) templateTextEl.disabled = (template.mode || 'standard') !== 'custom';
+      updateProposalTemplateDesignerState();
       applyBrandCustomization();
       convertStoredPdfLetterheadIfNeeded();
     }
@@ -7090,13 +7316,74 @@ A proposta contempla exclusivamente o(a) {{objeto}}, com as seguintes pranchas/e
       if(!String(brand.proposalTemplate.text || '').trim()) brand.proposalTemplate.text = defaultProposalTemplateText();
       return brand.proposalTemplate;
     }
+    function updateProposalTemplateDesignerState(){
+      const mode = document.getElementById('proposalTemplateMode')?.value || 'standard';
+      const textEl = document.getElementById('proposalTemplateText');
+      if(textEl) textEl.disabled = mode !== 'custom';
+      document.querySelectorAll('.template-mode-card').forEach(card => card.classList.toggle('active', card.dataset.mode === mode));
+      const notice = document.getElementById('proposalTemplateStandardNotice');
+      if(notice) notice.style.display = mode === 'custom' ? 'none' : 'block';
+      const badge = document.getElementById('proposalTemplateModeBadge');
+      if(badge) badge.textContent = mode === 'custom' ? 'Modelo personalizado ativo' : 'Padrão CM128 ativo';
+      const statusChip = document.getElementById('proposalTemplateStatusChip');
+      if(statusChip) statusChip.textContent = mode === 'custom' ? 'Modo personalizado' : 'Modo padrão';
+    }
+    function setProposalTemplateMode(mode){
+      const modeEl = document.getElementById('proposalTemplateMode');
+      if(modeEl) modeEl.value = mode === 'custom' ? 'custom' : 'standard';
+      updateProposalTemplateFromInputs();
+      if(mode === 'custom'){
+        const textEl = document.getElementById('proposalTemplateText');
+        if(textEl) textEl.focus();
+      }
+    }
+    function loadProposalTemplatePreset(preset){
+      const presets = proposalTemplatePresets();
+      const value = presets[preset] || presets.standard || defaultProposalTemplateText();
+      const modeEl = document.getElementById('proposalTemplateMode');
+      const textEl = document.getElementById('proposalTemplateText');
+      if(modeEl) modeEl.value = preset === 'standard' ? 'custom' : 'custom';
+      if(textEl){
+        textEl.disabled = false;
+        textEl.value = value;
+        textEl.focus();
+      }
+      updateProposalTemplateFromInputs();
+      toast(preset === 'standard' ? 'Texto padrão CM128 carregado no editor.' : 'Modelo pronto aplicado ao editor.');
+    }
+    function insertProposalTemplateText(content){
+      const modeEl = document.getElementById('proposalTemplateMode');
+      const textEl = document.getElementById('proposalTemplateText');
+      if(modeEl && modeEl.value !== 'custom') modeEl.value = 'custom';
+      if(textEl){
+        textEl.disabled = false;
+        const start = textEl.selectionStart ?? textEl.value.length;
+        const end = textEl.selectionEnd ?? textEl.value.length;
+        const before = textEl.value.slice(0, start);
+        const after = textEl.value.slice(end);
+        textEl.value = before + content + after;
+        const next = start + content.length;
+        textEl.focus();
+        textEl.setSelectionRange(next, next);
+      }
+      updateProposalTemplateFromInputs();
+    }
+    function insertProposalTemplateSnippet(type){
+      const snippets = {
+        section: '\n## Novo título de seção\n',
+        paragraph: '\nTexto descritivo do bloco. Ajuste este conteúdo conforme a proposta.\n',
+        bullet: '\n- Novo item / entregável\n',
+        divider: '\n\n'
+      };
+      insertProposalTemplateText(snippets[type] || '');
+    }
     function updateProposalTemplateFromInputs(){
       const tpl = proposalTemplateData();
       const mode = document.getElementById('proposalTemplateMode')?.value || 'standard';
       const textEl = document.getElementById('proposalTemplateText');
       tpl.mode = mode;
       if(textEl) tpl.text = textEl.value || defaultProposalTemplateText();
-      if(textEl) textEl.disabled = mode !== 'custom';
+      updateProposalTemplateDesignerState();
       cmfinPersistData();
       buildProposal();
     }
@@ -7108,26 +7395,13 @@ A proposta contempla exclusivamente o(a) {{objeto}}, com as seguintes pranchas/e
       const textEl = document.getElementById('proposalTemplateText');
       if(modeEl) modeEl.value = 'custom';
       if(textEl){ textEl.value = tpl.text; textEl.disabled = false; textEl.focus(); }
+      updateProposalTemplateDesignerState();
       cmfinPersistData();
       buildProposal();
-      toast('Modelo de texto restaurado.');
+      toast('Modelo padrão restaurado no editor.');
     }
     function insertProposalTemplateToken(token){
-      const modeEl = document.getElementById('proposalTemplateMode');
-      const textEl = document.getElementById('proposalTemplateText');
-      if(modeEl && modeEl.value !== 'custom') modeEl.value = 'custom';
-      if(textEl){
-        textEl.disabled = false;
-        const start = textEl.selectionStart ?? textEl.value.length;
-        const end = textEl.selectionEnd ?? textEl.value.length;
-        const before = textEl.value.slice(0, start);
-        const after = textEl.value.slice(end);
-        textEl.value = before + token + after;
-        const next = start + token.length;
-        textEl.focus();
-        textEl.setSelectionRange(next, next);
-      }
-      updateProposalTemplateFromInputs();
+      insertProposalTemplateText(token);
     }
     function handleProposalFontUpload(event){
       const file = event?.target?.files?.[0];
