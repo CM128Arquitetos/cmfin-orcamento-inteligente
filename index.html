@@ -968,20 +968,20 @@
     .template-hero span { display:block; margin-top:6px; color:rgba(255,255,255,.86); font-size:.8rem; line-height:1.45; max-width:640px; }
     .template-hero-badge { display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; min-height:34px; padding:7px 11px; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.16); font-size:.68rem; font-weight:800; letter-spacing:.03em; text-transform:uppercase; }
     .template-mode-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .template-mode-card { width:100%; min-width:0; text-align:left; border:1px solid #d7e2dc; border-radius:18px; background:#fff; padding:14px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; transition:.22s ease; box-shadow:0 12px 24px rgba(17,44,37,.05); overflow:hidden; }
+    .template-mode-card { width:100%; text-align:left; border:1px solid #d7e2dc; border-radius:18px; background:#fff; padding:16px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; transition:.22s ease; box-shadow:0 12px 24px rgba(17,44,37,.05); }
     .template-mode-card:hover { transform:translateY(-1px); border-color:#b8cbc3; box-shadow:0 16px 28px rgba(17,44,37,.08); }
     .template-mode-card.active { border-color:var(--brand); background:linear-gradient(180deg,#f7fcfa 0%,#eef7f3 100%); box-shadow:0 20px 34px rgba(17,44,37,.10); }
     .template-mode-icon { width:44px; height:44px; border-radius:14px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:1.2rem; background:#edf4f0; color:#143c31; }
     .template-mode-card.active .template-mode-icon { background:var(--brand); color:#fff; }
-    .template-mode-card strong { display:block; font-size:.86rem; color:#10251f; letter-spacing:-.01em; line-height:1.25; }
-    .template-mode-card span { display:block; margin-top:4px; color:#5d6f67; font-size:.74rem; line-height:1.38; }
-    .template-editor-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:14px; align-items:start; }
-    .template-editor-main, .template-sidebar { display:grid; gap:14px; min-width:0; }
+    .template-mode-card strong { display:block; font-size:.92rem; color:#10251f; letter-spacing:-.01em; }
+    .template-mode-card span { display:block; margin-top:4px; color:#5d6f67; font-size:.8rem; line-height:1.45; }
+    .template-editor-grid { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(280px,.95fr); gap:14px; align-items:start; }
+    .template-editor-main, .template-sidebar { display:grid; gap:14px; }
     .template-card { border:1px solid #dce7e1; border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 12px 28px rgba(17,44,37,.05); }
     .template-card-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; background:linear-gradient(180deg,#f9fcfb 0%,#f2f8f5 100%); border-bottom:1px solid #e3ece7; }
     .template-card-head strong { display:block; font-size:.88rem; color:#10251f; letter-spacing:-.01em; }
     .template-card-head span { display:block; font-size:.77rem; color:#62736b; line-height:1.4; }
-    .template-card-body { padding:14px; min-width:0; }
+    .template-card-body { padding:14px; }
     .template-status-chip { display:inline-flex; align-items:center; justify-content:center; min-height:30px; padding:6px 10px; border-radius:999px; background:#e8f1ec; color:#143c31; border:1px solid #d6e4dd; font-size:.72rem; font-weight:800; letter-spacing:.03em; text-transform:uppercase; }
     .template-empty-state { display:none; margin-bottom:12px; padding:14px; border-radius:16px; border:1px dashed #c8d7d0; background:linear-gradient(180deg,#fbfdfc 0%,#f4f9f7 100%); color:#5f7068; font-size:.83rem; line-height:1.5; }
     .template-empty-state strong { display:block; margin-bottom:4px; color:#10251f; }
@@ -7372,18 +7372,18 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
     }
     function insertProposalTemplateSnippet(type){
       const snippets = {
-        section: '
+        section: `
 ## Novo título de seção
-',
-        paragraph: '
+`,
+        paragraph: `
 Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
-',
-        bullet: '
+`,
+        bullet: `
 - Novo item / entregável
-',
-        divider: '
+`,
+        divider: `
 
-'
+`
       };
       insertProposalTemplateText(snippets[type] || '');
     }
