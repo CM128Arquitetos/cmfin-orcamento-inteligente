@@ -3117,6 +3117,395 @@ body:not(.cmfin-authenticated) {
   }
 }
 
+
+/* =========================================================
+   CMFIN — MINI BARRA CONTEXTUAL ESTILO WORD/CANVA
+   Corrige aplicação visual do editor e dos cards laterais.
+   ========================================================= */
+body .cmfin-mini-toolbar,
+body .cmfin-mini-toolbar *,
+body .proposal-template-simple,
+body .proposal-template-simple * {
+  box-sizing: border-box !important;
+}
+
+body .cmfin-mini-toolbar {
+  position: fixed !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  z-index: 999999 !important;
+  display: none !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 10px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(214,228,222,.95) !important;
+  background: rgba(19,27,24,.97) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.28) !important;
+  backdrop-filter: blur(18px) !important;
+  width: auto !important;
+  max-width: min(940px, calc(100vw - 20px)) !important;
+}
+
+body .cmfin-mini-toolbar.active {
+  display: flex !important;
+}
+
+body .cmfin-mini-toolbar__group {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+body .cmfin-mini-toolbar__group--font {
+  flex: 0 1 auto !important;
+}
+
+body .cmfin-mini-toolbar__divider {
+  width: 1px !important;
+  align-self: stretch !important;
+  min-height: 32px !important;
+  background: rgba(255,255,255,.14) !important;
+  border-radius: 999px !important;
+}
+
+body .cmfin-mini-toolbar select,
+body .cmfin-mini-toolbar button,
+body .cmfin-mini-toolbar__color {
+  min-height: 38px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.06) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  font-size: .77rem !important;
+  font-weight: 800 !important;
+  font-family: inherit !important;
+}
+
+body .cmfin-mini-toolbar select {
+  padding: 8px 10px !important;
+  min-width: 0 !important;
+  outline: none !important;
+}
+
+body .cmfin-mini-toolbar select option {
+  color: #10251f !important;
+  background: #ffffff !important;
+}
+
+body .cmfin-mini-toolbar__group--font select:first-child {
+  width: 150px !important;
+}
+
+body .cmfin-mini-toolbar__group--font select:last-child {
+  width: 82px !important;
+}
+
+body .cmfin-mini-toolbar button {
+  padding: 8px 10px !important;
+  min-width: 38px !important;
+  cursor: pointer !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+body .cmfin-mini-toolbar button:hover,
+body .cmfin-mini-toolbar__color:hover,
+body .cmfin-mini-toolbar select:hover {
+  background: rgba(255,255,255,.12) !important;
+  border-color: rgba(255,255,255,.22) !important;
+}
+
+body .cmfin-mini-toolbar__color {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 10px !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+body .cmfin-mini-toolbar__color input {
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+body .cmfin-mini-toolbar__color input::-webkit-color-swatch-wrapper {
+  padding: 0 !important;
+}
+
+body .cmfin-mini-toolbar__color input::-webkit-color-swatch {
+  border: 1px solid rgba(255,255,255,.28) !important;
+  border-radius: 999px !important;
+}
+
+body .cmfin-mini-toolbar__save {
+  background: linear-gradient(135deg,#1f8f68 0%,#16674d 100%) !important;
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+body .cmfin-mini-toolbar__close {
+  background: rgba(255,255,255,.08) !important;
+}
+
+/* Esconde barras antigas que estavam poluindo a tela */
+body .visual-editor-toolbar,
+body .cmfin-floating-editor {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Mantém a mini toolbar ativa mesmo com a regra acima */
+body .cmfin-mini-toolbar.active {
+  display: flex !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible !important;
+}
+
+/* Destaque discreto da área editável */
+body.proposal-visual-edit-on .proposal-page-dynamic {
+  outline: 2px dashed rgba(225,18,28,.35) !important;
+  outline-offset: 8px !important;
+  border-radius: 10px !important;
+  cursor: text !important;
+  background: rgba(255,255,255,.72) !important;
+}
+
+body.proposal-visual-edit-on .proposal-page-dynamic:focus {
+  outline: 2px solid rgba(225,18,28,.70) !important;
+  box-shadow: 0 0 0 7px rgba(225,18,28,.075) !important;
+}
+
+/* =========================================================
+   CMFIN — LATERAL MODELO DE TEXTO MAIS PREMIUM
+   ========================================================= */
+body .proposal-template-simple {
+  gap: 20px !important;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(180deg,#ffffff 0%,#f8fbfa 100%) !important;
+  box-shadow: 0 20px 38px rgba(17,44,37,.07) !important;
+  border: 1px solid #d8e7df !important;
+  overflow: hidden !important;
+}
+
+body .template-simple-head {
+  padding: 18px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg,#123c32 0%,#08251f 100%) !important;
+  box-shadow: 0 18px 34px rgba(17,44,37,.18) !important;
+}
+
+body .template-simple-head strong {
+  font-size: 1.02rem !important;
+  font-weight: 950 !important;
+  letter-spacing: -.025em !important;
+}
+
+body .template-simple-head span {
+  margin-top: 7px !important;
+  font-size: .82rem !important;
+  line-height: 1.45 !important;
+}
+
+body .template-simple-mode,
+body .template-simple-card,
+body .template-simple-help {
+  border: 1px solid #dce8e2 !important;
+  border-radius: 22px !important;
+  background: #fff !important;
+  box-shadow: 0 14px 28px rgba(17,44,37,.055) !important;
+  padding: 18px !important;
+  overflow: hidden !important;
+}
+
+body .template-simple-mode label,
+body .proposal-template-simple > label {
+  color: #43584f !important;
+  font-size: .72rem !important;
+  font-weight: 950 !important;
+  letter-spacing: .065em !important;
+  margin: 0 0 9px 0 !important;
+}
+
+body .template-simple-mode select,
+body #proposalTemplateText {
+  border: 1px solid #d7e3dd !important;
+  border-radius: 17px !important;
+  box-shadow: 0 9px 20px rgba(17,44,37,.035) !important;
+}
+
+body .template-simple-card-head {
+  display: grid !important;
+  gap: 5px !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid #e4eee8 !important;
+}
+
+body .template-simple-card-head strong {
+  display: block !important;
+  color: #10251f !important;
+  font-size: .98rem !important;
+  font-weight: 950 !important;
+  line-height: 1.18 !important;
+  letter-spacing: -.02em !important;
+  margin: 0 !important;
+}
+
+body .template-simple-card-head span {
+  display: block !important;
+  color: #667a70 !important;
+  font-size: .80rem !important;
+  line-height: 1.38 !important;
+  margin: 0 !important;
+}
+
+body .visual-paper-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+body .visual-paper-actions button,
+body .template-simple-actions button {
+  min-height: 46px !important;
+  border-radius: 16px !important;
+  padding: 11px 13px !important;
+  font-size: .78rem !important;
+  font-weight: 950 !important;
+  white-space: normal !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+body .visual-paper-hint {
+  margin-top: 13px !important;
+  padding: 13px !important;
+  border-radius: 16px !important;
+  background: #f4f8f6 !important;
+  border: 1px dashed #cdded6 !important;
+  color: #596d64 !important;
+  font-size: .78rem !important;
+  line-height: 1.45 !important;
+}
+
+body .template-token-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+body .template-token-grid button.secondary,
+body .template-block-buttons button.secondary {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  gap: 10px !important;
+  min-height: 54px !important;
+  border-radius: 18px !important;
+  border: 1px solid #d8e6df !important;
+  background: linear-gradient(180deg,#ffffff 0%,#eef6f2 100%) !important;
+  color: #10251f !important;
+  font-size: .84rem !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+  padding: 12px 14px !important;
+  box-shadow: 0 10px 22px rgba(17,44,37,.06) !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  position: relative !important;
+}
+
+body .template-token-grid button.secondary::before,
+body .template-block-buttons button.secondary::before {
+  content: "" !important;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg,#0f5a47 0%,#12372f 100%) !important;
+  box-shadow: 0 0 0 5px rgba(15,90,71,.10) !important;
+  display: inline-block !important;
+}
+
+body .template-token-grid button.secondary:hover,
+body .template-block-buttons button.secondary:hover {
+  transform: translateY(-1px) !important;
+  border-color: #b8cdc3 !important;
+  box-shadow: 0 14px 28px rgba(17,44,37,.10) !important;
+}
+
+body .template-token-grid button.secondary:nth-child(7),
+body .template-token-grid button.secondary:nth-child(12) {
+  grid-column: 1 / -1 !important;
+}
+
+body .template-block-buttons {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+body .template-simple-help {
+  border-radius: 20px !important;
+  padding: 18px !important;
+  background: #fff !important;
+  border: 1px solid #dbe7e1 !important;
+  box-shadow: 0 12px 28px rgba(17,44,37,.06) !important;
+}
+
+@media (max-width: 760px) {
+  body .template-token-grid,
+  body .template-block-buttons,
+  body .visual-paper-actions {
+    grid-template-columns: 1fr !important;
+  }
+  body .cmfin-mini-toolbar {
+    padding: 8px !important;
+    gap: 6px !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+  body .cmfin-mini-toolbar__divider {
+    display: none !important;
+  }
+  body .cmfin-mini-toolbar__group--font {
+    width: 100% !important;
+  }
+  body .cmfin-mini-toolbar__group--font select:first-child,
+  body .cmfin-mini-toolbar__group--font select:last-child {
+    width: auto !important;
+    flex: 1 1 120px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4921,14 +5310,14 @@ body:not(.cmfin-authenticated) {
                     <div class="template-simple-card visual-paper-editor-card">
                       <div class="template-simple-card-head">
                         <strong>Editor visual no papel timbrado</strong>
-                        <span>Ative a edição e use o painel flutuante fixo para formatar a proposta enquanto rola a folha.</span>
+                        <span>Ative a edição e selecione um trecho do texto na folha para abrir a mini barra de formatação.</span>
                       </div>
                       <div class="visual-paper-actions">
                         <button type="button" class="secondary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Editar no papel timbrado</button>
                         <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
                       </div>
 
-                      <p class="visual-paper-hint">Dica: após ativar, o painel premium fica fixo na tela e acompanha a rolagem da proposta.</p>
+                      <p class="visual-paper-hint">Dica: após ativar, selecione um trecho do texto na folha para abrir a mini barra de edição.</p>
                     </div>
 
                     <div id="proposalTemplateStandardNotice" class="template-simple-notice">
@@ -7915,7 +8304,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       proposalVisualEditEnabled = typeof force === 'boolean' ? force : !proposalVisualEditEnabled;
       applyProposalVisualEditState();
       if(proposalVisualEditEnabled){
-        toast('Editor visual ativado. Selecione um trecho do texto para abrir a mini barra de edição.');
+        toast('Editor visual ativado. Selecione um trecho do texto na folha para abrir a mini barra.');
       } else {
         toast('Editor visual desativado.');
       }
