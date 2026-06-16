@@ -3765,7 +3765,144 @@ body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color input 
   }
 }
 
+
+/* =========================================================
+   CMFIN — Ajustes solicitados: remove card verde + botões leves
+   ========================================================= */
+body .proposal-template-simple {
+  padding-top: 18px !important;
+}
+
+body .proposal-template-simple .template-token-grid button.secondary,
+body .proposal-template-simple .template-block-buttons button.secondary {
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+body .proposal-template-simple .template-token-grid button.secondary {
+  grid-template-columns: 22px minmax(0,1fr) !important;
+  min-height: 52px !important;
+  font-size: .80rem !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+body .proposal-template-simple .template-token-grid button.secondary::before {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  border-radius: 8px !important;
+}
+
+body .proposal-template-simple .template-token-grid button.secondary:nth-child(7) {
+  font-size: .80rem !important;
+}
+
+body .proposal-template-simple .template-block-buttons button.secondary {
+  font-size: .80rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
+
+body .proposal-template-simple .template-simple-card-head strong {
+  font-weight: 850 !important;
+}
+
+/* Esconde definitivamente qualquer mini barra antiga que possa estar conflitando */
+body #proposalVisualToolbar.cmfin-mini-toolbar {
+  display: none !important;
+}
+
 </style>
+
+<style>
+#cmfinWordSelectionToolbar {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  z-index: 2147483647;
+  display: none;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  width: auto;
+  max-width: min(860px, calc(100vw - 20px));
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(18,27,24,.98);
+  box-shadow: 0 28px 72px rgba(0,0,0,.35);
+  backdrop-filter: blur(18px) saturate(1.1);
+  font-family: Montserrat, Inter, Arial, sans-serif;
+}
+#cmfinWordSelectionToolbar.is-visible {
+  display: flex;
+}
+#cmfinWordSelectionToolbar select,
+#cmfinWordSelectionToolbar button,
+#cmfinWordSelectionToolbar label {
+  min-height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(255,255,255,.07);
+  color: #fff;
+  box-shadow: none;
+  font-size: .77rem;
+  font-weight: 750;
+  font-family: inherit;
+}
+#cmfinWordSelectionToolbar select {
+  padding: 8px 10px;
+}
+#cmfinWordSelectionToolbar select option {
+  color: #10251f;
+  background: #ffffff;
+}
+#cmfinWordSelectionToolbar button {
+  min-width: 38px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+#cmfinWordSelectionToolbar button:hover,
+#cmfinWordSelectionToolbar label:hover,
+#cmfinWordSelectionToolbar select:hover {
+  background: rgba(255,255,255,.13);
+}
+#cmfinWordSelectionToolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+#cmfinWordSelectionToolbar input[type="color"] {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+#cmfinWordSelectionToolbar .cmfin-word-sep {
+  width: 1px;
+  align-self: stretch;
+  min-height: 30px;
+  background: rgba(255,255,255,.15);
+}
+#cmfinWordSelectionToolbar .cmfin-word-save {
+  background: linear-gradient(135deg,#1f8f68 0%,#16674d 100%);
+}
+@media(max-width: 760px){
+  #cmfinWordSelectionToolbar {
+    max-width: calc(100vw - 20px);
+    gap: 5px;
+    padding: 8px;
+  }
+  #cmfinWordSelectionToolbar .cmfin-word-sep {
+    display: none;
+  }
+}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -5553,11 +5690,6 @@ body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color input 
                 <summary><span class="summary-title">Modelo de Texto da Proposta</span><span class="section-hint">Personalize a ordem, títulos e textos com variáveis automáticas.</span></summary>
                 <div class="accordion-body">
                   <div class="proposal-template-panel proposal-template-simple">
-                    <div class="template-simple-head">
-                      <strong>Personalização do texto da proposta</strong>
-                      <span>Escolha o modelo, edite o texto e use variáveis automáticas sem avançar a margem da aba.</span>
-                    </div>
-
                     <div class="template-simple-mode">
                       <label>Modelo utilizado</label>
                       <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()">
@@ -5604,7 +5736,7 @@ body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color input 
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por extenso</button>
+                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por Extenso</button>
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{intro}}')">Intro</button>
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
                         <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
@@ -9238,6 +9370,185 @@ ${p.obs}` : ''}`;
     if(ev.target && ev.target.closest && ev.target.closest('#proposalVisualToolbar')) return;
     if(ev.target && ev.target.closest && ev.target.closest('.proposal-page-dynamic')) return;
     toolbar.classList.remove('active');
+  }, true);
+})();
+</script>
+
+
+<script>
+(function(){
+  const TOOLBAR_ID = 'cmfinWordSelectionToolbar';
+
+  function isVisualEditOn(){
+    return document.body.classList.contains('proposal-visual-edit-on') ||
+      !!document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
+  }
+
+  function selectionContext(){
+    const sel = window.getSelection && window.getSelection();
+    if(!sel || !sel.rangeCount || sel.isCollapsed) return null;
+
+    const selectedText = String(sel.toString() || '').trim();
+    if(!selectedText) return null;
+
+    const range = sel.getRangeAt(0);
+    let node = range.commonAncestorContainer;
+    if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    if(!node || !node.closest) return null;
+
+    const area = node.closest('.proposal-page-dynamic');
+    if(!area) return null;
+
+    const rects = Array.from(range.getClientRects()).filter(r => r.width || r.height);
+    const rect = rects.length ? rects[0] : area.getBoundingClientRect();
+
+    return { sel, range, area, rect };
+  }
+
+  function exec(command, value){
+    if(!isVisualEditOn()) return;
+    try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
+    try { document.execCommand(command, false, value || null); } catch(e) {}
+    setTimeout(showFromSelection, 20);
+  }
+
+  function toolbarHTML(){
+    return `
+      <div id="${TOOLBAR_ID}" aria-label="Mini barra de edição">
+        <select data-cmd="fontName" title="Fonte">
+          <option value="Montserrat">Montserrat</option>
+          <option value="Inter">Inter</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Arial">Arial</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Times New Roman">Times</option>
+          <option value="Courier New">Courier</option>
+        </select>
+        <select data-cmd="fontSize" title="Tamanho">
+          <option value="">Tam.</option>
+          <option value="1">10</option>
+          <option value="2">12</option>
+          <option value="3">14</option>
+          <option value="4">16</option>
+          <option value="5">18</option>
+          <option value="6">24</option>
+          <option value="7">32</option>
+        </select>
+        <span class="cmfin-word-sep"></span>
+        <button type="button" data-cmd="bold" title="Negrito"><b>N</b></button>
+        <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
+        <button type="button" data-cmd="underline" title="Sublinhado"><u>S</u></button>
+        <button type="button" data-cmd="strikeThrough" title="Tachado"><s>abc</s></button>
+        <span class="cmfin-word-sep"></span>
+        <button type="button" data-cmd="justifyLeft" title="Alinhar à esquerda">☰</button>
+        <button type="button" data-cmd="justifyCenter" title="Centralizar">≡</button>
+        <button type="button" data-cmd="justifyRight" title="Alinhar à direita">☷</button>
+        <button type="button" data-cmd="justifyFull" title="Justificar">▤</button>
+        <span class="cmfin-word-sep"></span>
+        <button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
+        <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+        <span class="cmfin-word-sep"></span>
+        <label title="Cor do texto">A <input type="color" data-cmd="foreColor" value="#111111"></label>
+        <label title="Marca-texto">Marca <input type="color" data-cmd="hiliteColor" value="#fff3a3"></label>
+        <button type="button" data-cmd="removeFormat" title="Limpar formatação">⌫</button>
+        <span class="cmfin-word-sep"></span>
+        <button type="button" class="cmfin-word-save" data-action="save">Salvar</button>
+      </div>
+    `;
+  }
+
+  function ensureToolbar(){
+    let bar = document.getElementById(TOOLBAR_ID);
+    if(bar) return bar;
+
+    document.body.insertAdjacentHTML('beforeend', toolbarHTML());
+    bar = document.getElementById(TOOLBAR_ID);
+
+    bar.addEventListener('mousedown', ev => ev.preventDefault());
+
+    bar.addEventListener('click', ev => {
+      const btn = ev.target.closest('[data-cmd], [data-action]');
+      if(!btn) return;
+
+      const action = btn.getAttribute('data-action');
+      if(action === 'save'){
+        if(typeof window.saveProposalVisualEditToTemplate === 'function') {
+          window.saveProposalVisualEditToTemplate();
+        }
+        hideToolbar();
+        return;
+      }
+
+      const cmd = btn.getAttribute('data-cmd');
+      if(cmd && btn.tagName !== 'SELECT' && btn.tagName !== 'INPUT'){
+        exec(cmd);
+      }
+    });
+
+    bar.addEventListener('change', ev => {
+      const el = ev.target.closest('[data-cmd]');
+      if(!el) return;
+      const cmd = el.getAttribute('data-cmd');
+      if(cmd && el.value) exec(cmd, el.value);
+    });
+
+    return bar;
+  }
+
+  function hideToolbar(){
+    const bar = document.getElementById(TOOLBAR_ID);
+    if(bar) bar.classList.remove('is-visible');
+  }
+
+  function showFromSelection(lastEvent){
+    if(!isVisualEditOn()){
+      hideToolbar();
+      return;
+    }
+
+    const ctx = selectionContext();
+    if(!ctx){
+      hideToolbar();
+      return;
+    }
+
+    const bar = ensureToolbar();
+    bar.classList.add('is-visible');
+
+    requestAnimationFrame(() => {
+      const br = bar.getBoundingClientRect();
+      const r = ctx.rect;
+
+      let x = r.left + (r.width / 2) - (br.width / 2);
+      let y = r.top - br.height - 12;
+
+      if(y < 72) y = r.bottom + 12;
+      x = Math.max(10, Math.min(x, window.innerWidth - br.width - 10));
+      y = Math.max(70, Math.min(y, window.innerHeight - br.height - 10));
+
+      bar.style.left = x + 'px';
+      bar.style.top = y + 'px';
+    });
+  }
+
+  let timer = null;
+  function scheduleShow(ev){
+    clearTimeout(timer);
+    timer = setTimeout(() => showFromSelection(ev), 80);
+  }
+
+  document.addEventListener('selectionchange', scheduleShow, true);
+  document.addEventListener('mouseup', scheduleShow, true);
+  document.addEventListener('pointerup', scheduleShow, true);
+  document.addEventListener('keyup', scheduleShow, true);
+  document.addEventListener('touchend', scheduleShow, true);
+  window.addEventListener('scroll', scheduleShow, true);
+  window.addEventListener('resize', scheduleShow, true);
+
+  document.addEventListener('mousedown', function(ev){
+    if(ev.target.closest && ev.target.closest('#' + TOOLBAR_ID)) return;
+    if(ev.target.closest && ev.target.closest('.proposal-page-dynamic')) return;
+    hideToolbar();
   }, true);
 })();
 </script>
