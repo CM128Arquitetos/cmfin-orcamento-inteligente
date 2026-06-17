@@ -10394,38 +10394,61 @@ ${p.obs}` : ''}`;
   let currentRange = null;
   const FONT_SIZE_MAP = { '1':'10px', '2':'12px', '3':'14px', '4':'16px', '5':'18px', '6':'24px', '7':'32px' };
 
+  function saveCurrentRange(){
+    const sel = window.getSelection && window.getSelection();
+    if(sel && sel.rangeCount){
+      try { currentRange = sel.getRangeAt(0).cloneRange(); } catch(e){ currentRange = null; }
+    }
+  }
+
   function restoreSavedSelection(){
     if(!currentRange) return false;
     const sel = window.getSelection && window.getSelection();
     if(!sel) return false;
-    sel.removeAllRanges();
-    sel.addRange(currentRange);
-    return true;
+    try {
+      sel.removeAllRanges();
+      sel.addRange(currentRange);
+      return true;
+    } catch(e){
+      return false;
+    }
   }
 
-  function cloneCurrentRange(range){
-    try { currentRange = range ? range.cloneRange() : null; } catch(e){ currentRange = null; }
-  }
-
-  function normalizeLegacyFontTags(area){
-    if(!area) return;
-    area.querySelectorAll('font').forEach(fontEl => {
+  function unwrapTagWithin(root, tagName, styleProp, styleValue){
+    root.querySelectorAll(tagName).forEach(el => {
       const span = document.createElement('span');
-      const size = fontEl.getAttribute('size');
-      const face = fontEl.getAttribute('face');
-      const color = fontEl.getAttribute('color');
-      if(size && FONT_SIZE_MAP[size]) span.style.fontSize = FONT_SIZE_MAP[size];
-      if(face) span.style.fontFamily = face;
-      if(color) span.style.color = color;
-      Array.from(fontEl.attributes || []).forEach(attr => {
-        if(!['size','face','color'].includes(attr.name)) span.setAttribute(attr.name, attr.value);
-      });
-      if(fontEl.getAttribute('style')) span.setAttribute('style', ((span.getAttribute('style')||'') + ';' + fontEl.getAttribute('style')).trim());
-      span.innerHTML = fontEl.innerHTML;
-      fontEl.replaceWith(span);
+      if(styleProp && styleValue) span.style[styleProp] = styleValue;
+      span.innerHTML = el.innerHTML;
+      el.replaceWith(span);
     });
   }
 
+  function applyInlineStyle(styleMap){
+    if(!isVisualEditOn()) return;
+    const area = document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
+    if(!area) return;
+    area.focus();
+    restoreSavedSelection();
+    const sel = window.getSelection && window.getSelection();
+    if(!sel || !sel.rangeCount || sel.isCollapsed) return;
+    let range = sel.getRangeAt(0);
+
+    const span = document.createElement('span');
+    Object.entries(styleMap || {}).forEach(([k,v]) => { if(v) span.style[k] = v; });
+
+    try {
+      const frag = range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+      currentRange = newRange.cloneRange();
+    } catch(e){
+      console.warn('Falha ao aplicar estilo inline', e);
+    }
+  }
 
   function isVisualEditOn(){
     return document.body.classList.contains('proposal-visual-edit-on') ||
@@ -10461,12 +10484,32 @@ ${p.obs}` : ''}`;
     area.focus();
     restoreSavedSelection();
 
+    if(command === 'fontName' && value){
+      applyInlineStyle({ fontFamily: value });
+      setTimeout(showFromSelection, 20);
+      return;
+    }
+    if(command === 'fontSize' && value){
+      applyInlineStyle({ fontSize: FONT_SIZE_MAP[value] || '14px' });
+      setTimeout(showFromSelection, 20);
+      return;
+    }
+    if(command === 'foreColor' && value){
+      applyInlineStyle({ color: value });
+      setTimeout(showFromSelection, 20);
+      return;
+    }
+    if(command === 'hiliteColor' && value){
+      applyInlineStyle({ backgroundColor: value, padding: '0 .08em', borderRadius: '.14em' });
+      setTimeout(showFromSelection, 20);
+      return;
+    }
+
     try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
 
     try {
       document.execCommand(command, false, value || null);
-      normalizeLegacyFontTags(area);
-      cloneCurrentRange(window.getSelection().rangeCount ? window.getSelection().getRangeAt(0) : null);
+      saveCurrentRange();
     } catch(e) {
       console.warn('Falha ao aplicar comando na mini barra:', command, e);
     }
@@ -10504,7 +10547,6 @@ ${p.obs}` : ''}`;
             <button type="button" data-cmd="italic" title="Itálico"><i>I</i></button>
             <button type="button" data-cmd="underline" title="Sublinhado"><u>S</u></button>
             <button type="button" data-cmd="strikeThrough" title="Tachado"><s>abc</s></button>
-            <button type="button" data-cmd="removeFormat" title="Limpar formatação">⌫</button>
 
             <span class="cmfin-word-toolbar__divider"></span>
 
@@ -10552,7 +10594,18 @@ ${p.obs}` : ''}`;
     document.body.insertAdjacentHTML('beforeend', toolbarHTML());
     bar = document.getElementById(TOOLBAR_ID);
 
-    bar.addEventListener('mousedown', ev => ev.preventDefault());
+    bar.addEventListener('mousedown', ev => {
+      const btn = ev.target.closest('button');
+      const chip = ev.target.closest('.cmfin-word-toolbar__color-chip');
+      const selbox = ev.target.closest('select');
+      if(btn || chip){
+        ev.preventDefault();
+        saveCurrentRange();
+      }
+      if(selbox){
+        saveCurrentRange();
+      }
+    });
 
     bar.addEventListener('click', ev => {
       const btn = ev.target.closest('[data-cmd], [data-action]');
@@ -10592,7 +10645,7 @@ ${p.obs}` : ''}`;
     }
 
     const ctx = selectionContext();
-    if(ctx && ctx.range) cloneCurrentRange(ctx.range);
+    if(ctx && ctx.range) { try { currentRange = ctx.range.cloneRange(); } catch(e){} }
     if(!ctx){
       hideToolbar();
       return;
