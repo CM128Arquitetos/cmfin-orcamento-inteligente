@@ -4909,6 +4909,15 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{min-width:74px!important}
 </style>
 
+
+<style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="undoVisual"],
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="redoVisual"]{
+  font-size:1.05rem!important;
+  font-weight:800!important;
+}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -10449,6 +10458,78 @@ ${p.obs}` : ''}`;
 <script>
 (function(){
   const TOOLBAR_ID = 'cmfinWordSelectionToolbar';
+  const proposalVisualHistory = {
+    undo: [],
+    redo: [],
+    max: 60,
+    last: ''
+  };
+
+  function proposalVisualSnapshot(){
+    return Array.from(document.querySelectorAll('.proposal-page-dynamic')).map(area => area.innerHTML || '');
+  }
+
+  function proposalVisualSnapshotKey(snapshot){
+    return JSON.stringify(snapshot || proposalVisualSnapshot());
+  }
+
+  function proposalPushUndoSnapshot(){
+    const snap = proposalVisualSnapshot();
+    const key = proposalVisualSnapshotKey(snap);
+    if(key === proposalVisualHistory.last) return;
+    proposalVisualHistory.undo.push(snap);
+    if(proposalVisualHistory.undo.length > proposalVisualHistory.max) proposalVisualHistory.undo.shift();
+    proposalVisualHistory.redo = [];
+    proposalVisualHistory.last = key;
+  }
+
+  function proposalRestoreSnapshot(snapshot){
+    if(!Array.isArray(snapshot)) return;
+    const areas = Array.from(document.querySelectorAll('.proposal-page-dynamic'));
+    areas.forEach((area, index) => {
+      area.innerHTML = snapshot[index] || '';
+    });
+    proposalVisualHistory.last = proposalVisualSnapshotKey(snapshot);
+
+    try {
+      if(typeof proposalTemplateData === 'function'){
+        const tpl = proposalTemplateData();
+        tpl.mode = 'custom';
+        tpl.editorType = 'visual';
+        tpl.visualHtml = areas.map(area => String(area.innerHTML || '').trim()).filter(Boolean).join('<div style="page-break-before:always;height:1px;"></div>');
+        tpl.text = areas.map(area => area.innerText || '').filter(Boolean).join('\n\n');
+      }
+      if(typeof cmfinPersistData === 'function') cmfinPersistData();
+    } catch(e) {
+      console.warn('Não foi possível sincronizar o histórico visual:', e);
+    }
+  }
+
+  function proposalUndoVisual(){
+    if(!proposalVisualHistory.undo.length) {
+      if(typeof toast === 'function') toast('Não há alteração para desfazer.');
+      return;
+    }
+    const current = proposalVisualSnapshot();
+    const previous = proposalVisualHistory.undo.pop();
+    proposalVisualHistory.redo.push(current);
+    proposalRestoreSnapshot(previous);
+    if(typeof toast === 'function') toast('Alteração desfeita.');
+  }
+
+  function proposalRedoVisual(){
+    if(!proposalVisualHistory.redo.length) {
+      if(typeof toast === 'function') toast('Não há alteração para refazer.');
+      return;
+    }
+    const current = proposalVisualSnapshot();
+    const next = proposalVisualHistory.redo.pop();
+    proposalVisualHistory.undo.push(current);
+    proposalRestoreSnapshot(next);
+    if(typeof toast === 'function') toast('Alteração refeita.');
+  }
+
+
   let currentRange = null;
   const FONT_SIZE_MAP = { '1':'10px', '2':'12px', '3':'14px', '4':'16px', '5':'18px', '6':'24px', '7':'32px' };
 
@@ -10493,6 +10574,8 @@ ${p.obs}` : ''}`;
 
     const span = document.createElement('span');
     Object.entries(styleMap || {}).forEach(([k,v]) => { if(v) span.style[k] = v; });
+
+    proposalPushUndoSnapshot();
 
     try {
       const frag = range.extractContents();
@@ -10573,6 +10656,8 @@ ${p.obs}` : ''}`;
 
     try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
 
+    proposalPushUndoSnapshot();
+
     try {
       document.execCommand(command, false, value || null);
       saveCurrentRange();
@@ -10622,6 +10707,11 @@ ${p.obs}` : ''}`;
 
             <button type="button" class="cmfin-word-toolbar__mini" data-action="decreaseFont" title="Diminuir fonte">A−</button>
             <button type="button" class="cmfin-word-toolbar__mini" data-action="increaseFont" title="Aumentar fonte">A+</button>
+
+            <span class="cmfin-word-toolbar__divider"></span>
+
+            <button type="button" class="cmfin-word-toolbar__mini" data-action="undoVisual" title="Desfazer alteração">↶</button>
+            <button type="button" class="cmfin-word-toolbar__mini" data-action="redoVisual" title="Refazer alteração">↷</button>
 
             <span class="cmfin-word-toolbar__divider"></span>
 
@@ -10727,6 +10817,8 @@ ${p.obs}` : ''}`;
       const action = btn.getAttribute('data-action');
       if(action === 'increaseFont') return void applyToolbarFontDelta(1);
       if(action === 'decreaseFont') return void applyToolbarFontDelta(-1);
+      if(action === 'undoVisual') return void proposalUndoVisual();
+      if(action === 'redoVisual') return void proposalRedoVisual();
       if(action === 'toggleSizeMenu') return void toggleSizeMenu();
       if(action === 'openTextColor'){
         bar.querySelector('.cmfin-word-toolbar__color-input[data-cmd="foreColor"]')?.click();
@@ -10858,6 +10950,39 @@ function toggleProposalMiniSection(btn){
   const collapsed = card.classList.toggle('is-collapsed');
   btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 }
+</script>
+
+
+<script>
+(function(){
+  function isProposalVisualEditing(){
+    return document.body.classList.contains('proposal-visual-edit-on') ||
+      !!document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
+  }
+
+  document.addEventListener('beforeinput', function(ev){
+    if(!isProposalVisualEditing()) return;
+    if(!ev.target || !ev.target.closest || !ev.target.closest('.proposal-page-dynamic')) return;
+    if(typeof proposalPushUndoSnapshot === 'function') proposalPushUndoSnapshot();
+  }, true);
+
+  document.addEventListener('keydown', function(ev){
+    if(!isProposalVisualEditing()) return;
+    const key = String(ev.key || '').toLowerCase();
+    const isUndo = (ev.ctrlKey || ev.metaKey) && key === 'z' && !ev.shiftKey;
+    const isRedo = ((ev.ctrlKey || ev.metaKey) && key === 'y') || ((ev.ctrlKey || ev.metaKey) && ev.shiftKey && key === 'z');
+
+    if(isUndo && typeof proposalUndoVisual === 'function'){
+      ev.preventDefault();
+      proposalUndoVisual();
+    }
+
+    if(isRedo && typeof proposalRedoVisual === 'function'){
+      ev.preventDefault();
+      proposalRedoVisual();
+    }
+  }, true);
+})();
 </script>
 
 </body>
