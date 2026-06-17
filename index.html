@@ -4851,6 +4851,28 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 }
 </style>
 
+
+<style>
+/* Campo de tamanho digitável + botões A-/A+ */
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{
+  width:64px !important;
+  min-width:64px !important;
+  padding:0 8px !important;
+  text-align:center !important;
+  outline:none !important;
+}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra input.cmfin-word-toolbar__font-size::-webkit-calendar-picker-indicator{
+  opacity:.85 !important;
+  filter:invert(1) !important;
+}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{
+  width:38px !important;
+  min-width:38px !important;
+  font-size:.78rem !important;
+  font-weight:800 !important;
+}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -10476,6 +10498,14 @@ ${p.obs}` : ''}`;
     return { sel, range, area, rect };
   }
 
+  function normalizeFontSizeValue(value){
+    const raw = String(value || '').replace(',', '.').replace(/[^\d.]/g, '');
+    const num = parseFloat(raw);
+    if(!Number.isFinite(num) || num <= 0) return '14px';
+    const clamped = Math.max(6, Math.min(num, 120));
+    return `${clamped}px`;
+  }
+
   function exec(command, value){
     if(!isVisualEditOn()) return;
     const area = document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
@@ -10490,7 +10520,7 @@ ${p.obs}` : ''}`;
       return;
     }
     if(command === 'fontSize' && value){
-      applyInlineStyle({ fontSize: FONT_SIZE_MAP[value] || '14px' });
+      applyInlineStyle({ fontSize: normalizeFontSizeValue(value) });
       setTimeout(showFromSelection, 20);
       return;
     }
@@ -10531,15 +10561,33 @@ ${p.obs}` : ''}`;
               <option value="Courier New">Courier New</option>
             </select>
 
-            <select class="cmfin-word-toolbar__font-size" data-cmd="fontSize" title="Tamanho">
-              <option value="1">10</option>
-              <option value="2">12</option>
-              <option value="3" selected>14</option>
-              <option value="4">16</option>
-              <option value="5">18</option>
-              <option value="6">24</option>
-              <option value="7">32</option>
-            </select>
+            <input class="cmfin-word-toolbar__font-size"
+                   data-cmd="fontSize"
+                   title="Tamanho da fonte"
+                   list="cmfinFontSizeList"
+                   value="14"
+                   inputmode="decimal"
+                   autocomplete="off">
+            <datalist id="cmfinFontSizeList">
+              <option value="8"></option>
+              <option value="9"></option>
+              <option value="10"></option>
+              <option value="11"></option>
+              <option value="12"></option>
+              <option value="14"></option>
+              <option value="16"></option>
+              <option value="18"></option>
+              <option value="20"></option>
+              <option value="22"></option>
+              <option value="24"></option>
+              <option value="26"></option>
+              <option value="28"></option>
+              <option value="36"></option>
+              <option value="48"></option>
+              <option value="72"></option>
+            </datalist>
+            <button type="button" class="cmfin-word-toolbar__mini" data-action="decreaseFont" title="Diminuir fonte">A−</button>
+            <button type="button" class="cmfin-word-toolbar__mini" data-action="increaseFont" title="Aumentar fonte">A+</button>
 
             <span class="cmfin-word-toolbar__divider"></span>
 
@@ -10587,6 +10635,19 @@ ${p.obs}` : ''}`;
     `;
   }
 
+  function currentToolbarFontSize(){
+    const input = document.querySelector(`#${TOOLBAR_ID} .cmfin-word-toolbar__font-size`);
+    const num = parseFloat(String(input?.value || '14').replace(',', '.'));
+    return Number.isFinite(num) ? num : 14;
+  }
+
+  function applyToolbarFontDelta(delta){
+    const input = document.querySelector(`#${TOOLBAR_ID} .cmfin-word-toolbar__font-size`);
+    const next = Math.max(6, Math.min(120, currentToolbarFontSize() + delta));
+    if(input) input.value = String(next);
+    exec('fontSize', next);
+  }
+
   function ensureToolbar(){
     let bar = document.getElementById(TOOLBAR_ID);
     if(bar) return bar;
@@ -10597,12 +10658,12 @@ ${p.obs}` : ''}`;
     bar.addEventListener('mousedown', ev => {
       const btn = ev.target.closest('button');
       const chip = ev.target.closest('.cmfin-word-toolbar__color-chip');
-      const selbox = ev.target.closest('select');
+      const field = ev.target.closest('select, input');
       if(btn || chip){
         ev.preventDefault();
         saveCurrentRange();
       }
-      if(selbox){
+      if(field){
         saveCurrentRange();
       }
     });
@@ -10611,9 +10672,29 @@ ${p.obs}` : ''}`;
       const btn = ev.target.closest('[data-cmd], [data-action]');
       if(!btn) return;
 
+      const action = btn.getAttribute('data-action');
+      if(action === 'increaseFont'){
+        applyToolbarFontDelta(1);
+        return;
+      }
+      if(action === 'decreaseFont'){
+        applyToolbarFontDelta(-1);
+        return;
+      }
+
       const cmd = btn.getAttribute('data-cmd');
       if(cmd && btn.tagName !== 'SELECT' && btn.tagName !== 'INPUT'){
         exec(cmd);
+      }
+    });
+
+    bar.addEventListener('keydown', ev => {
+      const el = ev.target.closest('[data-cmd]');
+      if(!el) return;
+      if(ev.key === 'Enter'){
+        ev.preventDefault();
+        const cmd = el.getAttribute('data-cmd');
+        if(cmd && el.value) exec(cmd, el.value);
       }
     });
 
