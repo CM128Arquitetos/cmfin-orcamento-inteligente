@@ -4895,6 +4895,20 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{width:10px!important;height:26px!important;border-radius:3px!important}
 </style>
 
+
+<style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{overflow:visible!important;max-width:none!important;width:auto!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{overflow:visible!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{overflow:visible!important;z-index:3!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{top:42px!important;left:0!important;z-index:99999!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-input{position:absolute!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:0 10px!important;min-width:54px!important;width:auto!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger--wide{min-width:92px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-text{display:inline-flex!important;align-items:center!important;color:#fff!important;font-size:.8rem!important;font-weight:700!important;letter-spacing:.01em!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{width:10px!important;height:24px!important;border-radius:3px!important;flex:0 0 auto!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{min-width:74px!important}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -10605,6 +10619,7 @@ ${p.obs}` : ''}`;
                 <button type="button" data-action="pickSize" data-size="72">72</button>
               </div>
             </div>
+
             <button type="button" class="cmfin-word-toolbar__mini" data-action="decreaseFont" title="Diminuir fonte">A−</button>
             <button type="button" class="cmfin-word-toolbar__mini" data-action="increaseFont" title="Aumentar fonte">A+</button>
 
@@ -10635,16 +10650,18 @@ ${p.obs}` : ''}`;
             <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertUnorderedList" title="Lista com marcadores">• Lista</button>
             <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
 
-            <label class="cmfin-word-toolbar__color-chip" title="Cor do texto">
-              <span class="cmfin-word-toolbar__chip-label">T</span>
-              <span class="cmfin-word-toolbar__chip-swatch" style="--chip-color:#111111"></span>
-              <input type="color" value="#111111" data-cmd="foreColor" aria-label="Cor do texto">
-            </label>
-            <label class="cmfin-word-toolbar__color-chip" title="Marca-texto">
-              <span class="cmfin-word-toolbar__chip-label">Marca</span>
-              <span class="cmfin-word-toolbar__chip-swatch" style="--chip-color:#f5e58a"></span>
-              <input type="color" value="#f5e58a" data-cmd="hiliteColor" aria-label="Marca-texto">
-            </label>
+            <button type="button" class="cmfin-word-toolbar__color-trigger" data-action="openTextColor" title="Cor do texto">
+              <span class="cmfin-word-toolbar__color-text">T</span>
+              <span class="cmfin-word-toolbar__chip-swatch cmfin-word-toolbar__chip-swatch--text" style="--chip-color:#111111"></span>
+            </button>
+
+            <button type="button" class="cmfin-word-toolbar__color-trigger cmfin-word-toolbar__color-trigger--wide" data-action="openMarkColor" title="Marca-texto">
+              <span class="cmfin-word-toolbar__color-text">MARCA</span>
+              <span class="cmfin-word-toolbar__chip-swatch cmfin-word-toolbar__chip-swatch--mark" style="--chip-color:#f5e58a"></span>
+            </button>
+
+            <input type="color" class="cmfin-word-toolbar__color-input" value="#111111" data-cmd="foreColor" aria-label="Cor do texto">
+            <input type="color" class="cmfin-word-toolbar__color-input" value="#f5e58a" data-cmd="hiliteColor" aria-label="Marca-texto">
           </div>
         </div>
       </div>`;
@@ -10691,7 +10708,7 @@ ${p.obs}` : ''}`;
 
     bar.addEventListener('mousedown', ev => {
       const btn = ev.target.closest('button');
-      const chip = ev.target.closest('.cmfin-word-toolbar__color-chip');
+      const chip = ev.target.closest('.cmfin-word-toolbar__color-trigger');
       const field = ev.target.closest('select, input');
       const sizeMenu = ev.target.closest('.cmfin-word-toolbar__size-menu');
       if((btn && !sizeMenu) || chip){
@@ -10711,6 +10728,14 @@ ${p.obs}` : ''}`;
       if(action === 'increaseFont') return void applyToolbarFontDelta(1);
       if(action === 'decreaseFont') return void applyToolbarFontDelta(-1);
       if(action === 'toggleSizeMenu') return void toggleSizeMenu();
+      if(action === 'openTextColor'){
+        bar.querySelector('.cmfin-word-toolbar__color-input[data-cmd="foreColor"]')?.click();
+        return;
+      }
+      if(action === 'openMarkColor'){
+        bar.querySelector('.cmfin-word-toolbar__color-input[data-cmd="hiliteColor"]')?.click();
+        return;
+      }
       if(action === 'pickSize'){
         const size = btn.getAttribute('data-size');
         setToolbarSizeValue(size, true);
@@ -10749,9 +10774,12 @@ ${p.obs}` : ''}`;
       const cmd = el.getAttribute('data-cmd');
       if(cmd && el.value) exec(cmd, el.value);
 
-      const chip = el.closest('.cmfin-word-toolbar__color-chip');
-      if(chip){
-        const sw = chip.querySelector('.cmfin-word-toolbar__chip-swatch');
+      if(cmd === 'foreColor'){
+        const sw = bar.querySelector('.cmfin-word-toolbar__chip-swatch--text');
+        if(sw) sw.style.setProperty('--chip-color', el.value);
+      }
+      if(cmd === 'hiliteColor'){
+        const sw = bar.querySelector('.cmfin-word-toolbar__chip-swatch--mark');
         if(sw) sw.style.setProperty('--chip-color', el.value);
       }
     });
