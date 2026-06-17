@@ -4873,6 +4873,28 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 }
 </style>
 
+
+<style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{max-width:none!important;width:auto!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{padding:10px 12px!important;border-radius:18px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row--single{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:8px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{margin-top:0!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{height:30px!important;margin:0 1px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{width:140px!important;min-width:140px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{position:relative!important;display:flex!important;align-items:center!important;width:78px!important;min-width:78px!important;height:38px!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:11px!important;background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04))!important;overflow:visible!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{width:46px!important;min-width:46px!important;height:100%!important;border:0!important;background:transparent!important;color:#fff!important;padding:0 8px!important;text-align:center!important;box-shadow:none!important;outline:none!important;font-size:.82rem!important;font-weight:700!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-toggle{width:28px!important;min-width:28px!important;height:100%!important;border:0!important;border-left:1px solid rgba(255,255,255,.1)!important;border-radius:0 11px 11px 0!important;background:transparent!important;color:#fff!important;font-size:.9rem!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{position:absolute!important;top:44px!important;left:0!important;z-index:50!important;width:82px!important;max-height:260px!important;overflow:auto!important;padding:6px!important;display:grid!important;grid-template-columns:1fr!important;gap:4px!important;background:#23292a!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:12px!important;box-shadow:0 16px 40px rgba(0,0,0,.42)!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu[hidden]{display:none!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu button{width:100%!important;min-width:100%!important;height:30px!important;border-radius:8px!important;justify-content:flex-start!important;padding:0 10px!important;font-size:.82rem!important;font-weight:600!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{width:36px!important;min-width:36px!important;font-size:.78rem!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{width:38px!important;min-width:38px!important;height:38px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{min-width:72px!important;padding:0 10px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-chip{height:38px!important;min-width:78px!important;padding:0 10px!important;gap:8px!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-label{font-size:.8rem!important;font-weight:700!important}
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{width:10px!important;height:26px!important;border-radius:3px!important}
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -10549,8 +10571,8 @@ ${p.obs}` : ''}`;
   function toolbarHTML(){
     return `
       <div id="${TOOLBAR_ID}" class="cmfin-word-toolbar cmfin-word-toolbar--ultra" aria-label="Mini barra de edição">
-        <div class="cmfin-word-toolbar__surface">
-          <div class="cmfin-word-toolbar__row cmfin-word-toolbar__row--top">
+        <div class="cmfin-word-toolbar__surface cmfin-word-toolbar__surface--one-line">
+          <div class="cmfin-word-toolbar__row cmfin-word-toolbar__row--single">
             <select class="cmfin-word-toolbar__font-family" data-cmd="fontName" title="Fonte">
               <option value="Montserrat">Montserrat</option>
               <option value="Inter">Inter</option>
@@ -10561,31 +10583,28 @@ ${p.obs}` : ''}`;
               <option value="Courier New">Courier New</option>
             </select>
 
-            <input class="cmfin-word-toolbar__font-size"
-                   data-cmd="fontSize"
-                   title="Tamanho da fonte"
-                   list="cmfinFontSizeList"
-                   value="14"
-                   inputmode="decimal"
-                   autocomplete="off">
-            <datalist id="cmfinFontSizeList">
-              <option value="8"></option>
-              <option value="9"></option>
-              <option value="10"></option>
-              <option value="11"></option>
-              <option value="12"></option>
-              <option value="14"></option>
-              <option value="16"></option>
-              <option value="18"></option>
-              <option value="20"></option>
-              <option value="22"></option>
-              <option value="24"></option>
-              <option value="26"></option>
-              <option value="28"></option>
-              <option value="36"></option>
-              <option value="48"></option>
-              <option value="72"></option>
-            </datalist>
+            <div class="cmfin-word-toolbar__size-combo" title="Tamanho da fonte">
+              <input class="cmfin-word-toolbar__font-size" data-cmd="fontSize" value="14" inputmode="decimal" autocomplete="off" aria-label="Tamanho da fonte">
+              <button type="button" class="cmfin-word-toolbar__size-toggle" data-action="toggleSizeMenu" aria-label="Abrir tamanhos">▾</button>
+              <div class="cmfin-word-toolbar__size-menu" hidden>
+                <button type="button" data-action="pickSize" data-size="8">8</button>
+                <button type="button" data-action="pickSize" data-size="9">9</button>
+                <button type="button" data-action="pickSize" data-size="10">10</button>
+                <button type="button" data-action="pickSize" data-size="11">11</button>
+                <button type="button" data-action="pickSize" data-size="12">12</button>
+                <button type="button" data-action="pickSize" data-size="14">14</button>
+                <button type="button" data-action="pickSize" data-size="16">16</button>
+                <button type="button" data-action="pickSize" data-size="18">18</button>
+                <button type="button" data-action="pickSize" data-size="20">20</button>
+                <button type="button" data-action="pickSize" data-size="22">22</button>
+                <button type="button" data-action="pickSize" data-size="24">24</button>
+                <button type="button" data-action="pickSize" data-size="26">26</button>
+                <button type="button" data-action="pickSize" data-size="28">28</button>
+                <button type="button" data-action="pickSize" data-size="36">36</button>
+                <button type="button" data-action="pickSize" data-size="48">48</button>
+                <button type="button" data-action="pickSize" data-size="72">72</button>
+              </div>
+            </div>
             <button type="button" class="cmfin-word-toolbar__mini" data-action="decreaseFont" title="Diminuir fonte">A−</button>
             <button type="button" class="cmfin-word-toolbar__mini" data-action="increaseFont" title="Aumentar fonte">A+</button>
 
@@ -10599,40 +10618,36 @@ ${p.obs}` : ''}`;
             <span class="cmfin-word-toolbar__divider"></span>
 
             <button type="button" data-cmd="justifyLeft" title="Alinhar à esquerda">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 11h10M5 15h14M5 19h10"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg>
             </button>
             <button type="button" data-cmd="justifyCenter" title="Centralizar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M7 11h10M5 15h14M7 19h10"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg>
             </button>
             <button type="button" data-cmd="justifyRight" title="Alinhar à direita">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 11h10M5 15h14M9 19h10"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></svg>
             </button>
             <button type="button" data-cmd="justifyFull" title="Justificar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 11h14M5 15h14M5 19h14"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
             </button>
-          </div>
-
-          <div class="cmfin-word-toolbar__row cmfin-word-toolbar__row--bottom">
-            <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertUnorderedList" title="Lista com marcadores">• Lista</button>
-            <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
 
             <span class="cmfin-word-toolbar__divider"></span>
 
-            <label class="cmfin-word-toolbar__color-chip" title="Cor do texto">
-              <span class="cmfin-word-toolbar__chip-text">Texto</span>
-              <span class="cmfin-word-toolbar__chip-swatch cmfin-word-toolbar__chip-swatch--text"></span>
-              <input type="color" data-cmd="foreColor" value="#111111">
-            </label>
+            <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertUnorderedList" title="Lista com marcadores">• Lista</button>
+            <button type="button" class="cmfin-word-toolbar__wide" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
 
-            <label class="cmfin-word-toolbar__color-chip cmfin-word-toolbar__color-chip--mark" title="Marca-texto">
-              <span class="cmfin-word-toolbar__chip-text">Marca</span>
-              <span class="cmfin-word-toolbar__chip-swatch cmfin-word-toolbar__chip-swatch--mark"></span>
-              <input type="color" data-cmd="hiliteColor" value="#f4e28a">
+            <label class="cmfin-word-toolbar__color-chip" title="Cor do texto">
+              <span class="cmfin-word-toolbar__chip-label">T</span>
+              <span class="cmfin-word-toolbar__chip-swatch" style="--chip-color:#111111"></span>
+              <input type="color" value="#111111" data-cmd="foreColor" aria-label="Cor do texto">
+            </label>
+            <label class="cmfin-word-toolbar__color-chip" title="Marca-texto">
+              <span class="cmfin-word-toolbar__chip-label">Marca</span>
+              <span class="cmfin-word-toolbar__chip-swatch" style="--chip-color:#f5e58a"></span>
+              <input type="color" value="#f5e58a" data-cmd="hiliteColor" aria-label="Marca-texto">
             </label>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
   function currentToolbarFontSize(){
@@ -10641,11 +10656,30 @@ ${p.obs}` : ''}`;
     return Number.isFinite(num) ? num : 14;
   }
 
-  function applyToolbarFontDelta(delta){
+  function closeSizeMenu(){
+    const bar = document.getElementById(TOOLBAR_ID);
+    const menu = bar?.querySelector('.cmfin-word-toolbar__size-menu');
+    if(menu) menu.hidden = true;
+  }
+
+  function toggleSizeMenu(force){
+    const bar = document.getElementById(TOOLBAR_ID);
+    const menu = bar?.querySelector('.cmfin-word-toolbar__size-menu');
+    if(!menu) return;
+    if(typeof force === 'boolean') menu.hidden = !force;
+    else menu.hidden = !menu.hidden;
+  }
+
+  function setToolbarSizeValue(value, applyNow=false){
     const input = document.querySelector(`#${TOOLBAR_ID} .cmfin-word-toolbar__font-size`);
+    const raw = String(value || '').replace(',', '.').replace(/[^\d.]/g, '');
+    if(input) input.value = raw || '14';
+    if(applyNow && raw) exec('fontSize', raw);
+  }
+
+  function applyToolbarFontDelta(delta){
     const next = Math.max(6, Math.min(120, currentToolbarFontSize() + delta));
-    if(input) input.value = String(next);
-    exec('fontSize', next);
+    setToolbarSizeValue(String(next), true);
   }
 
   function ensureToolbar(){
@@ -10659,7 +10693,8 @@ ${p.obs}` : ''}`;
       const btn = ev.target.closest('button');
       const chip = ev.target.closest('.cmfin-word-toolbar__color-chip');
       const field = ev.target.closest('select, input');
-      if(btn || chip){
+      const sizeMenu = ev.target.closest('.cmfin-word-toolbar__size-menu');
+      if((btn && !sizeMenu) || chip){
         ev.preventDefault();
         saveCurrentRange();
       }
@@ -10673,18 +10708,20 @@ ${p.obs}` : ''}`;
       if(!btn) return;
 
       const action = btn.getAttribute('data-action');
-      if(action === 'increaseFont'){
-        applyToolbarFontDelta(1);
-        return;
-      }
-      if(action === 'decreaseFont'){
-        applyToolbarFontDelta(-1);
+      if(action === 'increaseFont') return void applyToolbarFontDelta(1);
+      if(action === 'decreaseFont') return void applyToolbarFontDelta(-1);
+      if(action === 'toggleSizeMenu') return void toggleSizeMenu();
+      if(action === 'pickSize'){
+        const size = btn.getAttribute('data-size');
+        setToolbarSizeValue(size, true);
+        closeSizeMenu();
         return;
       }
 
       const cmd = btn.getAttribute('data-cmd');
       if(cmd && btn.tagName !== 'SELECT' && btn.tagName !== 'INPUT'){
         exec(cmd);
+        closeSizeMenu();
       }
     });
 
@@ -10694,8 +10731,16 @@ ${p.obs}` : ''}`;
       if(ev.key === 'Enter'){
         ev.preventDefault();
         const cmd = el.getAttribute('data-cmd');
-        if(cmd && el.value) exec(cmd, el.value);
+        if(cmd && el.value) {
+          exec(cmd, el.value);
+          closeSizeMenu();
+        }
       }
+      if(ev.key === 'ArrowDown' && el.classList.contains('cmfin-word-toolbar__font-size')){
+        ev.preventDefault();
+        toggleSizeMenu(true);
+      }
+      if(ev.key === 'Escape') closeSizeMenu();
     });
 
     bar.addEventListener('change', ev => {
@@ -10709,6 +10754,10 @@ ${p.obs}` : ''}`;
         const sw = chip.querySelector('.cmfin-word-toolbar__chip-swatch');
         if(sw) sw.style.setProperty('--chip-color', el.value);
       }
+    });
+
+    document.addEventListener('mousedown', ev => {
+      if(!bar.contains(ev.target)) closeSizeMenu();
     });
 
     return bar;
