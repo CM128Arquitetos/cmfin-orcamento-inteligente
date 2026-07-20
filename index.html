@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- Versão v30: nova sessão limpa, número prévio e sincronização orçamento/proposta -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -5462,6 +5463,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
             calculate();
             syncProfessionalShareRows();
             updateHistorySaveButton();
+            if(options.startFreshBudget && typeof resetBudget === 'function') resetBudget();
           } catch(renderErr) {
             console.warn('Renderização após carregar nuvem ignorada:', renderErr);
           }
@@ -5500,6 +5502,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
             calculate();
             syncProfessionalShareRows();
             updateHistorySaveButton();
+            if(options.startFreshBudget && typeof resetBudget === 'function') resetBudget();
           } catch(renderErr) {
             console.warn('Renderização após criar dados vazios ignorada:', renderErr);
           }
@@ -5672,7 +5675,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
         // A sincronização da nuvem não pode bloquear o login.
         cmfinCarregarLocalPorLicenca(cmfinPendingLicenseId);
         try {
-          await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: false });
+          await cmfinCarregarDadosNuvem(cmfinPendingLicenseId, { resetWhenEmpty: true, showError: false, startFreshBudget: true });
         } catch(syncErr) {
           console.warn('Sincronização em nuvem ignorada no login:', syncErr);
         }
@@ -6273,11 +6276,11 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
           <h2>Dados do Orçamento</h2>
           <div class="card-body">
             <div class="form-grid">
-              <div><label>Cliente</label><input id="cliente" list="clienteHistoryOptions" placeholder="" oninput="calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)"><datalist id="clienteHistoryOptions"></datalist></div>
+              <div><label>Cliente</label><input id="cliente" list="clienteHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('cliente'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)"><datalist id="clienteHistoryOptions"></datalist></div>
               <div>
                 <label>Data</label>
                 <div class="date-input-wrap" onclick="openDatePicker('data')">
-                  <input id="data" type="date" oninput="calculate()">
+                  <input id="data" type="date" oninput="syncBudgetFieldToProposal('data'); calculate()">
                   <button type="button" class="date-trigger" onclick="event.stopPropagation(); openDatePicker('data')" aria-label="Abrir calendário">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <rect x="4" y="5.5" width="16" height="14.5" rx="3.2" stroke="currentColor" stroke-width="1.8"/>
@@ -6312,12 +6315,12 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
                   </div>
                 </div>
               </div>
-              <div><label>Serviço</label><input id="servico" list="servicoHistoryOptions" placeholder="" oninput="calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)"><datalist id="servicoHistoryOptions"></datalist></div>
+              <div><label>Serviço</label><input id="servico" list="servicoHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('servico'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)"><datalist id="servicoHistoryOptions"></datalist></div>
               <div><label>Complexidade</label><select id="complexidade" onchange="calculate()"><option>Baixa</option><option selected>Média</option><option>Alta</option><option>Muito alta</option></select></div>
               <div><label>Padrão do projeto</label><select id="padrao" onchange="calculate()"><option>Econômico</option><option selected>Médio</option><option>Alto</option><option>Luxo</option></select></div>
               <div><label>Prazo</label><select id="prazo" onchange="calculate()"><option selected>Normal</option><option>Urgente</option><option>Emergencial</option></select><p class="hint">Os acréscimos de urgência são definidos nas Configurações.</p></div>
-              <div><label>Endereço / Localização</label><input id="endereco" list="enderecoHistoryOptions" placeholder="" oninput="calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)"><datalist id="enderecoHistoryOptions"></datalist></div>
-              <div><label>Dias trabalhados úteis</label><input id="diasUteisProjeto" type="number" step="0.5" value="10" oninput="calculate()"></div>
+              <div><label>Endereço / Localização</label><input id="endereco" list="enderecoHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('endereco'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)"><datalist id="enderecoHistoryOptions"></datalist></div>
+              <div><label>Dias trabalhados úteis</label><input id="diasUteisProjeto" type="number" step="0.5" value="0" oninput="calculate()"></div>
               <div><label>Dias trabalhados sábados</label><input id="diasSabadosProjeto" type="number" step="0.5" value="0" oninput="calculate()"></div>
               <div><label>Horas adicionais manuais</label><input id="horasAdicionais" type="number" step="0.25" value="0" oninput="calculate()"></div>
             </div>
@@ -6372,7 +6375,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
             <div class="divider"></div>
             <div class="form-grid" style="margin-bottom:14px;">
               <div><label>Status comercial</label><select id="statusComercial" onchange="calculate()"><option>Em análise</option><option>Enviada</option><option>Em negociação</option><option>Aprovada</option><option>Recusada</option><option>Cancelada</option></select></div>
-              <div><label>Nº da proposta</label><input id="numeroPropostaAtual" readonly placeholder="Gerado ao salvar no histórico"></div>
+              <div><label>Nº da proposta</label><input id="numeroPropostaAtual" readonly placeholder="Gerado automaticamente"></div>
             </div>
             <div class="actions">
               <button id="historySaveBtn" class="success" onclick="addToHistory()">Salvar no Histórico</button>
@@ -6682,7 +6685,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
                 <div class="accordion-body">
                   <div class="form-grid">
                     <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA"></div>
-                    <div><label>Nº da proposta</label><input id="propNumero" readonly placeholder="Gerado ao salvar no histórico"></div>
+                    <div><label>Nº da proposta</label><input id="propNumero" readonly placeholder="Gerado automaticamente"></div>
                     <div><label>Data da proposta</label><input id="propData" type="date" oninput="buildProposal()"></div>
                     <div><label>Cliente</label><input id="propCliente" list="clienteHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)" placeholder="Nome do cliente"></div>
                     <div><label>Contato</label><input id="propContato" oninput="buildProposal()" placeholder="+55 88 9.0000-0000"></div>
@@ -7033,6 +7036,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       const field = document.getElementById(activeDateFieldId || 'data');
       if(!field) return;
       field.value = iso;
+      if(activeDateFieldId === 'data' && typeof syncBudgetFieldToProposal === 'function') syncBudgetFieldToProposal('data');
       if(typeof calculate === 'function') calculate();
       closeDatePicker();
     }
@@ -7040,6 +7044,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       const field = document.getElementById(activeDateFieldId || 'data');
       if(!field) return;
       field.value = '';
+      if(activeDateFieldId === 'data' && typeof syncBudgetFieldToProposal === 'function') syncBudgetFieldToProposal('data');
       if(typeof calculate === 'function') calculate();
       closeDatePicker();
     }
@@ -7251,7 +7256,10 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
       renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
-      if(activeLicenseId) cmfinCarregarDadosNuvem(activeLicenseId, { showError: false });
+      // Cada abertura do site inicia um orçamento novo, mantendo configurações,
+      // perfil, personalização e histórico já salvos.
+      resetBudget();
+      if(activeLicenseId) cmfinCarregarDadosNuvem(activeLicenseId, { showError: false, startFreshBudget: true });
     }
     function toggleActionMenu(event){
       if(event) event.stopPropagation();
@@ -8545,6 +8553,18 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
         const setExisting = (id, value) => { const el = document.getElementById(id); if(el) el.value = value; };
         setExisting('numeroPropostaAtual', current);
         setExisting('propNumero', current);
+        // O número já aparece na criação da proposta. Ao salvar no histórico,
+        // ele é confirmado na sequência para não ser reutilizado futuramente.
+        if(commit){
+          const parsed = parseProposalNumber(current);
+          if(parsed){
+            const previous = data.proposalSequence && data.proposalSequence.year === parsed.year
+              ? Number(data.proposalSequence.lastNumber || 0)
+              : 0;
+            data.proposalSequence = { year: parsed.year, lastNumber: Math.max(previous, parsed.number) };
+            cmfinPersistData();
+          }
+        }
         return current;
       }
       const year = currentProposalYear();
@@ -8563,6 +8583,22 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       const clean = displayProposalNumber(number);
       ['numeroPropostaAtual','propNumero'].forEach(id => { const el = document.getElementById(id); if(el) el.value = clean; });
       setProposalHeaderNumber(clean);
+    }
+    function syncBudgetFieldToProposal(field){
+      const map = {
+        cliente: 'propCliente',
+        data: 'propData',
+        servico: 'propObjeto',
+        endereco: 'propEndereco'
+      };
+      const targetId = map[field];
+      const source = document.getElementById(field);
+      const target = targetId ? document.getElementById(targetId) : null;
+      if(!source || !target) return;
+
+      // Estes dados pertencem ao mesmo orçamento e devem aparecer na proposta
+      // imediatamente, mesmo antes de o orçamento ser salvo no histórico.
+      target.value = field === 'data' ? (source.value || todayISO()) : source.value;
     }
     function setProposalHeaderNumber(number){
       const clean = displayProposalNumber(number);
@@ -10497,7 +10533,7 @@ ${p.obs}` : ''}`;
       setValue('propFormaPagamento', 'padrao');
       setValue('propParcelasQtd', '5');
       setValue('propPrazoDias', '20');
-      syncProposalNumber('');
+      syncProposalNumber(previewNextProposalNumber());
 
       // A personalização do modelo, o papel timbrado e a fonte são configurações
       // permanentes do usuário e, por isso, não são apagadas ao iniciar nova proposta.
