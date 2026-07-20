@@ -6681,7 +6681,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
                 <summary><span class="summary-title">Dados Principais</span><span class="section-hint">Título, cliente, contato, objeto, valor por extenso e endereço/localização.</span></summary>
                 <div class="accordion-body">
                   <div class="form-grid">
-                    <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA - PROJETO DE INTERIORES [REFORMA]"></div>
+                    <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA"></div>
                     <div><label>Nº da proposta</label><input id="propNumero" readonly placeholder="Gerado ao salvar no histórico"></div>
                     <div><label>Data da proposta</label><input id="propData" type="date" oninput="buildProposal()"></div>
                     <div><label>Cliente</label><input id="propCliente" list="clienteHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)" placeholder="Nome do cliente"></div>
@@ -10483,13 +10483,16 @@ ${p.obs}` : ''}`;
 
       // Dados exclusivos de cada proposta: nunca devem ser herdados da proposta anterior.
       [
-        'propTitulo', 'propCliente', 'propContato', 'propObjeto',
+        'propCliente', 'propContato', 'propObjeto',
         'propValorTotalManual', 'propValorExtenso', 'propEndereco',
         'propIntro', 'propEscopo', 'propEntradaValor',
         'propEntradaVencimento', 'propParcelaValor',
         'propPagamentoManual', 'propObs', 'newDeliverable'
       ].forEach(id => setValue(id, ''));
 
+      // Toda nova proposta começa com este título-base para o usuário
+      // complementar normalmente com o tipo e as características do projeto.
+      setValue('propTitulo', 'DESCRIÇÃO DA PROPOSTA');
       setValue('propData', todayISO());
       setValue('propFormaPagamento', 'padrao');
       setValue('propParcelasQtd', '5');
