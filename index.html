@@ -9892,9 +9892,267 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return areas.map(area => String(area.innerHTML || '').trim()).filter(Boolean).join('<div style="page-break-before:always;height:1px;"></div>');
     }
 
+    function proposalVisualSectionNodes(root, headingPrefix){
+      const headings = Array.from(root.querySelectorAll('h4'));
+      const heading = headings.find(el => String(el.textContent || '').trim().toUpperCase().startsWith(String(headingPrefix || '').toUpperCase()));
+      if(!heading) return [];
+      const nodes = [];
+      let current = heading.nextElementSibling;
+      while(current && current.tagName !== 'H4'){
+        nodes.push(current);
+        current = current.nextElementSibling;
+      }
+      return nodes;
+    }
+
+    function proposalVisualTextReplacements(ctx){
+      const valorTotal = Number(ctx?.valorTotal || 0);
+      const metade = valorTotal / 2;
+      const entrada = parseBRLCurrency(document.getElementById('propEntradaValor')?.value || '');
+      const qtd = Math.max(1, parseInt(document.getElementById('propParcelasQtd')?.value || '1', 10) || 1);
+      const parcelaManual = parseBRLCurrency(document.getElementById('propParcelaValor')?.value || '');
+      const parcela = parcelaManual > 0 ? parcelaManual : Math.max(0, (valorTotal - entrada) / qtd);
+      const vencimento = document.getElementById('propEntradaVencimento')?.value || '';
+      return {
+        titulo: ctx?.titulo || '',
+        numero: ctx?.numero || '',
+        cliente: ctx?.cliente || '',
+        contato: ctx?.contato || '',
+        data: formatDateBR(ctx?.dataProp || ''),
+        objeto: String(ctx?.objeto || '').toUpperCase(),
+        endereco: ctx?.endereco || '',
+        valor: money(valorTotal),
+        valor_extenso: ctx?.valorExtenso || '',
+        metade_valor: money(metade),
+        metade_extenso: moedaPorExtensoBR(metade),
+        entrada_valor: money(entrada),
+        entrada_extenso: moedaPorExtensoBR(entrada),
+        parcela_valor: money(parcela),
+        parcela_extenso: moedaPorExtensoBR(parcela),
+        parcelas_qtd: String(qtd).padStart(2, '0'),
+        parcelas_extenso: numeroPorExtensoBR(qtd),
+        entrada_vencimento: vencimento ? formatDateBR(vencimento) : '',
+        prazo_dias: String(prazoDiasValue()),
+        prazo_extenso: numeroPorExtensoBR(prazoDiasValue())
+      };
+    }
+
+    function replaceProposalVisualTokens(html, ctx){
+      const values = proposalVisualTextReplacements(ctx);
+      const rich = {
+        intro_html: proposalIntroHtml(ctx?.intro || '', ctx?.objeto || '').replace(/^<p>|<\/p>$/g, ''),
+        entregaveis_html: proposalListBlocks(ctx?.escopo || '').join(''),
+        pagamento_html: paymentHtmlBlocks(ctx?.objeto || '', Number(ctx?.valorTotal || 0), ctx?.valorExtenso || '').join(''),
+        prazo_html: prazoHtml().replace(/^<p>|<\/p>$/g, ''),
+        observacoes_html: esc(ctx?.obs || '').replace(/\n/g, '<br>')
+      };
+      return String(html || '').replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (all, key) => {
+        if(Object.prototype.hasOwnProperty.call(rich, key)) return rich[key];
+        if(Object.prototype.hasOwnProperty.call(values, key)) return esc(values[key]);
+        return all;
+      });
+    }
+
+    function proposalVisualSetLiveValue(el, key, ctx){
+      if(!el || !key) return;
+      const values = proposalVisualTextReplacements(ctx);
+      if(key === 'intro_html'){
+        el.innerHTML = proposalIntroHtml(ctx?.intro || '', ctx?.objeto || '').replace(/^<p>|<\/p>$/g, '');
+      }else if(key === 'prazo_html'){
+        el.innerHTML = prazoHtml().replace(/^<p>|<\/p>$/g, '');
+      }else if(key === 'observacoes_html'){
+        el.innerHTML = esc(ctx?.obs || '').replace(/\n/g, '<br>');
+      }else if(Object.prototype.hasOwnProperty.call(values, key)){
+        el.textContent = values[key];
+      }
+    }
+
+    function proposalVisualReplaceSequentialCurrency(nodes, currentPaymentText){
+      const oldText = nodes.map(node => node.textContent || '').join(' ');
+      const currencyRe = /R\$\s*[\d.]+,\d{2}(?:\s*\([^)]+\))?/g;
+      const oldValues = oldText.match(currencyRe) || [];
+      const newValues = String(currentPaymentText || '').match(currencyRe) || [];
+      if(!oldValues.length || !newValues.length) return;
+      const pairs = oldValues.map((oldValue, index) => [oldValue, newValues[index] || newValues[newValues.length - 1]]);
+      const walkerRoot = document.createElement('div');
+      nodes.forEach(node => walkerRoot.appendChild(node.cloneNode(true)));
+      let pairIndex = 0;
+      const walker = document.createTreeWalker(walkerRoot, NodeFilter.SHOW_TEXT);
+      let textNode;
+      while((textNode = walker.nextNode()) && pairIndex < pairs.length){
+        let text = textNode.nodeValue || '';
+        while(pairIndex < pairs.length && text.includes(pairs[pairIndex][0])){
+          text = text.replace(pairs[pairIndex][0], pairs[pairIndex][1]);
+          pairIndex += 1;
+        }
+        textNode.nodeValue = text;
+      }
+      const updated = Array.from(walkerRoot.children);
+      nodes.forEach((node, index) => {
+        if(updated[index]) node.innerHTML = updated[index].innerHTML;
+      });
+    }
+
+    function syncProposalVisualHtml(html, ctx){
+      const template = document.createElement('template');
+      template.innerHTML = replaceProposalVisualTokens(html, ctx);
+      const root = template.content;
+
+      root.querySelectorAll('[data-cmfin-live]').forEach(el => proposalVisualSetLiveValue(el, el.dataset.cmfinLive, ctx));
+
+      root.querySelectorAll('.proposal-title-doc').forEach(el => {
+        el.dataset.cmfinLive = 'titulo';
+        proposalVisualSetLiveValue(el, 'titulo', ctx);
+      });
+      root.querySelectorAll('.proposal-number-between').forEach(el => {
+        el.dataset.cmfinLive = 'numero';
+        el.textContent = ctx?.numero ? `Nº: ${ctx.numero}` : '';
+        el.style.display = ctx?.numero ? 'inline-block' : 'none';
+      });
+
+      root.querySelectorAll('.proposal-client-line').forEach(line => {
+        const children = Array.from(line.children);
+        if(children[0]) children[0].innerHTML = `<strong>Cliente:</strong> <span data-cmfin-live="cliente">${esc(ctx?.cliente || '')}</span>`;
+        if(children[1]) children[1].innerHTML = `<strong>Contato:</strong> <span data-cmfin-live="contato">${esc(ctx?.contato || '')}</span>`;
+        if(children[2]) children[2].innerHTML = `<strong>Data:</strong><span data-cmfin-live="data">${esc(formatDateBR(ctx?.dataProp || ''))}</span>`;
+      });
+
+      const clientLine = root.querySelector('.proposal-client-line');
+      if(clientLine){
+        let introNode = clientLine.nextElementSibling;
+        while(introNode && introNode.tagName !== 'H4' && introNode.tagName !== 'P') introNode = introNode.nextElementSibling;
+        if(introNode && introNode.tagName === 'P'){
+          introNode.dataset.cmfinLive = 'intro_html';
+          proposalVisualSetLiveValue(introNode, 'intro_html', ctx);
+        }
+      }
+
+      const scopeNodes = proposalVisualSectionNodes(root, '1.');
+      const scopeIntro = scopeNodes.find(node => node.tagName === 'P');
+      const scopeStrong = scopeIntro?.querySelector('strong');
+      if(scopeStrong){
+        scopeStrong.dataset.cmfinLive = 'objeto';
+        proposalVisualSetLiveValue(scopeStrong, 'objeto', ctx);
+      }
+
+      const paymentNodes = proposalVisualSectionNodes(root, '2.');
+      if(paymentNodes.length){
+        const paymentObject = paymentNodes[0]?.querySelector('strong');
+        if(paymentObject){
+          paymentObject.dataset.cmfinLive = 'objeto';
+          proposalVisualSetLiveValue(paymentObject, 'objeto', ctx);
+        }
+        proposalVisualReplaceSequentialCurrency(paymentNodes, paymentPlainText(ctx?.objeto || '', Number(ctx?.valorTotal || 0), ctx?.valorExtenso || ''));
+      }
+
+      const deadlineNodes = proposalVisualSectionNodes(root, '3.');
+      const deadlineParagraph = deadlineNodes.find(node => node.tagName === 'P');
+      if(deadlineParagraph){
+        deadlineParagraph.dataset.cmfinLive = 'prazo_html';
+        proposalVisualSetLiveValue(deadlineParagraph, 'prazo_html', ctx);
+      }
+
+      const observationNodes = proposalVisualSectionNodes(root, '4.');
+      const observationParagraph = observationNodes.find(node => node.tagName === 'P');
+      if(observationParagraph){
+        observationParagraph.dataset.cmfinLive = 'observacoes_html';
+        proposalVisualSetLiveValue(observationParagraph, 'observacoes_html', ctx);
+      }
+
+      return template.innerHTML;
+    }
+
+    function tokenizeProposalVisualHtmlForStorage(html, ctx){
+      const template = document.createElement('template');
+      template.innerHTML = String(html || '');
+      const root = template.content;
+
+      root.querySelectorAll('.proposal-title-doc').forEach(el => {
+        el.dataset.cmfinLive = 'titulo';
+        el.textContent = '{{titulo}}';
+      });
+      root.querySelectorAll('.proposal-number-between').forEach(el => {
+        el.dataset.cmfinLive = 'numero';
+        el.textContent = 'Nº: {{numero}}';
+      });
+      root.querySelectorAll('.proposal-client-line').forEach(line => {
+        const children = Array.from(line.children);
+        if(children[0]) children[0].innerHTML = '<strong>Cliente:</strong> <span data-cmfin-live="cliente">{{cliente}}</span>';
+        if(children[1]) children[1].innerHTML = '<strong>Contato:</strong> <span data-cmfin-live="contato">{{contato}}</span>';
+        if(children[2]) children[2].innerHTML = '<strong>Data:</strong><span data-cmfin-live="data">{{data}}</span>';
+      });
+
+      const clientLine = root.querySelector('.proposal-client-line');
+      if(clientLine){
+        let introNode = clientLine.nextElementSibling;
+        while(introNode && introNode.tagName !== 'H4' && introNode.tagName !== 'P') introNode = introNode.nextElementSibling;
+        if(introNode && introNode.tagName === 'P'){
+          introNode.dataset.cmfinLive = 'intro_html';
+          introNode.innerHTML = '{{intro_html}}';
+        }
+      }
+
+      const scopeNodes = proposalVisualSectionNodes(root, '1.');
+      const scopeStrong = scopeNodes.find(node => node.tagName === 'P')?.querySelector('strong');
+      if(scopeStrong){
+        scopeStrong.dataset.cmfinLive = 'objeto';
+        scopeStrong.textContent = '{{objeto}}';
+      }
+
+      const deadlineParagraph = proposalVisualSectionNodes(root, '3.').find(node => node.tagName === 'P');
+      if(deadlineParagraph){
+        deadlineParagraph.dataset.cmfinLive = 'prazo_html';
+        deadlineParagraph.innerHTML = '{{prazo_html}}';
+      }
+
+      const observationParagraph = proposalVisualSectionNodes(root, '4.').find(node => node.tagName === 'P');
+      if(observationParagraph){
+        observationParagraph.dataset.cmfinLive = 'observacoes_html';
+        observationParagraph.innerHTML = '{{observacoes_html}}';
+      }
+
+      const values = proposalVisualTextReplacements(ctx);
+      const replacements = [
+        ['valor', values.valor], ['valor_extenso', values.valor_extenso],
+        ['metade_valor', values.metade_valor], ['metade_extenso', values.metade_extenso],
+        ['entrada_valor', values.entrada_valor], ['entrada_extenso', values.entrada_extenso],
+        ['parcela_valor', values.parcela_valor], ['parcela_extenso', values.parcela_extenso],
+        ['entrada_vencimento', values.entrada_vencimento]
+      ].filter(([, value]) => value && value !== 'R$ 0,00' && value !== 'zero reais')
+       .sort((a, b) => b[1].length - a[1].length);
+
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node;
+      while((node = walker.nextNode())){
+        let text = node.nodeValue || '';
+        replacements.forEach(([key, value]) => {
+          if(text.includes(value)) text = text.split(value).join(`{{${key}}}`);
+        });
+        node.nodeValue = text;
+      }
+      return template.innerHTML;
+    }
+
     function saveProposalVisualEditToTemplate(){
       const editedText = captureProposalVisualEditText();
-      const editedHtml = captureProposalVisualEditHtml();
+      const rawEditedHtml = captureProposalVisualEditHtml();
+      const valorTotal = proposalTotalValue();
+      const saveCtx = {
+        titulo: prop('propTitulo', ''),
+        numero: displayProposalNumber(prop('propNumero', val('numeroPropostaAtual') || '')),
+        cliente: prop('propCliente', val('cliente') || ''),
+        contato: prop('propContato', ''),
+        dataProp: prop('propData', val('data') || todayISO()),
+        objeto: prop('propObjeto', val('servico') || ''),
+        endereco: prop('propEndereco', val('endereco') || ''),
+        intro: prop('propIntro', ''),
+        escopo: prop('propEscopo', ''),
+        prazo: prazoText(),
+        obs: prop('propObs', ''),
+        valorTotal,
+        valorExtenso: moedaPorExtensoBR(valorTotal)
+      };
+      const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
       if(!editedText && !editedHtml){
         toast('Nenhum texto encontrado na proposta para salvar.');
         return;
@@ -9940,9 +10198,10 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const tpl = proposalTemplateData();
       if((tpl.mode || 'standard') === 'custom'){
         if(tpl.editorType === 'visual' && String(tpl.visualHtml || '').trim()){
-          renderProposalPages([tpl.visualHtml]);
+          const liveVisualHtml = syncProposalVisualHtml(tpl.visualHtml, ctx);
+          renderProposalPages([liveVisualHtml]);
           applyBrandCustomization();
-          return proposalHtmlToText(tpl.visualHtml);
+          return proposalHtmlToText(liveVisualHtml);
         }
         const customText = replaceProposalTemplateTokens(tpl.text || defaultProposalTemplateText(), ctx)
           .replace(/\n{3,}/g, '\n\n')
