@@ -6377,7 +6377,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
             <div class="actions">
               <button id="historySaveBtn" class="success" onclick="addToHistory()">Salvar no Histórico</button>
               <button class="secondary" onclick="copyProposal()">Copiar Proposta</button>
-              <button class="secondary" onclick="resetBudget()">Novo Orçamento</button>
+              <button class="secondary" onclick="startNewProposal()">Novo Orçamento</button>
             </div>
             <p class="hint">Regra principal: Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado). A margem alvo forma o repasse dos profissionais; os demais custos entram como custos do escritório e são somados ao valor cobrado do cliente.</p>
           </div>
@@ -6901,6 +6901,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
                 <div class="accordion-body">
                   <div class="actions">
                     <button class="secondary" onclick="fillProposalDefaults()">Preencher com Dados do Orçamento</button>
+                    <button class="danger" onclick="startNewProposal()">Nova Proposta</button>
                     <button onclick="copyProposal()">Copiar texto</button>
                     <button onclick="printProposal()">Imprimir / PDF</button>
                   </div>
@@ -10470,8 +10471,139 @@ ${p.obs}` : ''}`;
     function deleteHistory(i){ data.history.splice(i,1); renderHistory(); saveAll(); }
     function clearHistory(){ if(confirm('Limpar todo o histórico?')){ data.history=[]; renderHistory(); saveAll(); } }
 
+    function resetProposalCommercialFields(){
+      const setValue = (id, value='') => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.value = value;
+        if(el.dataset && Object.prototype.hasOwnProperty.call(el.dataset, 'currencyDigits')){
+          el.dataset.currencyDigits = '';
+        }
+      };
+
+      // Dados exclusivos de cada proposta: nunca devem ser herdados da proposta anterior.
+      [
+        'propTitulo', 'propCliente', 'propContato', 'propObjeto',
+        'propValorTotalManual', 'propValorExtenso', 'propEndereco',
+        'propIntro', 'propEscopo', 'propEntradaValor',
+        'propEntradaVencimento', 'propParcelaValor',
+        'propPagamentoManual', 'propObs', 'newDeliverable'
+      ].forEach(id => setValue(id, ''));
+
+      setValue('propData', todayISO());
+      setValue('propFormaPagamento', 'padrao');
+      setValue('propParcelasQtd', '5');
+      setValue('propPrazoDias', '20');
+      syncProposalNumber('');
+
+      // A personalização do modelo, o papel timbrado e a fonte são configurações
+      // permanentes do usuário e, por isso, não são apagadas ao iniciar nova proposta.
+      if(typeof proposalVisualEditEnabled !== 'undefined') proposalVisualEditEnabled = false;
+      if(typeof applyProposalVisualEditState === 'function') applyProposalVisualEditState();
+
+      // O editor visual possui histórico próprio dentro de um módulo isolado.
+      // O evento abaixo limpa corretamente desfazer/refazer e a seleção anterior.
+      document.dispatchEvent(new CustomEvent('cmfin:proposal-reset'));
+
+      try {
+        const selection = window.getSelection && window.getSelection();
+        if(selection) selection.removeAllRanges();
+      } catch(e) {}
+
+      const floatingToolbar = document.getElementById('cmfinWordSelectionToolbar');
+      if(floatingToolbar) floatingToolbar.remove();
+      const legacyToolbar = document.getElementById('proposalVisualToolbar');
+      if(legacyToolbar) legacyToolbar.classList.remove('visible');
+
+      if(typeof togglePaymentFields === 'function') togglePaymentFields();
+      if(typeof renderDeliverableChecklist === 'function') renderDeliverableChecklist();
+      if(typeof syncDeliverableChecks === 'function') syncDeliverableChecks();
+    }
+
     function resetBudget(){
-      document.getElementById('cliente').value=''; document.getElementById('servico').value=''; document.getElementById('endereco').value=''; document.getElementById('diasUteisProjeto').value='0'; document.getElementById('diasSabadosProjeto').value='0'; document.getElementById('visitas').value='0'; document.getElementById('kmVisita').value='0'; document.getElementById('modeloVeiculo').value=''; document.getElementById('kmCidade').value='0'; document.getElementById('kmEstrada').value='0'; document.getElementById('tipoTrajeto').value='misto'; document.getElementById('valorCombustivel').value='7.19'; document.getElementById('manutencaoVisita').value='50'; document.getElementById('deslocamentoSugerido').value='0'; document.getElementById('valorAlimentacao').value='0'; document.getElementById('horasAdicionais').value='0'; document.getElementById('desconto').value='0'; const vcm=document.getElementById('valorComercialManual'); if(vcm) vcm.value='0'; const sc=document.getElementById('statusComercial'); if(sc) sc.value='Em análise'; const qp=document.getElementById('qtdProfissionais'); if(qp) qp.value='2'; const critReset=document.getElementById('criterioDivisaoProfissionais'); if(critReset) critReset.value='Divisão manual por percentual'; data.professionalCount=2; data.professionalCriterion='Divisão manual por percentual'; data.professionalShares=[50,50]; syncProfessionalShareRows(true); syncProposalNumber(''); document.getElementById('data').valueAsDate = new Date(); data.complementaryServices = []; editingHistoryIndex = null; updateHistorySaveButton(); renderComplementaryServices(); calculate();
+      const setValue = (id, value='') => {
+        const el = document.getElementById(id);
+        if(el) el.value = value;
+      };
+      const setChecked = (id, value) => {
+        const el = document.getElementById(id);
+        if(el) el.checked = !!value;
+      };
+
+      // Identificação e parâmetros do novo orçamento.
+      setValue('cliente', '');
+      setValue('servico', '');
+      setValue('endereco', '');
+      setValue('data', todayISO());
+      setValue('complexidade', 'Média');
+      setValue('padrao', 'Médio');
+      setValue('prazo', 'Normal');
+      setValue('diasUteisProjeto', '0');
+      setValue('diasSabadosProjeto', '0');
+      setValue('horasAdicionais', '0');
+
+      // Visitas, veículo e deslocamento.
+      setValue('visitas', '0');
+      setValue('kmVisita', '0');
+      setValue('modeloVeiculo', '');
+      setValue('kmCidade', '0');
+      setValue('kmEstrada', '0');
+      setValue('tipoTrajeto', 'misto');
+      setValue('valorCombustivel', '7.19');
+      setValue('manutencaoVisita', '50');
+      setValue('deslocamentoSugerido', '0');
+      setValue('valorAlimentacao', '0');
+
+      // Ajustes comerciais e simulador interno.
+      setValue('desconto', '0');
+      setValue('valorComercialManual', '0');
+      setValue('viabDescontoPerc', '0');
+      setValue('viabDescontoValor', '0');
+      setValue('statusComercial', 'Em análise');
+
+      // Itens opcionais voltam ao padrão de uma proposta nova.
+      setChecked('rrtProjeto', false);
+      setChecked('rrtExecucao', false);
+      setChecked('notaFiscal', true);
+      setChecked('placa', false);
+      setChecked('brinde', false);
+      setChecked('reserva', true);
+      document.querySelectorAll('#customExtrasChecks input[type="checkbox"]').forEach(el => { el.checked = false; });
+
+      // Limpa também os campos auxiliares de serviços terceirizados.
+      setValue('compTipo', '');
+      setValue('compFornecedor', '');
+      setValue('compValor', '0');
+      data.complementaryServices = [];
+
+      // Nova divisão padrão entre profissionais, sem reaproveitar percentuais da anterior.
+      setValue('qtdProfissionais', '2');
+      setValue('criterioDivisaoProfissionais', 'Divisão manual por percentual');
+      data.professionalCount = 2;
+      data.professionalCriterion = 'Divisão manual por percentual';
+      data.professionalShares = [50, 50];
+      syncProfessionalShareRows(true);
+
+      editingHistoryIndex = null;
+      updateHistorySaveButton();
+      resetProposalCommercialFields();
+
+      const vehiclePanel = document.getElementById('budgetVehicleSuggestionPanel');
+      if(vehiclePanel) vehiclePanel.classList.remove('active');
+
+      renderComplementaryServices();
+      renderSmartSuggestions();
+      calculate();
+    }
+
+    function startNewProposal(){
+      resetBudget();
+      openTab('calc');
+      toast('Novo orçamento e nova proposta iniciados. Os dados da proposta anterior foram removidos.', {
+        title: 'Nova proposta',
+        type: 'success',
+        icon: '✓'
+      });
     }
     async function exportData(){
       try{
@@ -10723,6 +10855,15 @@ ${p.obs}` : ''}`;
     max: 60,
     last: ''
   };
+
+  document.addEventListener('cmfin:proposal-reset', function(){
+    proposalVisualHistory.undo = [];
+    proposalVisualHistory.redo = [];
+    proposalVisualHistory.last = '';
+    currentRange = null;
+    const bar = document.getElementById(TOOLBAR_ID);
+    if(bar) bar.remove();
+  });
 
   function proposalVisualSnapshot(){
     return Array.from(document.querySelectorAll('.proposal-page-dynamic')).map(area => area.innerHTML || '');
