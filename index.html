@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
-  <!-- Versão v32: valor total com centavos + exclusão de entregáveis personalizados + checklist compacto -->
+  <!-- Versão v33: mantém prefixo R$ visível durante a digitação do valor total -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -6694,7 +6694,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
                     <div><label>Cliente</label><input id="propCliente" list="clienteHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)" placeholder="Nome do cliente"></div>
                     <div><label>Contato</label><input id="propContato" oninput="buildProposal()" placeholder="+55 88 9.0000-0000"></div>
                     <div><label>Tipo/objeto</label><input id="propObjeto" list="servicoHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)" placeholder="PROJETO DE INTERIORES + FACHADA"></div>
-                    <div><label>Valor total</label><input id="propValorTotalManual" inputmode="decimal" oninput="liveCurrencyInput(event, this); buildProposal()" onblur="formatCurrencyInput(this); buildProposal()" onkeydown="currencyEnterFormat(event, this)" placeholder="Ex.: R$ 8.000,00"></div>
+                    <div><label>Valor total</label><input id="propValorTotalManual" inputmode="decimal" onfocus="ensureCurrencyPrefix(this)" oninput="liveCurrencyInput(event, this); buildProposal()" onblur="formatCurrencyInput(this); buildProposal()" onkeydown="currencyEnterFormat(event, this)" placeholder="Ex.: R$ 8.000,00"></div>
                     <div><label>Valor por extenso</label><input id="propValorExtenso" readonly placeholder="preenchido automaticamente"></div>
                   </div>
                   <div style="margin-top:12px"><label>Endereço/Localização</label><textarea id="propEndereco" class="mini" list="enderecoHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)" placeholder="Endereço completo do projeto"></textarea></div>
@@ -8472,17 +8472,32 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 
       return raw.replace(/\D/g, '').replace(/^0+(?=\d)/, '');
     }
+    function ensureCurrencyPrefix(el){
+      if(!el) return;
+      const normalized = normalizeCurrencyTypingValue(el.value);
+      el.value = normalized ? `R$ ${normalized}` : 'R$ ';
+      setCurrencyCaretToEnd(el);
+    }
     function liveCurrencyInput(event, el){
       if(!el) return;
       const normalized = normalizeCurrencyTypingValue(el.value);
-      if(el.value !== normalized) el.value = normalized;
+      const displayed = normalized ? `R$ ${normalized}` : 'R$ ';
+      if(el.value !== displayed){
+        el.value = displayed;
+        setCurrencyCaretToEnd(el);
+      }
       delete el.dataset.currencyDigits;
     }
     function formatCurrencyInput(el){
       if(!el) return;
-      const typed = String(el.value || '').trim();
-      const n = parseBRLCurrency(typed);
-      el.value = typed && isFinite(n) ? money(n) : '';
+      const normalized = normalizeCurrencyTypingValue(el.value);
+      if(!normalized){
+        el.value = '';
+        delete el.dataset.currencyDigits;
+        return;
+      }
+      const n = parseBRLCurrency(normalized);
+      el.value = isFinite(n) ? money(n) : '';
       delete el.dataset.currencyDigits;
     }
     function currencyEnterFormat(event, el){
