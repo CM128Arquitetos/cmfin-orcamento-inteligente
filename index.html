@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
-  <!-- Versão v34: mantém prefixo R$ visível e permite preservar/editar a escrita dos entregáveis -->
+  <!-- Versão v36: mantém prefixo R$, edição inline e cards longos em largura total no checklist de entregáveis -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -30,7 +30,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=0QNG8c9Q7m9KU2Yyc9MQfM86H-TjwrnpWWCkMChTj6ps1jO_I9U6Pvme2IqS2tu65h8SDiaDYj1wKEF9q4KF-1RMn3BB-mX2jm2eFV4Ppl05zFcAa1AYQs788vEY--iXfierSYJjdKijxFo_pBaDXHt1rE7wuKH_vDWNcpewRrIVGoPUKWyupnvIbl8IH-97JtaO_JrNovDnJujUKt_tlbdfyXP88TkdNGEOqTCmgFAx_-ZfSaRgDd3QGC-hEfQHjLNSTG_53Ee8ibH-M9kDhaUIVcwwvXYD878fdqvExr-wgp_oKJknbb_g7_8ptSqG594T7tkr_trs5cYWH1E039Hlwp8U01AEpuKqJ3ooRgl_ZgMaSqezfFA6nJ5Ebmbj" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://me.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jaGF0Z3B0LmNvbS9iYWNrZW5kLWFwaS9lc3R1YXJ5L2NvbnRlbnQ_aWQ9ZmlsZV8wMDAwMDAwMDJkZmM4MjBlYThkMjRjZmQ1MjYyODU1MyZmbj1pbmRleF9jbWZpbl9vcmNhbWVudG9fdjMxX251bWVyb19wcm9wb3N0YV9yZXBvc2ljaW9uYWRvLmh0bWwmY2Q9YXR0YWNobWVudCZ0cz00OTU3MTYmcD1mcyZjaWQ9MSZzaWc9ZmI1N2UxMzZlOWJhNmRmNDM4ZmY1NGI2MjJjNzgxYmM1MjhiYjliZWUwNTkzMTYxYmZhZmI0YjhhNmI0NTM0NyZ2PTA"/><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=MuitiNekn3C2by7CGlPDZ9JbQm6QF-tdX7xBItaWyrv6UldF9h53-Ldj1hQiaGHowWP5_efQNu-SEu3BL82bCSD4J2OtMW5kakyNMkkZFoAY2u7pHTCFiP8MjK3LKewvDVsxcxeS2pVZPZ8uXfr6XD9aC8001cTA_2TH1vFFvEQcYDTW-aZi5xFxxRNs3vW4L_X9PFKXP30r0FUzRHtB_Okht_5N28p09l8aCCgAMSlSr5N7Vypg3Xwtezin5steWR0_wO9pM7mfZ8qP1Ncjrw" charset="UTF-8"></script><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=0QNG8c9Q7m9KU2Yyc9MQfM86H-TjwrnpWWCkMChTj6ps1jO_I9U6Pvme2IqS2tu65h8SDiaDYj1wKEF9q4KF-1RMn3BB-mX2jm2eFV4Ppl05zFcAa1AYQs788vEY--iXfierSYJjdKijxFo_pBaDXHt1rE7wuKH_vDWNcpewRrIVGoPUKWyupnvIbl8IH-97JtaO_JrNovDnJujUKt_tlbdfyXP88TkdNGEOqTCmgFAx_-ZfSaRgDd3QGC-hEfQHjLNSTG_53Ee8ibH-M9kDhaUIVcwwvXYD878fdqvExr-wgp_oKJknbb_g7_8ptSqG594T7tkr_trs5cYWH1E039Hlwp8U01AEpuKqJ3ooRgl_ZgMaSqezfFA6nJ5Ebmbj" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://me.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jaGF0Z3B0LmNvbS9iYWNrZW5kLWFwaS9lc3R1YXJ5L2NvbnRlbnQ_aWQ9ZmlsZV8wMDAwMDAwMDJkZmM4MjBlYThkMjRjZmQ1MjYyODU1MyZmbj1pbmRleF9jbWZpbl9vcmNhbWVudG9fdjMxX251bWVyb19wcm9wb3N0YV9yZXBvc2ljaW9uYWRvLmh0bWwmY2Q9YXR0YWNobWVudCZ0cz00OTU3MTYmcD1mcyZjaWQ9MSZzaWc9ZmI1N2UxMzZlOWJhNmRmNDM4ZmY1NGI2MjJjNzgxYmM1MjhiYjliZWUwNTkzMTYxYmZhZmI0YjhhNmI0NTM0NyZ2PTA"/><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -1327,6 +1327,14 @@
     .deliverables-tools button { padding:8px 10px; border-radius:10px; font-size:.76rem; box-shadow:none; }
     .deliverables-checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; align-items:start; max-height:330px; overflow:auto; padding:2px 3px 2px 1px; }
     .deliverable-check { position:relative; display:flex; align-items:center; gap:7px; align-self:start; padding:9px 9px; border:1px solid var(--line); border-radius:11px; background:#fff; transition:.16s ease; min-height:42px; }
+    /* Entregáveis longos usam a largura completa do checklist para melhorar a leitura. */
+    .deliverable-check.is-wide {
+      grid-column:1 / -1;
+      min-height:48px;
+      padding:10px 11px;
+    }
+    .deliverable-check.is-wide .deliverable-check-main { align-items:flex-start; }
+    .deliverable-check.is-wide span { font-size:.78rem; line-height:1.38; }
     .deliverable-check:hover { border-color:#9cafb8; transform:translateY(-1px); box-shadow:0 6px 14px rgba(17,44,37,.05); }
     .deliverable-check-main { display:flex; align-items:flex-start; gap:8px; width:100%; min-width:0; margin:0; cursor:pointer; text-transform:none; letter-spacing:0; color:inherit; font:inherit; }
     .deliverable-check.has-edit .deliverable-check-main { padding-right:32px; }
@@ -8576,6 +8584,15 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       renderDeliverableChecklist();
       toast('Entregável excluído.');
     }
+    function shouldDeliverableUseFullWidth(item){
+      const text = String(item || '').trim();
+      if(!text) return false;
+
+      // A partir deste tamanho, em duas colunas o card tende a ficar alto e estreito.
+      // Usar a linha inteira melhora a leitura sem alterar os cards curtos.
+      return text.length >= 56;
+    }
+
     function renderDeliverableChecklist(){
       const wrap = document.getElementById('deliverablesChecklist');
       if(!wrap) return;
@@ -8585,6 +8602,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
         const card = document.createElement('div');
         card.className = 'deliverable-check';
         card.setAttribute('data-item', item);
+        card.classList.toggle('is-wide', shouldDeliverableUseFullWidth(item));
 
         const mainLabel = document.createElement('label');
         mainLabel.className = 'deliverable-check-main';
