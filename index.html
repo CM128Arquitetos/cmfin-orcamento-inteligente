@@ -6,6 +6,7 @@
   <title>CMFin - Gestão de Orçamento Inteligente</title>
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
+  <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
   <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
@@ -5697,6 +5698,139 @@ main{
 })();
 </script>
 
+
+<style id="cmfin-v48-ui-refresh">
+  /* v48 — ações da proposta com hierarquia visual profissional */
+  .proposal-actions-details .accordion-body{padding:16px 18px 18px}
+  .proposal-actions-toolbar{
+    display:grid;
+    grid-template-columns:minmax(220px,1.35fr) repeat(3,minmax(150px,1fr));
+    gap:10px;
+    align-items:stretch;
+  }
+  .proposal-action-btn{
+    min-height:66px;
+    border-radius:15px;
+    padding:11px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:11px;
+    text-align:left;
+    border:1px solid #d9e3de;
+    background:linear-gradient(180deg,#ffffff 0%,#f7faf8 100%);
+    color:#17342c;
+    box-shadow:0 7px 18px rgba(17,44,37,.055);
+    white-space:normal;
+    transform:none;
+  }
+  .proposal-action-btn:hover{
+    transform:translateY(-1px);
+    border-color:#c7d8d0;
+    box-shadow:0 10px 22px rgba(17,44,37,.09);
+    filter:none;
+  }
+  .proposal-action-btn > span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .proposal-action-btn strong{font-size:.84rem;line-height:1.15;font-weight:850;letter-spacing:-.01em}
+  .proposal-action-btn small{font-size:.68rem;line-height:1.2;color:#74827c;font-weight:650}
+  .proposal-action-icon{
+    width:34px;height:34px;min-width:34px;border-radius:11px;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:#edf3f0;color:#18372f;
+  }
+  .proposal-action-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .proposal-action-sync{background:linear-gradient(145deg,#153b31 0%,#0f2f27 100%);color:#fff;border-color:#153b31;box-shadow:0 10px 24px rgba(17,44,37,.16)}
+  .proposal-action-sync small{color:rgba(255,255,255,.72)}
+  .proposal-action-sync .proposal-action-icon{background:rgba(255,255,255,.12);color:#fff}
+  .proposal-action-print{background:linear-gradient(145deg,#0a2d25 0%,#08241e 100%);color:#fff;border-color:#0a2d25}
+  .proposal-action-print small{color:rgba(255,255,255,.70)}
+  .proposal-action-print .proposal-action-icon{background:rgba(255,255,255,.12);color:#fff}
+  .proposal-action-new{color:#b42318;background:linear-gradient(180deg,#fffafa 0%,#fff4f2 100%);border-color:#f3d9d5;box-shadow:none}
+  .proposal-action-new .proposal-action-icon{background:#fff0ee;color:#b42318}
+  .proposal-action-save{background:linear-gradient(145deg,#16703b 0%,#115d31 100%);color:#fff;border-color:#16703b}
+  .proposal-action-save small{color:rgba(255,255,255,.74)}
+  .proposal-action-save .proposal-action-icon{background:rgba(255,255,255,.14);color:#fff}
+
+  /* v48 — histórico em cards responsivos, sem rolagem horizontal */
+  .history-list-section{display:grid;gap:12px}
+  .history-list-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 2px}
+  .history-list-head > div{display:flex;flex-direction:column;gap:3px}
+  .history-list-head strong{font-size:.94rem;color:#17342c;letter-spacing:-.01em}
+  .history-list-head span:not(.history-result-count){font-size:.76rem;color:#718079;line-height:1.35}
+  .history-result-count{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:7px 11px;border-radius:999px;background:#eef4f1;border:1px solid #dce7e1;color:#40544c;font-size:.74rem;font-weight:800;white-space:nowrap}
+  .history-table-wrap{overflow:visible!important;max-height:none!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+  #historyTable.history-cards{min-width:0!important;width:100%;display:grid;gap:10px}
+  .history-record-card{background:#fff;border:1px solid #dde6e1;border-radius:17px;box-shadow:0 8px 22px rgba(17,44,37,.055);overflow:hidden;transition:.18s ease}
+  .history-record-card:hover{border-color:#cbdad2;box-shadow:0 12px 28px rgba(17,44,37,.08)}
+  .history-record-main{display:grid;grid-template-columns:92px minmax(220px,1.55fr) minmax(145px,.65fr) minmax(150px,.72fr) minmax(285px,1fr);gap:14px;align-items:center;padding:14px 15px}
+  .history-record-number{align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding-right:14px;border-right:1px solid #e7ece9}
+  .history-record-number small,.history-record-value small,.history-detail-grid small{font-size:.64rem;color:#7a8882;font-weight:800;text-transform:uppercase;letter-spacing:.055em}
+  .history-record-number strong{font-size:1rem;color:#14332b;letter-spacing:-.02em;margin:3px 0 2px}
+  .history-record-number span{font-size:.72rem;color:#78867f;font-weight:650}
+  .history-record-identity{min-width:0;display:flex;flex-direction:column;gap:3px}
+  .history-client-name{font-size:.91rem;color:#112f27;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .history-service-name{font-size:.76rem;line-height:1.3;color:#53645d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .history-address-line{display:flex;align-items:center;gap:5px;min-width:0;margin-top:2px;font-size:.69rem;color:#84918b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .history-address-line svg{width:13px;height:13px;min-width:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .history-record-value{display:flex;flex-direction:column;gap:3px}
+  .history-record-value strong{font-size:1.02rem;color:#102f27;letter-spacing:-.025em;white-space:nowrap}
+  .history-profit{font-size:.68rem;font-weight:750;white-space:nowrap}
+  .history-profit.positive{color:#16703b}.history-profit.negative{color:#b42318}
+  .history-record-statuses{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
+  .history-record-statuses .history-badge{max-width:100%;font-size:.68rem;padding:6px 8px;overflow:hidden;text-overflow:ellipsis}
+  .history-record-actions{display:grid;grid-template-columns:1fr 1fr auto auto;gap:7px;align-items:center;justify-self:end;width:100%;max-width:340px}
+  .history-row-action,.history-details-toggle,.history-row-delete{min-height:38px;border-radius:11px;box-shadow:none;transform:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 9px;font-size:.72rem;font-weight:800;white-space:nowrap}
+  .history-row-action{background:#f5f8f6;color:#24423a;border:1px solid #dce5e0}
+  .history-row-action.primary{background:#12382f;color:#fff;border-color:#12382f}
+  .history-details-toggle{background:#fff;color:#50635b;border:1px solid #dce5e0}
+  .history-row-delete{width:38px;padding:0;background:#fff6f5;color:#b42318;border:1px solid #f1d9d6}
+  .history-row-action:hover,.history-details-toggle:hover,.history-row-delete:hover{transform:translateY(-1px);filter:none;box-shadow:0 6px 14px rgba(17,44,37,.08)}
+  .history-record-actions svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .history-details-toggle svg{transition:transform .18s ease}
+  .history-record-card.details-open .history-details-toggle svg{transform:rotate(180deg)}
+  .history-record-details{display:grid;grid-template-rows:0fr;border-top:1px solid transparent;background:#f8faf9;transition:grid-template-rows .2s ease,border-color .2s ease}
+  .history-record-details > .history-detail-grid{overflow:hidden}
+  .history-record-card.details-open .history-record-details{grid-template-rows:1fr;border-top-color:#e4ebe7}
+  .history-detail-grid{display:grid;grid-template-columns:repeat(4,minmax(115px,1fr)) minmax(230px,1.65fr);gap:0;padding:0 15px;transition:padding .2s ease}
+  .history-record-card.details-open .history-detail-grid{padding:12px 15px}
+  .history-detail-grid > div{display:flex;flex-direction:column;gap:3px;padding:3px 13px;border-right:1px solid #e1e9e5}
+  .history-detail-grid > div:first-child{padding-left:0}.history-detail-grid > div:last-child{border-right:0;padding-right:0}
+  .history-detail-grid strong{font-size:.82rem;color:#233c35;line-height:1.3}
+  .history-detail-grid span{font-size:.68rem;color:#75847d}
+  .history-detail-address strong{font-size:.74rem;font-weight:700;color:#5c6c65}
+  .history-empty-state{min-height:190px;border:1px dashed #d5dfda;border-radius:17px;background:#fbfcfb;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;color:#77857f}
+  .history-empty-state svg{width:34px;height:34px;margin-bottom:10px;fill:none;stroke:#7e8d86;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .history-empty-state strong{color:#30483f;font-size:.92rem;margin-bottom:4px}.history-empty-state span{font-size:.76rem}
+
+  @media (max-width:1260px){
+    .history-record-main{grid-template-columns:82px minmax(190px,1.5fr) 135px 145px minmax(250px,1fr);gap:10px;padding:12px}
+    .history-record-actions{grid-template-columns:1fr 1fr auto;max-width:285px}
+    .history-row-delete{grid-column:3;grid-row:1}
+    .history-details-toggle{grid-column:1/3}
+    .proposal-actions-toolbar{grid-template-columns:repeat(2,minmax(210px,1fr))}
+  }
+  @media (max-width:980px){
+    .history-record-main{grid-template-columns:78px minmax(180px,1fr) 135px;grid-template-areas:"number identity value" "number statuses actions";align-items:center}
+    .history-record-number{grid-area:number}.history-record-identity{grid-area:identity}.history-record-value{grid-area:value}.history-record-statuses{grid-area:statuses;flex-direction:row;flex-wrap:wrap}.history-record-actions{grid-area:actions;justify-self:stretch;max-width:none}
+    .history-detail-grid{grid-template-columns:repeat(2,minmax(120px,1fr))}.history-detail-grid > div{border-right:0;border-bottom:1px solid #e1e9e5;padding:8px}.history-detail-grid > div:last-child{grid-column:1/-1;border-bottom:0}
+  }
+  @media (max-width:720px){
+    .proposal-actions-toolbar{grid-template-columns:1fr}.proposal-action-btn{min-height:58px}
+    .history-list-head{align-items:flex-start;flex-direction:column;gap:8px}
+    .history-record-main{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:13px}
+    .history-record-number{border-right:0;border-bottom:1px solid #e7ece9;padding:0 0 9px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+    .history-record-number small{display:none}.history-record-number strong{margin:0}.history-record-number span{justify-self:end}
+    .history-record-statuses{flex-direction:row;flex-wrap:wrap}.history-record-actions{grid-template-columns:1fr 1fr auto;max-width:none}.history-details-toggle{grid-column:1/3}
+    .history-detail-grid{grid-template-columns:1fr!important}.history-detail-grid > div:last-child{grid-column:auto}
+  }
+  @media print{
+    .history-record-actions,.history-list-head{display:none!important}
+    .history-record-card{break-inside:avoid;box-shadow:none}
+    .history-record-details{grid-template-rows:1fr!important;border-top-color:#e4ebe7!important}
+    .history-detail-grid{padding:10px 15px!important}
+  }
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -7550,7 +7684,13 @@ main{
             </div>
           </div>
 
-          <div class="history-table-wrap"><table id="historyTable"></table></div>
+          <div class="history-list-section">
+            <div class="history-list-head no-print">
+              <div><strong>Propostas encontradas</strong><span>Informações essenciais sem rolagem horizontal. Use “Detalhes” para consultar a composição completa.</span></div>
+              <span id="historyResultCount" class="history-result-count">0 registros</span>
+            </div>
+            <div class="history-table-wrap"><div id="historyTable" class="history-cards"></div></div>
+          </div>
         </div>
       </div></div>
     </section>
@@ -7816,15 +7956,30 @@ main{
                 </div>
               </details>
 
-              <details open>
-                <summary><span class="summary-title">Ações da Proposta</span><span class="section-hint">Preencher, copiar, imprimir ou gerar PDF.</span></summary>
+              <details open class="proposal-actions-details">
+                <summary><span class="summary-title">Ações da Proposta</span><span class="section-hint">Sincronize, edite e finalize a proposta.</span></summary>
                 <div class="accordion-body">
-                  <div class="actions">
-                    <button class="secondary" onclick="fillProposalDefaults()">Preencher com Dados do Orçamento</button>
-                    <button id="proposalHistorySaveBtn" class="success" style="display:none" onclick="addToHistory()">Salvar alterações da proposta</button>
-                    <button class="danger" onclick="startNewProposal()">Nova Proposta</button>
-                    <button onclick="copyProposal()">Copiar texto</button>
-                    <button onclick="printProposal()">Imprimir / PDF</button>
+                  <div class="proposal-actions-toolbar">
+                    <button class="proposal-action-btn proposal-action-sync" onclick="fillProposalDefaults()" title="Atualizar a proposta com os dados do orçamento atual">
+                      <span class="proposal-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.9-4M4 4v5h5M4 13a8 8 0 0 0 14.9 4M20 20v-5h-5"/></svg></span>
+                      <span><strong>Atualizar dados</strong><small>Sincronizar com orçamento</small></span>
+                    </button>
+                    <button id="proposalHistorySaveBtn" class="proposal-action-btn proposal-action-save" style="display:none" onclick="addToHistory()">
+                      <span class="proposal-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3h12l2 2v16H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg></span>
+                      <span><strong>Salvar alterações</strong><small>Atualizar no histórico</small></span>
+                    </button>
+                    <button class="proposal-action-btn proposal-action-new" onclick="startNewProposal()">
+                      <span class="proposal-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+                      <span><strong>Nova proposta</strong><small>Começar do zero</small></span>
+                    </button>
+                    <button class="proposal-action-btn proposal-action-copy" onclick="copyProposal()">
+                      <span class="proposal-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></span>
+                      <span><strong>Copiar texto</strong><small>Copiar para área de transferência</small></span>
+                    </button>
+                    <button class="proposal-action-btn proposal-action-print" onclick="printProposal()">
+                      <span class="proposal-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7"/><path d="M17 11h.01"/></svg></span>
+                      <span><strong>Imprimir / PDF</strong><small>Gerar documento final</small></span>
+                    </button>
                   </div>
                 </div>
               </details>
@@ -12040,14 +12195,90 @@ ${p.obs}` : ''}`;
       if(s.includes('inv') || s.includes('abaixo') || s.includes('crít')) return 'danger';
       return 'neutral';
     }
+    function formatHistoryDate(value){
+      const raw = String(value || '').trim();
+      if(!raw) return 'Sem data';
+      const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      return m ? `${m[3]}/${m[2]}/${m[1]}` : raw;
+    }
+    function toggleHistoryDetails(index){
+      const card = document.getElementById(`historyCard-${index}`);
+      if(!card) return;
+      const expanded = card.classList.toggle('details-open');
+      const btn = card.querySelector('.history-details-toggle');
+      if(btn){
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        const label = btn.querySelector('span:last-child');
+        if(label) label.textContent = expanded ? 'Ocultar' : 'Detalhes';
+      }
+    }
+    function historyRecordCard(h, i){
+      const commercial = h.statusComercial || 'Em análise';
+      const financial = h.status || '';
+      const prazoUtil = Number(h.diasUteis || 0);
+      const sabados = Number(h.diasSabados || 0);
+      const endereco = String(h.endereco || '').trim() || 'Endereço não informado';
+      const lucro = Number(h.lucro || 0);
+      const lucroClass = lucro < 0 ? 'negative' : 'positive';
+      return `
+        <article class="history-record-card" id="historyCard-${i}">
+          <div class="history-record-main">
+            <div class="history-record-number">
+              <small>Proposta</small>
+              <strong>${esc(h.numeroProposta || '-')}</strong>
+              <span>${esc(formatHistoryDate(h.data))}</span>
+            </div>
+            <div class="history-record-identity">
+              <strong class="history-client-name">${esc(h.cliente || 'Cliente não informado')}</strong>
+              <span class="history-service-name">${esc(h.servico || 'Serviço não informado')}</span>
+              <span class="history-address-line" title="${esc(endereco)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>${esc(endereco)}</span>
+            </div>
+            <div class="history-record-value">
+              <small>Total ao cliente</small>
+              <strong>${money(h.valor)}</strong>
+              <span class="history-profit ${lucroClass}">Resultado ${money(lucro)}</span>
+            </div>
+            <div class="history-record-statuses">
+              <span class="history-badge ${historyBadgeClassByFinancial(financial)}">${esc(financial || 'Sem diagnóstico')}</span>
+              <span class="history-badge ${historyBadgeClassByCommercial(commercial)}">${esc(commercial)}</span>
+            </div>
+            <div class="history-record-actions no-print">
+              <button class="history-row-action primary" onclick="editHistory(${i})" title="Editar orçamento">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Orçamento</span>
+              </button>
+              <button class="history-row-action" onclick="editProposalFromHistory(${i})" title="Editar proposta comercial">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h6"/></svg><span>Proposta</span>
+              </button>
+              <button class="history-details-toggle" onclick="toggleHistoryDetails(${i})" aria-expanded="false" title="Exibir detalhes financeiros">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span>Detalhes</span>
+              </button>
+              <button class="history-row-delete" onclick="deleteHistory(${i})" title="Excluir registro" aria-label="Excluir registro">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="history-record-details">
+            <div class="history-detail-grid">
+              <div><small>Valor mínimo</small><strong>${money(h.minimo)}</strong></div>
+              <div><small>Valor alvo</small><strong>${money(h.alvo)}</strong></div>
+              <div><small>Complementares</small><strong>${money(h.complementares || 0)}</strong></div>
+              <div><small>Prazo</small><strong>${prazoUtil} ${prazoUtil === 1 ? 'dia útil' : 'dias úteis'}</strong><span>${sabados} ${sabados === 1 ? 'sábado' : 'sábados'}</span></div>
+              <div class="history-detail-address"><small>Endereço</small><strong>${esc(endereco)}</strong></div>
+            </div>
+          </div>
+        </article>`;
+    }
     function renderHistory(){
       const table = document.getElementById('historyTable');
       if(!table) return;
       populateHistoryPeriodFilters();
       const rows = filteredHistory();
       renderHistoryDashboard(rows);
-      table.innerHTML = `<thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Serviço</th><th>Endereço</th><th>Dias úteis</th><th>Sábados</th><th>Total ao cliente</th><th>Complementares</th><th>Mínimo</th><th>Alvo</th><th>Lucro</th><th>Status financeiro</th><th>Status comercial</th><th class="no-print">Ação</th></tr></thead><tbody>` +
-        (rows.length ? rows.map(({h,i})=>`<tr><td><strong>${esc(h.numeroProposta||'-')}</strong></td><td>${h.data||''}</td><td>${esc(h.cliente||'')}</td><td>${esc(h.servico||'')}</td><td>${esc(h.endereco||'')}</td><td>${h.diasUteis||0}</td><td>${h.diasSabados||0}</td><td>${money(h.valor)}</td><td>${money(h.complementares || 0)}</td><td>${money(h.minimo)}</td><td>${money(h.alvo)}</td><td>${money(h.lucro)}</td><td><span class="history-badge ${historyBadgeClassByFinancial(h.status||'')}">${esc(h.status||'')}</span></td><td><span class="history-badge ${historyBadgeClassByCommercial(h.statusComercial||'Em análise')}">${esc(h.statusComercial||'Em análise')}</span></td><td class="no-print"><div class="table-actions"><button class="secondary" onclick="editHistory(${i})">Editar orçamento</button><button class="secondary" onclick="editProposalFromHistory(${i})">Editar proposta</button><button class="danger" onclick="deleteHistory(${i})">Excluir</button></div></td></tr>`).join('') : '<tr><td colspan="15" class="hint">Nenhum orçamento encontrado para os filtros atuais.</td></tr>') + `</tbody>`;
+      const count = document.getElementById('historyResultCount');
+      if(count) count.textContent = `${rows.length} ${rows.length === 1 ? 'registro' : 'registros'}`;
+      table.innerHTML = rows.length
+        ? rows.map(({h,i}) => historyRecordCard(h,i)).join('')
+        : `<div class="history-empty-state"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v14H4zM8 3h8v3M8 11h8M8 15h5"/></svg><strong>Nenhum orçamento encontrado</strong><span>Ajuste os filtros para localizar outros registros.</span></div>`;
     }
     function deleteHistory(i){ data.history.splice(i,1); renderHistory(); saveAll(); }
     function clearHistory(){ if(confirm('Limpar todo o histórico?')){ data.history=[]; renderHistory(); saveAll(); } }
