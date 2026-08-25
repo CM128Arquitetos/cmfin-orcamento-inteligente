@@ -6719,6 +6719,55 @@ main{
   }
 </style>
 
+
+<style id="cmfin-budget-workspace-v53">
+  /* V53 — acabamento da aba Orçamento:
+     - remove a rolagem interna do Resultado Financeiro;
+     - mantém a lateral direita sticky, usando a rolagem normal da página;
+     - aplica ao card Dados do Orçamento o mesmo acabamento arredondado do Resultado Financeiro. */
+
+  @media (min-width:1101px){
+    #calc .stack-col-v51 {
+      position:sticky !important;
+      top:92px !important;
+      align-self:start !important;
+      max-height:none !important;
+      height:auto !important;
+      overflow:visible !important;
+      overflow-x:visible !important;
+      overflow-y:visible !important;
+      overscroll-behavior:auto !important;
+      scrollbar-width:auto !important;
+      padding-right:0 !important;
+    }
+    #calc .stack-col-v51::-webkit-scrollbar {
+      width:0 !important;
+      height:0 !important;
+      display:none !important;
+    }
+  }
+
+  /* Mesmo raio e recorte visual nos dois cards principais. */
+  #calc .budget-workspace-card,
+  #calc .financial-summary-card {
+    border-radius:20px !important;
+    overflow:hidden !important;
+  }
+
+  #calc .budget-workspace-card > h2,
+  #calc .financial-summary-card > h2 {
+    border-top-left-radius:20px !important;
+    border-top-right-radius:20px !important;
+  }
+
+  /* Evita qualquer corte visual dos elementos internos do resumo. */
+  #calc .financial-summary-card,
+  #calc .financial-summary-card .card-body,
+  #calc .financial-primary-grid-v51,
+  #calc .financial-commercial-v51 {
+    max-height:none !important;
+  }
+</style>
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
