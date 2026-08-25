@@ -5414,11 +5414,165 @@ main{
   header.brand-shell h1{ max-width:38vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   main{ padding:14px 10px 32px; }
 }
+/* Personalização da interface — zoom por dispositivo */
+.cmfin-interface-personalization{
+  margin-top:20px;
+  border:1px solid #dbe4df;
+  border-radius:18px;
+  background:linear-gradient(145deg,#ffffff 0%,#f7faf8 100%);
+  box-shadow:0 12px 30px rgba(16,37,31,.06);
+  overflow:hidden;
+}
+.cmfin-interface-personalization-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:18px 20px 14px;
+  border-bottom:1px solid #e3eae6;
+}
+.cmfin-interface-personalization-head h3{
+  margin:0;
+  color:#10251f;
+  font-size:1.08rem;
+  letter-spacing:-.02em;
+}
+.cmfin-interface-personalization-head p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.45;
+  max-width:760px;
+}
+.cmfin-interface-device-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border:1px solid #dce7e1;
+  border-radius:999px;
+  background:#fff;
+  color:#496159;
+  font-size:.74rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+.cmfin-interface-personalization-body{ padding:18px 20px 20px; }
+.cmfin-interface-zoom-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.cmfin-interface-zoom-label label{ margin:0; }
+.cmfin-interface-zoom-label span{ color:var(--muted); font-size:.76rem; font-weight:700; }
+.cmfin-interface-zoom-control{
+  display:grid;
+  grid-template-columns:50px minmax(160px,1fr) 126px 50px;
+  gap:12px;
+  align-items:center;
+}
+.cmfin-interface-zoom-step{
+  min-height:50px;
+  width:50px;
+  padding:0;
+  border-radius:14px;
+  border:1px solid #dce5e0;
+  background:#fff;
+  color:var(--brand);
+  box-shadow:none;
+  font-size:1.28rem;
+  line-height:1;
+}
+.cmfin-interface-zoom-step:hover{ background:#f4f8f6; filter:none; }
+.cmfin-interface-zoom-range{
+  width:100%;
+  min-height:auto;
+  padding:0;
+  border:0;
+  border-radius:0;
+  accent-color:var(--brand);
+  box-shadow:none!important;
+  cursor:pointer;
+}
+.cmfin-interface-zoom-range:focus{ box-shadow:none!important; }
+.cmfin-interface-zoom-value{
+  min-height:50px;
+  display:flex;
+  align-items:center;
+  border:1px solid #dce5e0;
+  border-radius:14px;
+  background:#fff;
+  overflow:hidden;
+}
+.cmfin-interface-zoom-value input{
+  width:78px;
+  min-height:48px;
+  padding:10px 4px 10px 14px;
+  border:0;
+  border-radius:0;
+  text-align:center;
+  font-weight:900;
+  color:#10251f;
+  box-shadow:none!important;
+}
+.cmfin-interface-zoom-value span{
+  padding:0 12px 0 3px;
+  color:#66736d;
+  font-size:.82rem;
+  font-weight:900;
+}
+.cmfin-interface-zoom-hint{
+  margin-top:13px;
+  padding:11px 13px;
+  border:1px dashed #d8e2dc;
+  border-radius:13px;
+  background:#f7faf8;
+  color:#63736c;
+  font-size:.78rem;
+  line-height:1.45;
+}
+.cmfin-interface-zoom-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.cmfin-interface-zoom-actions button{ min-height:44px; }
+.cmfin-interface-zoom-saved{
+  color:var(--success);
+  font-size:.78rem;
+  font-weight:800;
+  opacity:0;
+  transition:opacity .18s ease;
+}
+.cmfin-interface-zoom-saved.show{ opacity:1; }
+@media (max-width:720px){
+  .cmfin-interface-personalization-head{ flex-direction:column; }
+  .cmfin-interface-zoom-control{ grid-template-columns:48px minmax(0,1fr) 48px; }
+  .cmfin-interface-zoom-value{ grid-column:1/-1; justify-content:center; }
+  .cmfin-interface-zoom-value input{ width:90px; }
+}
+
 @media print{
   .cmfin-sidebar,.cmfin-sidebar-backdrop,.cmfin-sidebar-mobile-trigger,.cmfin-header-actions{ display:none!important; }
+  .cmfin-interface-personalization{ display:none!important; }
   body > header.brand-shell, body > main{ margin-left:0!important; }
 }
 </style>
+
+<script id="cmfin-interface-zoom-boot">
+(function(){
+  const KEY = 'cmfinOrcamentoInterfaceZoomV1';
+  let value = 100;
+  try { value = Number(localStorage.getItem(KEY) || 100); } catch(e){}
+  value = Number.isFinite(value) ? Math.max(50, Math.min(150, value)) : 100;
+  document.documentElement.style.zoom = String(value / 100);
+  document.documentElement.dataset.cmfinInterfaceZoom = String(value);
+})();
+</script>
 
 </head>
 <body>
@@ -7048,6 +7202,37 @@ main{
         <div class="config-actions no-print">
           <button class="success" onclick="saveConfig()">Salvar configurações</button>
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
+        </div>
+
+        <div class="cmfin-interface-personalization no-print" id="cmfinInterfacePersonalization">
+          <div class="cmfin-interface-personalization-head">
+            <div>
+              <h3>Personalização da Interface</h3>
+              <p>Ajuste o zoom do sistema para aproveitar melhor notebooks, monitores maiores e diferentes resoluções, com comportamento semelhante ao zoom do navegador.</p>
+            </div>
+            <span class="cmfin-interface-device-badge">◉ Preferência deste dispositivo</span>
+          </div>
+          <div class="cmfin-interface-personalization-body">
+            <div class="cmfin-interface-zoom-label">
+              <label for="cmfinInterfaceZoomRange">Zoom da interface</label>
+              <span>Faixa de 50% a 150%</span>
+            </div>
+            <div class="cmfin-interface-zoom-control" id="cmfinInterfaceZoomControl">
+              <button type="button" class="cmfin-interface-zoom-step" onclick="cmfinChangeInterfaceZoom(-5)" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
+              <input id="cmfinInterfaceZoomRange" class="cmfin-interface-zoom-range" type="range" min="50" max="150" step="5" value="100" oninput="cmfinPreviewInterfaceZoom(this.value)" aria-label="Zoom da interface">
+              <div class="cmfin-interface-zoom-value">
+                <input id="cmfinInterfaceZoomValue" type="number" min="50" max="150" step="5" value="100" oninput="cmfinPreviewInterfaceZoom(this.value)" onblur="cmfinNormalizeInterfaceZoomInput()" aria-label="Percentual de zoom">
+                <span>%</span>
+              </div>
+              <button type="button" class="cmfin-interface-zoom-step" onclick="cmfinChangeInterfaceZoom(5)" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+            </div>
+            <div class="cmfin-interface-zoom-hint">Você pode usar os botões −/+, digitar o percentual, arrastar a barra ou usar a roda do mouse sobre o controle. O ajuste é aplicado imediatamente para visualização e só é gravado neste navegador ao clicar em <strong>Salvar zoom</strong>.</div>
+            <div class="cmfin-interface-zoom-actions">
+              <button type="button" class="success" onclick="cmfinSaveInterfaceZoom()">Salvar zoom</button>
+              <button type="button" class="secondary" onclick="cmfinResetInterfaceZoom()">Restaurar 100%</button>
+              <span id="cmfinInterfaceZoomSaved" class="cmfin-interface-zoom-saved">Zoom salvo neste dispositivo.</span>
+            </div>
+          </div>
         </div>
 
         <div class="custom-extra-panel no-print">
@@ -12429,6 +12614,102 @@ function toggleProposalMiniSection(btn){
 })();
 </script>
 
+
+<script id="cmfin-interface-zoom-script">
+(function(){
+  const KEY = 'cmfinOrcamentoInterfaceZoomV1';
+  const MIN = 50;
+  const MAX = 150;
+  const STEP = 5;
+  let previewValue = 100;
+  let savedTimer = null;
+
+  function clamp(value){
+    const n = Number(value);
+    if(!Number.isFinite(n)) return 100;
+    return Math.max(MIN, Math.min(MAX, Math.round(n)));
+  }
+
+  function storedValue(){
+    try { return clamp(localStorage.getItem(KEY) || 100); } catch(e){ return 100; }
+  }
+
+  function apply(value, syncControls = true){
+    const v = clamp(value);
+    previewValue = v;
+    document.documentElement.style.zoom = String(v / 100);
+    document.documentElement.dataset.cmfinInterfaceZoom = String(v);
+    if(syncControls){
+      const range = document.getElementById('cmfinInterfaceZoomRange');
+      const input = document.getElementById('cmfinInterfaceZoomValue');
+      if(range) range.value = String(v);
+      if(input) input.value = String(v);
+    }
+    const saved = document.getElementById('cmfinInterfaceZoomSaved');
+    if(saved) saved.classList.remove('show');
+    return v;
+  }
+
+  window.cmfinPreviewInterfaceZoom = function(value){
+    apply(value, true);
+  };
+
+  window.cmfinChangeInterfaceZoom = function(delta){
+    const current = clamp(previewValue || storedValue());
+    const next = Math.round((current + Number(delta || 0)) / STEP) * STEP;
+    apply(next, true);
+  };
+
+  window.cmfinNormalizeInterfaceZoomInput = function(){
+    apply(previewValue, true);
+  };
+
+  window.cmfinSaveInterfaceZoom = function(){
+    const v = apply(previewValue, true);
+    try { localStorage.setItem(KEY, String(v)); } catch(e){}
+    const saved = document.getElementById('cmfinInterfaceZoomSaved');
+    if(saved){
+      clearTimeout(savedTimer);
+      saved.classList.add('show');
+      savedTimer = setTimeout(() => saved.classList.remove('show'), 2800);
+    }
+    if(typeof toast === 'function'){
+      toast(`Zoom da interface salvo em ${v}%.`, { title:'Personalização salva', type:'success', icon:'✓' });
+    }
+  };
+
+  window.cmfinResetInterfaceZoom = function(){
+    apply(100, true);
+    try { localStorage.setItem(KEY, '100'); } catch(e){}
+    const saved = document.getElementById('cmfinInterfaceZoomSaved');
+    if(saved){
+      clearTimeout(savedTimer);
+      saved.classList.add('show');
+      savedTimer = setTimeout(() => saved.classList.remove('show'), 2800);
+    }
+    if(typeof toast === 'function'){
+      toast('Zoom da interface restaurado para 100%.', { title:'Visualização restaurada', type:'success', icon:'✓' });
+    }
+  };
+
+  function init(){
+    const v = storedValue();
+    previewValue = v;
+    apply(v, true);
+    const control = document.getElementById('cmfinInterfaceZoomControl');
+    if(control){
+      control.addEventListener('wheel', function(ev){
+        if(Math.abs(ev.deltaY) < 1) return;
+        ev.preventDefault();
+        cmfinChangeInterfaceZoom(ev.deltaY < 0 ? STEP : -STEP);
+      }, { passive:false });
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
 
 <script id="cmfin-sidebar-v40-script">
 (function(){
