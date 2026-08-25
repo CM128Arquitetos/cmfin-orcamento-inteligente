@@ -5947,6 +5947,388 @@ main{
   }
 </style>
 
+
+<style id="cmfin-budget-workspace-v51">
+  /* V51 — Nova organização visual da aba principal do Orçamento.
+     Mantém toda a lógica e todos os IDs existentes; altera somente hierarquia e apresentação. */
+  #calc .grid {
+    grid-template-columns: minmax(0, 1.46fr) minmax(360px, .74fr);
+    gap: 20px;
+    align-items: start;
+  }
+  #calc .grid > .card,
+  #calc .grid > .stack-col > .card,
+  #calc .grid > .viability-card {
+    border-radius: 20px;
+  }
+  #calc .grid > .budget-workspace-card {
+    overflow: visible;
+  }
+  #calc .budget-workspace-card > h2,
+  #calc .financial-summary-card > h2,
+  #calc .viability-card > h2 {
+    padding: 16px 18px;
+    font-size: 1rem;
+    background: linear-gradient(180deg,#fbfdfc 0%,#f7faf8 100%);
+    border-bottom: 1px solid #e2e9e5;
+  }
+  #calc .budget-workspace-card > h2::after,
+  #calc .financial-summary-card > h2::after {
+    display:block;
+    margin-top:4px;
+    font-size:.74rem;
+    line-height:1.35;
+    font-weight:600;
+    color:#7a8882;
+    letter-spacing:0;
+  }
+  #calc .budget-workspace-card > h2::after { content:'Organize os dados por etapa. O cálculo continua automático enquanto você preenche.'; }
+  #calc .financial-summary-card > h2::after { content:'Acompanhe os números principais sem perder o contexto do orçamento.'; }
+
+  #calc .budget-workspace-card .card-body {
+    padding: 16px;
+    display:grid;
+    gap: 14px;
+  }
+  .budget-stage-nav {
+    display:grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap:8px;
+    padding:8px;
+    border:1px solid #dfe8e3;
+    border-radius:15px;
+    background:#f7faf8;
+  }
+  .budget-stage-nav button {
+    min-height:42px;
+    padding:9px 10px;
+    border-radius:11px;
+    background:transparent;
+    color:#53635d;
+    border:1px solid transparent;
+    box-shadow:none;
+    font-size:.76rem;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+  }
+  .budget-stage-nav button:hover {
+    transform:none;
+    filter:none;
+    background:#fff;
+    border-color:#dbe5df;
+    color:#12362d;
+  }
+  .budget-stage-nav .stage-number {
+    width:24px;
+    height:24px;
+    border-radius:8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#e7efeb;
+    color:#12362d;
+    font-size:.67rem;
+    font-weight:900;
+  }
+
+  .budget-section-v51 {
+    scroll-margin-top: 116px;
+    border:1px solid #dce5e0;
+    border-radius:17px;
+    background:#fff;
+    box-shadow:0 8px 20px rgba(16,37,31,.035);
+    overflow:hidden;
+  }
+  .budget-section-head-v51 {
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:13px 15px;
+    background:#fbfcfb;
+    border-bottom:1px solid #e7ece9;
+  }
+  .budget-section-step-v51 {
+    width:30px;
+    height:30px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    background:#113d32;
+    color:#fff;
+    font-size:.68rem;
+    font-weight:900;
+    letter-spacing:.02em;
+  }
+  .budget-section-head-v51 h3 {
+    margin:0;
+    color:#10251f;
+    font-size:.9rem;
+    letter-spacing:-.01em;
+  }
+  .budget-section-head-v51 p {
+    margin:2px 0 0;
+    color:#7a8882;
+    font-size:.72rem;
+    line-height:1.32;
+  }
+  .budget-section-body-v51 { padding:14px; }
+  .budget-grid-v51 {
+    display:grid;
+    gap:11px 12px;
+  }
+  .budget-grid-v51.cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .budget-grid-v51.cols-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .budget-grid-v51 > div { min-width:0; }
+  .budget-grid-v51 label {
+    font-size:.69rem;
+    letter-spacing:.035em;
+    margin-bottom:5px;
+  }
+  .budget-grid-v51 input,
+  .budget-grid-v51 select,
+  .budget-grid-v51 textarea {
+    min-height:46px;
+    border-radius:11px;
+    padding:10px 11px;
+    font-size:.9rem;
+  }
+  .budget-grid-v51 .hint,
+  .budget-grid-v51 .field-help {
+    margin-top:5px;
+    font-size:.69rem;
+    line-height:1.3;
+  }
+  .budget-commercial-row-v51 {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .budget-checks-v51 {
+    padding-top:12px;
+    border-top:1px dashed #dce5e0;
+  }
+  .budget-checks-v51 .checks {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;
+  }
+  .budget-checks-v51 .checkline {
+    min-height:42px;
+    padding:7px 9px;
+    border-radius:11px;
+    font-size:.72rem;
+    background:#f8faf9;
+  }
+
+  #calc .stack-col-v51 {
+    position:sticky;
+    top: 92px;
+    align-self:start;
+    display:grid;
+    gap:16px;
+  }
+  #calc .financial-summary-card .card-body { padding:15px; }
+  .financial-primary-grid-v51 {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+  .financial-primary-grid-v51 .metric {
+    min-height:78px;
+    padding:11px 12px;
+    border-radius:13px;
+    background:#f7faf8;
+  }
+  .financial-primary-grid-v51 .metric small { font-size:.64rem; }
+  .financial-primary-grid-v51 .metric strong { font-size:1.02rem; margin-top:5px; }
+  .financial-primary-grid-v51 .metric.metric-total-v51 {
+    grid-column:1/-1;
+    min-height:108px;
+    padding:15px;
+    background:linear-gradient(145deg,#0d3a2f 0%,#123f34 66%,#194a3e 100%);
+    border-color:#0d3a2f;
+    position:relative;
+    overflow:hidden;
+  }
+  .financial-primary-grid-v51 .metric.metric-total-v51::after {
+    content:'';
+    position:absolute;
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    right:-55px;
+    bottom:-70px;
+    background:rgba(225,18,28,.14);
+  }
+  .financial-primary-grid-v51 .metric.metric-total-v51 small { color:rgba(255,255,255,.72); }
+  .financial-primary-grid-v51 .metric.metric-total-v51 strong {
+    color:#fff;
+    font-size:1.72rem;
+    letter-spacing:-.04em;
+  }
+  .financial-primary-grid-v51 .metric.metric-diagnosis-v51 {
+    grid-column:1/-1;
+    min-height:64px;
+    padding:10px 12px;
+  }
+  .financial-details-v51 {
+    margin-top:10px;
+    border:1px solid #dfe8e3;
+    border-radius:13px;
+    background:#fbfdfc;
+    overflow:hidden;
+  }
+  .financial-details-v51 summary {
+    list-style:none;
+    cursor:pointer;
+    padding:11px 13px;
+    font-size:.76rem;
+    font-weight:850;
+    color:#29463d;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .financial-details-v51 summary::-webkit-details-marker { display:none; }
+  .financial-details-v51 summary::after {
+    content:'+';
+    width:23px;
+    height:23px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    background:#e8efeb;
+    font-size:.85rem;
+  }
+  .financial-details-v51[open] summary::after { content:'–'; }
+  .financial-detail-grid-v51 {
+    padding:0 10px 10px;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .financial-detail-grid-v51 .metric {
+    min-height:68px;
+    padding:9px 10px;
+    border-radius:11px;
+    background:#fff;
+  }
+  .financial-detail-grid-v51 .metric small { font-size:.61rem; }
+  .financial-detail-grid-v51 .metric strong { font-size:.91rem; margin-top:4px; }
+  .financial-commercial-v51 {
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid #e3eae6;
+  }
+  .financial-commercial-v51 .form-grid { gap:9px; margin-bottom:10px !important; }
+  .financial-commercial-v51 label { font-size:.66rem; }
+  .financial-commercial-v51 input,
+  .financial-commercial-v51 select { min-height:43px; padding:9px 10px; font-size:.86rem; }
+  .financial-commercial-v51 .actions {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .financial-commercial-v51 .actions button {
+    min-height:41px;
+    padding:9px 10px;
+    border-radius:11px;
+    font-size:.75rem;
+  }
+  .financial-commercial-v51 .actions #historySaveBtn { grid-column:1/-1; }
+  .financial-commercial-v51 > .hint {
+    margin:10px 0 0;
+    padding:9px 10px;
+    border-radius:10px;
+    background:#f7faf8;
+    font-size:.67rem;
+    line-height:1.35;
+  }
+
+  #calc .viability-card.viability-workspace-v51 {
+    grid-column:1/-1;
+    width:100%;
+    margin:0;
+    box-shadow:0 16px 36px rgba(16,37,31,.07);
+  }
+  #calc .viability-workspace-v51 > h2::after {
+    content:'Compare cenários, negocie descontos e valide o prazo em uma área separada da montagem do orçamento.';
+    display:block;
+    margin-top:4px;
+    font-size:.74rem;
+    line-height:1.35;
+    font-weight:600;
+    color:#7a8882;
+    letter-spacing:0;
+  }
+  #calc .viability-workspace-v51 .viability-body {
+    padding:16px;
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:14px;
+  }
+  #calc .viability-workspace-v51 .viability-head { grid-column:1/-1; }
+  #calc .viability-workspace-v51 .viability-scenarios-v51 { grid-column:span 6; }
+  #calc .viability-workspace-v51 .viability-deadline-v51 { grid-column:span 6; }
+  #calc .viability-workspace-v51 .viability-simulator-v51 { grid-column:span 5; }
+  #calc .viability-workspace-v51 .viability-composition-v51 { grid-column:span 7; }
+  #calc .viability-workspace-v51 #viabAlert { grid-column:1/-1; }
+  #calc .viability-workspace-v51 .viability-section-card {
+    height:fit-content;
+    border-radius:15px;
+    box-shadow:none;
+  }
+  #calc .viability-workspace-v51 .viability-section-head {
+    border-top-width:3px;
+    padding:12px 14px 11px;
+  }
+  #calc .viability-workspace-v51 .viability-section-body { padding:13px; }
+  #calc .viability-workspace-v51 .viability-mini-card { min-height:82px; padding:12px; }
+  #calc .viability-workspace-v51 .viability-scenario-hero { min-height:164px; }
+  #calc .viability-workspace-v51 .deadline-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+
+  @media (max-width: 1240px) {
+    #calc .grid { grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr); gap:16px; }
+    .budget-grid-v51.cols-3 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .budget-checks-v51 .checks { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    #calc .viability-workspace-v51 .viability-scenarios-v51,
+    #calc .viability-workspace-v51 .viability-deadline-v51,
+    #calc .viability-workspace-v51 .viability-simulator-v51,
+    #calc .viability-workspace-v51 .viability-composition-v51 { grid-column:1/-1; }
+  }
+  @media (max-width: 980px) {
+    #calc .grid { grid-template-columns:1fr; }
+    #calc .stack-col-v51 { position:static; }
+    .budget-stage-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    #calc .viability-workspace-v51 { grid-column:1; }
+  }
+  @media (max-width: 680px) {
+    .budget-grid-v51.cols-2,
+    .budget-grid-v51.cols-3,
+    .budget-commercial-row-v51,
+    .financial-primary-grid-v51,
+    .financial-detail-grid-v51 { grid-template-columns:1fr; }
+    .budget-checks-v51 .checks { grid-template-columns:1fr; }
+    .financial-primary-grid-v51 .metric.metric-total-v51,
+    .financial-primary-grid-v51 .metric.metric-diagnosis-v51 { grid-column:1; }
+    #calc .viability-workspace-v51 .viability-body { grid-template-columns:1fr; }
+    #calc .viability-workspace-v51 .viability-head,
+    #calc .viability-workspace-v51 .viability-scenarios-v51,
+    #calc .viability-workspace-v51 .viability-deadline-v51,
+    #calc .viability-workspace-v51 .viability-simulator-v51,
+    #calc .viability-workspace-v51 .viability-composition-v51,
+    #calc .viability-workspace-v51 #viabAlert { grid-column:1; }
+    #calc .viability-workspace-v51 .deadline-grid { grid-template-columns:1fr; }
+  }
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -13475,6 +13857,156 @@ function toggleProposalMiniSection(btn){
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+
+
+<script id="cmfin-budget-workspace-script-v51">
+(function(){
+  function fieldWrap(id){
+    const el = document.getElementById(id);
+    if(!el) return null;
+    let node = el;
+    while(node && node.parentElement){
+      if(node.parentElement.classList && node.parentElement.classList.contains('form-grid')) return node;
+      node = node.parentElement;
+    }
+    return el.parentElement;
+  }
+  function makeSection(step, title, subtitle, className){
+    const section = document.createElement('section');
+    section.className = 'budget-section-v51 ' + (className || '');
+    section.id = 'budgetStage' + step;
+    section.innerHTML = '<div class="budget-section-head-v51"><span class="budget-section-step-v51">0'+step+'</span><div><h3>'+title+'</h3><p>'+subtitle+'</p></div></div><div class="budget-section-body-v51"></div>';
+    return section;
+  }
+  function makeGrid(cols){
+    const g = document.createElement('div');
+    g.className = 'budget-grid-v51 cols-' + cols;
+    return g;
+  }
+  function moveFields(grid, ids){
+    ids.forEach(id => { const w = fieldWrap(id); if(w) grid.appendChild(w); });
+  }
+  function scrollStage(step){
+    const el = document.getElementById('budgetStage'+step);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  window.cmfinScrollBudgetStage = scrollStage;
+
+  function organizeBudget(){
+    const calc = document.getElementById('calc');
+    if(!calc || calc.dataset.workspaceV51 === '1') return;
+    const gridRoot = calc.querySelector(':scope > .grid');
+    if(!gridRoot) return;
+    const budgetCard = gridRoot.querySelector(':scope > .card');
+    const stack = gridRoot.querySelector(':scope > .stack-col');
+    if(!budgetCard || !stack) return;
+    calc.dataset.workspaceV51 = '1';
+
+    budgetCard.classList.add('budget-workspace-card');
+    stack.classList.add('stack-col-v51');
+    const financial = stack.querySelector(':scope > .card');
+    if(financial) financial.classList.add('financial-summary-card');
+
+    const body = budgetCard.querySelector(':scope > .card-body');
+    if(body){
+      const nav = document.createElement('div');
+      nav.className = 'budget-stage-nav no-print';
+      nav.innerHTML = [
+        ['1','Projeto'],['2','Esforço'],['3','Deslocamento'],['4','Comercial']
+      ].map(([n,t]) => '<button type="button" onclick="cmfinScrollBudgetStage('+n+')"><span class="stage-number">0'+n+'</span><span>'+t+'</span></button>').join('');
+
+      const s1 = makeSection(1,'Dados do projeto','Identificação do cliente, serviço e localização.','budget-project-v51');
+      const g1 = makeGrid(2);
+      moveFields(g1,['cliente','data','servico','endereco']);
+      s1.querySelector('.budget-section-body-v51').appendChild(g1);
+
+      const s2 = makeSection(2,'Escopo e esforço','Defina complexidade, padrão, prazo e tempo estimado de trabalho.','budget-effort-v51');
+      const g2 = makeGrid(3);
+      moveFields(g2,['complexidade','padrao','prazo','diasUteisProjeto','diasSabadosProjeto','horasAdicionais']);
+      s2.querySelector('.budget-section-body-v51').appendChild(g2);
+
+      const s3 = makeSection(3,'Deslocamento e visitas','Custos de visita, veículo, combustível, alimentação e desgaste.','budget-travel-v51');
+      const g3 = makeGrid(3);
+      moveFields(g3,['visitas','kmVisita','modeloVeiculo','kmCidade','kmEstrada','tipoTrajeto','valorCombustivel','manutencaoVisita','valorAlimentacao','deslocamentoSugerido']);
+      s3.querySelector('.budget-section-body-v51').appendChild(g3);
+
+      const s4 = makeSection(4,'Condições comerciais e adicionais','Aplique desconto, valor fechado e itens complementares do orçamento.','budget-commercial-v51');
+      const commercial = document.createElement('div');
+      commercial.className = 'budget-commercial-row-v51 budget-grid-v51 cols-2';
+      moveFields(commercial,['desconto','valorComercialManual']);
+      s4.querySelector('.budget-section-body-v51').appendChild(commercial);
+
+      const checksWrap = document.createElement('div');
+      checksWrap.className = 'budget-checks-v51';
+      const checks = body.querySelector('.checks:not(#customExtrasChecks)');
+      const extras = document.getElementById('customExtrasChecks');
+      if(checks) checksWrap.appendChild(checks);
+      if(extras) checksWrap.appendChild(extras);
+      s4.querySelector('.budget-section-body-v51').appendChild(checksWrap);
+
+      body.querySelectorAll(':scope > .form-grid, :scope > .divider, :scope > .checks').forEach(el => {
+        if(!el.children.length || el.classList.contains('form-grid')) el.remove();
+      });
+      body.prepend(nav);
+      body.appendChild(s1);
+      body.appendChild(s2);
+      body.appendChild(s3);
+      body.appendChild(s4);
+    }
+
+    if(financial){
+      const fbody = financial.querySelector(':scope > .card-body');
+      const result = fbody && fbody.querySelector(':scope > .result-card');
+      if(fbody && result){
+        const totalMetric = document.getElementById('outSugerido')?.closest('.metric');
+        const targetMetric = document.getElementById('outAlvo')?.closest('.metric');
+        const marginMetric = document.getElementById('outLucro')?.closest('.metric');
+        const adjustMetric = document.getElementById('outAjusteComercial')?.closest('.metric');
+        const diagnosisMetric = document.getElementById('outStatus')?.closest('.metric');
+        const primary = document.createElement('div');
+        primary.className = 'financial-primary-grid-v51';
+        [totalMetric,targetMetric,marginMetric,adjustMetric,diagnosisMetric].forEach(m => {
+          if(!m) return;
+          if(m === totalMetric) m.classList.add('metric-total-v51');
+          if(m === diagnosisMetric) m.classList.add('metric-diagnosis-v51');
+          primary.appendChild(m);
+        });
+
+        const details = document.createElement('details');
+        details.className = 'financial-details-v51';
+        details.innerHTML = '<summary>Ver composição do cálculo</summary><div class="financial-detail-grid-v51"></div>';
+        const detailGrid = details.querySelector('.financial-detail-grid-v51');
+        Array.from(result.querySelectorAll(':scope > .metric')).forEach(m => detailGrid.appendChild(m));
+        result.replaceWith(primary,details);
+
+        const commercialWrap = document.createElement('div');
+        commercialWrap.className = 'financial-commercial-v51';
+        const divider = fbody.querySelector(':scope > .divider');
+        const form = fbody.querySelector(':scope > .form-grid');
+        const actions = fbody.querySelector(':scope > .actions');
+        const hint = fbody.querySelector(':scope > .hint');
+        [form,actions,hint].forEach(el => { if(el) commercialWrap.appendChild(el); });
+        if(divider) divider.remove();
+        fbody.appendChild(commercialWrap);
+      }
+    }
+
+    const viability = stack.querySelector(':scope > .viability-card');
+    if(viability){
+      viability.classList.add('viability-workspace-v51');
+      const sections = viability.querySelectorAll('.viability-body > .viability-section-card');
+      if(sections[0]) sections[0].classList.add('viability-scenarios-v51');
+      if(sections[1]) sections[1].classList.add('viability-composition-v51');
+      if(sections[2]) sections[2].classList.add('viability-simulator-v51');
+      if(sections[3]) sections[3].classList.add('viability-deadline-v51');
+      gridRoot.appendChild(viability);
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', organizeBudget, {once:true});
+  else organizeBudget();
 })();
 </script>
 
