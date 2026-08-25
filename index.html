@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
@@ -30,7 +31,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=y2jPQOl6hx9FQiIXFVJwWjhrUeqt2KvFRaaf9CsLKxJc-siOXQlzcJXb48xo2zwr9qeq4yy4Lw5WQGBxw6MVLpkE5835xcOIUVKl5W5UwkGx8tnvPlJJ9GhNW68UFRr0NF89bF32gidhzuiEgS2ioPfOGNGYKWcA3YrmS60CXPVItRztmqdcOUyAaWUWTRBpQfTomuk_u-t1hDC1NPyx96NxFOTdbIXUCldvlA3k-eKgLzp-qHahsaxt2s1w-EcWSDQIn-k-A0wQv7KiEylHsg" charset="UTF-8"></script><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=0QNG8c9Q7m9KU2Yyc9MQfM86H-TjwrnpWWCkMChTj6ps1jO_I9U6Pvme2IqS2tu65h8SDiaDYj1wKEF9q4KF-1RMn3BB-mX2jm2eFV4Ppl05zFcAa1AYQs788vEY--iXfierSYJjdKijxFo_pBaDXHt1rE7wuKH_vDWNcpewRrIVGoPUKWyupnvIbl8IH-97JtaO_JrNovDnJujUKt_tlbdfyXP88TkdNGEOqTCmgFAx_-ZfSaRgDd3QGC-hEfQHjLNSTG_53Ee8ibH-M9kDhaUIVcwwvXYD878fdqvExr-wgp_oKJknbb_g7_8ptSqG594T7tkr_trs5cYWH1E039Hlwp8U01AEpuKqJ3ooRgl_ZgMaSqezfFA6nJ5Ebmbj" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://me.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jaGF0Z3B0LmNvbS9iYWNrZW5kLWFwaS9lc3R1YXJ5L2NvbnRlbnQ_aWQ9ZmlsZV8wMDAwMDAwMDJkZmM4MjBlYThkMjRjZmQ1MjYyODU1MyZmbj1pbmRleF9jbWZpbl9vcmNhbWVudG9fdjMxX251bWVyb19wcm9wb3N0YV9yZXBvc2ljaW9uYWRvLmh0bWwmY2Q9YXR0YWNobWVudCZ0cz00OTU3MTYmcD1mcyZjaWQ9MSZzaWc9ZmI1N2UxMzZlOWJhNmRmNDM4ZmY1NGI2MjJjNzgxYmM1MjhiYjliZWUwNTkzMTYxYmZhZmI0YjhhNmI0NTM0NyZ2PTA"/><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=0QNG8c9Q7m9KU2Yyc9MQfM86H-TjwrnpWWCkMChTj6ps1jO_I9U6Pvme2IqS2tu65h8SDiaDYj1wKEF9q4KF-1RMn3BB-mX2jm2eFV4Ppl05zFcAa1AYQs788vEY--iXfierSYJjdKijxFo_pBaDXHt1rE7wuKH_vDWNcpewRrIVGoPUKWyupnvIbl8IH-97JtaO_JrNovDnJujUKt_tlbdfyXP88TkdNGEOqTCmgFAx_-ZfSaRgDd3QGC-hEfQHjLNSTG_53Ee8ibH-M9kDhaUIVcwwvXYD878fdqvExr-wgp_oKJknbb_g7_8ptSqG594T7tkr_trs5cYWH1E039Hlwp8U01AEpuKqJ3ooRgl_ZgMaSqezfFA6nJ5Ebmbj" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://me.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jaGF0Z3B0LmNvbS9iYWNrZW5kLWFwaS9lc3R1YXJ5L2NvbnRlbnQ_aWQ9ZmlsZV8wMDAwMDAwMDJkZmM4MjBlYThkMjRjZmQ1MjYyODU1MyZmbj1pbmRleF9jbWZpbl9vcmNhbWVudG9fdjMxX251bWVyb19wcm9wb3N0YV9yZXBvc2ljaW9uYWRvLmh0bWwmY2Q9YXR0YWNobWVudCZ0cz00OTU3MTYmcD1mcyZjaWQ9MSZzaWc9ZmI1N2UxMzZlOWJhNmRmNDM4ZmY1NGI2MjJjNzgxYmM1MjhiYjliZWUwNTkzMTYxYmZhZmI0YjhhNmI0NTM0NyZ2PTA"/><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -5066,7 +5067,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 
 
 <style id="cmfin-sidebar-v40-styles">
-/* ===== CMFin Orçamento v43 · Sidebar refinada + controle lateral profissional ===== */
+/* ===== CMFin Orçamento v44 · Sidebar contínua em toda a altura da viewport ===== */
 :root{
   --cmfin-sidebar-w: 248px;
   --cmfin-sidebar-collapsed-w: 82px;
@@ -5083,7 +5084,11 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
   position:fixed;
   inset:0 auto 0 0;
   width:var(--cmfin-sidebar-w);
-  height:100dvh;
+  /* Não fixe a altura em 100dvh: com o zoom da interface aplicado no elemento raiz,
+     100dvh também é escalado e pode deixar uma faixa vazia no rodapé.
+     O par top:0 + bottom:0 (via inset) mantém a sidebar ocupando toda a viewport. */
+  height:auto;
+  min-height:0;
   z-index:120;
   display:flex;
   flex-direction:column;
@@ -5257,23 +5262,65 @@ body.cmfin-sidebar-collapsed .cmfin-sidebar-logo{ width:58px; height:54px; }
 body.cmfin-sidebar-collapsed .cmfin-sidebar-collapse svg{ transform:rotate(180deg); }
 body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item{ justify-content:center; padding-left:6px; padding-right:6px; }
 body.cmfin-sidebar-collapsed .cmfin-nav-icon{ flex-basis:38px; width:38px; height:38px; }
-body.cmfin-sidebar-collapsed .cmfin-sidebar [data-tooltip]:hover::after{
-  content:attr(data-tooltip);
-  position:absolute;
-  left:calc(100% + 14px);
-  top:50%;
-  transform:translateY(-50%);
-  z-index:150;
-  max-width:260px;
-  padding:9px 11px;
-  border-radius:10px;
-  background:#10251f;
-  color:#fff;
-  box-shadow:0 12px 26px rgba(0,0,0,.20);
-  font-size:.75rem;
-  font-weight:700;
-  white-space:nowrap;
-  pointer-events:none;
+/* Tooltip das abas quando a sidebar estiver recolhida. */
+@media (min-width:901px){
+  body.cmfin-sidebar-collapsed .cmfin-sidebar-nav{
+    overflow:visible;
+  }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]::after{
+    content:attr(data-tooltip);
+    position:absolute;
+    left:calc(100% + 16px);
+    top:50%;
+    z-index:500;
+    min-width:max-content;
+    max-width:280px;
+    padding:9px 12px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:10px;
+    background:#102f27;
+    color:#fff;
+    box-shadow:0 12px 28px rgba(5,29,24,.22), 0 2px 7px rgba(5,29,24,.12);
+    font-size:.76rem;
+    font-weight:800;
+    line-height:1.2;
+    letter-spacing:.005em;
+    white-space:nowrap;
+    pointer-events:none;
+    opacity:0;
+    visibility:hidden;
+    transform:translate(4px,-50%);
+    transition:opacity .14s ease, transform .14s ease, visibility .14s ease;
+  }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]::before{
+    content:'';
+    position:absolute;
+    left:calc(100% + 10px);
+    top:50%;
+    z-index:501;
+    width:10px;
+    height:10px;
+    border-left:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:#102f27;
+    pointer-events:none;
+    opacity:0;
+    visibility:hidden;
+    transform:translate(4px,-50%) rotate(45deg);
+    transition:opacity .14s ease, transform .14s ease, visibility .14s ease;
+  }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]:hover::after,
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]:focus-visible::after{
+    opacity:1;
+    visibility:visible;
+    transform:translate(0,-50%);
+  }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]:hover::before,
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item[data-tooltip]:focus-visible::before{
+    opacity:1;
+    visibility:visible;
+    transform:translate(0,-50%) rotate(45deg);
+  }
 }
 
 /* Cabeçalho compacto no padrão de aplicação */
@@ -7226,6 +7273,22 @@ main{
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
         </div>
 
+        <div class="custom-extra-panel no-print">
+          <div class="custom-extra-head">
+            <div>
+              <h3>Gastos Adicionais Personalizados</h3>
+              <p>Cadastre outros custos do escritório para aparecerem como opção na aba Orçamento.</p>
+            </div>
+          </div>
+          <div class="custom-extra-editor">
+            <div><label>Título</label><input id="extraTitulo" placeholder="Ex.: Impressão / plotagem"></div>
+            <div><label>Descrição</label><input id="extraDescricao" placeholder="Texto curto explicando o custo"></div>
+            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"></div>
+            <button class="success" type="button" onclick="addCustomExtra()">Adicionar</button>
+          </div>
+          <div class="custom-extra-list" id="customExtrasList"></div>
+        </div>
+
         <div class="cmfin-interface-personalization no-print" id="cmfinInterfacePersonalization">
           <div class="cmfin-interface-personalization-head">
             <div>
@@ -7255,22 +7318,6 @@ main{
               <span id="cmfinInterfaceZoomSaved" class="cmfin-interface-zoom-saved">Zoom salvo neste dispositivo.</span>
             </div>
           </div>
-        </div>
-
-        <div class="custom-extra-panel no-print">
-          <div class="custom-extra-head">
-            <div>
-              <h3>Gastos Adicionais Personalizados</h3>
-              <p>Cadastre outros custos do escritório para aparecerem como opção na aba Orçamento.</p>
-            </div>
-          </div>
-          <div class="custom-extra-editor">
-            <div><label>Título</label><input id="extraTitulo" placeholder="Ex.: Impressão / plotagem"></div>
-            <div><label>Descrição</label><input id="extraDescricao" placeholder="Texto curto explicando o custo"></div>
-            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"></div>
-            <button class="success" type="button" onclick="addCustomExtra()">Adicionar</button>
-          </div>
-          <div class="custom-extra-list" id="customExtrasList"></div>
         </div>
 
         <div class="divider"></div>
