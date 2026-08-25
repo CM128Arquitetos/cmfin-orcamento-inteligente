@@ -7,6 +7,7 @@
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
+  <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
   <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
@@ -5829,6 +5830,44 @@ main{
     .history-record-details{grid-template-rows:1fr!important;border-top-color:#e4ebe7!important}
     .history-detail-grid{padding:10px 15px!important}
   }
+
+  /* v49 — reposicionamento das ações do histórico: mais espaço à direita e sem cortes */
+  @media (min-width:1361px){
+    .history-record-main{
+      grid-template-columns:92px minmax(220px,1.62fr) minmax(140px,.60fr) minmax(145px,.66fr) minmax(350px,1fr);
+      gap:12px;
+      padding-right:18px;
+    }
+    .history-record-actions{
+      max-width:330px;
+      justify-self:end;
+      transform:translateX(-34px);
+      grid-template-columns:minmax(96px,1fr) minmax(88px,.95fr) minmax(82px,.85fr) 38px;
+      gap:6px;
+    }
+    .history-row-action,.history-details-toggle{padding-left:8px;padding-right:8px}
+  }
+
+  /* Em notebooks, reorganiza as ações antes que o conteúdo encoste na borda. */
+  @media (min-width:981px) and (max-width:1360px){
+    .history-record-main{
+      grid-template-columns:82px minmax(185px,1.45fr) 132px 138px minmax(285px,.95fr);
+      gap:9px;
+      padding:12px 14px;
+    }
+    .history-record-actions{
+      grid-template-columns:1fr 1fr auto;
+      width:100%;
+      max-width:290px;
+      justify-self:start;
+      transform:translateX(-12px);
+      gap:6px;
+    }
+    .history-row-delete{grid-column:3;grid-row:1}
+    .history-details-toggle{grid-column:1/3}
+    .history-row-action,.history-details-toggle{font-size:.69rem;padding:7px 8px}
+  }
+
 </style>
 
 </head>
