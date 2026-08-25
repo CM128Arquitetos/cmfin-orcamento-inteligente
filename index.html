@@ -5066,7 +5066,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
 
 
 <style id="cmfin-sidebar-v40-styles">
-/* ===== CMFin Orçamento v40 · Navegação lateral inspirada no padrão CMFin Financeiro ===== */
+/* ===== CMFin Orçamento v41 · Sidebar refinada no padrão CMFin Financeiro ===== */
 :root{
   --cmfin-sidebar-w: 248px;
   --cmfin-sidebar-collapsed-w: 82px;
@@ -5096,17 +5096,16 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
   overflow:visible;
 }
 .cmfin-sidebar-head{
-  min-height:84px;
+  min-height:98px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  padding:2px 4px 12px;
+  justify-content:center;
+  padding:2px 4px 14px;
   border-bottom:1px solid rgba(255,255,255,.10);
 }
 .cmfin-sidebar-logo-wrap{
+  width:100%;
   min-width:0;
-  flex:1;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -5114,29 +5113,41 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
 }
 .cmfin-sidebar-logo{
   display:block;
-  width:166px;
+  width:178px;
   max-width:100%;
-  height:66px;
+  height:74px;
   object-fit:contain;
   object-position:center;
   filter:drop-shadow(0 7px 14px rgba(0,0,0,.12));
   transition:width .22s ease, opacity .18s ease;
 }
+/* Alça lateral: único controle para recolher/expandir a navegação no desktop. */
 .cmfin-sidebar-collapse{
-  flex:0 0 34px;
-  width:34px;
-  height:34px;
+  position:absolute;
+  right:-15px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:4;
+  width:30px;
+  height:50px;
   padding:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:11px;
-  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  border-left-color:rgba(255,255,255,.10);
+  border-radius:0 14px 14px 0;
+  background:#082c25;
   color:#fff;
-  box-shadow:none;
+  box-shadow:7px 8px 18px rgba(5,29,24,.18);
+  transition:background .16s ease, width .16s ease;
 }
-.cmfin-sidebar-collapse:hover{ background:rgba(255,255,255,.14); transform:none; }
+.cmfin-sidebar-collapse:hover{
+  width:33px;
+  background:#0c3a31;
+  transform:translateY(-50%);
+  filter:none;
+}
 .cmfin-sidebar-collapse svg,
 .cmfin-sidebar-mobile-trigger svg,
 .cmfin-nav-icon svg{
@@ -5148,34 +5159,17 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-.cmfin-sidebar-context{
-  padding:15px 10px 10px;
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-  white-space:nowrap;
-  overflow:hidden;
-}
-.cmfin-sidebar-context-kicker{
-  color:rgba(255,255,255,.55);
-  font-size:.66rem;
-  font-weight:800;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-}
-.cmfin-sidebar-context strong{ font-size:.84rem; color:rgba(255,255,255,.92); }
 .cmfin-sidebar-nav{
   display:flex;
   flex-direction:column;
   gap:6px;
-  padding-top:4px;
+  padding-top:14px;
   overflow-y:auto;
   overflow-x:visible;
   scrollbar-width:thin;
   scrollbar-color:rgba(255,255,255,.18) transparent;
 }
-.cmfin-sidebar .cmfin-nav-item,
-.cmfin-sidebar-foot-btn{
+.cmfin-sidebar .cmfin-nav-item{
   width:100%;
   min-height:48px;
   display:flex;
@@ -5194,8 +5188,7 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
   transition:background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease;
   position:relative;
 }
-.cmfin-sidebar .cmfin-nav-item:hover,
-.cmfin-sidebar-foot-btn:hover{
+.cmfin-sidebar .cmfin-nav-item:hover{
   transform:none;
   filter:none;
   background:rgba(255,255,255,.085);
@@ -5228,13 +5221,6 @@ body:not(.cmfin-authenticated) .cmfin-sidebar-backdrop{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-.cmfin-sidebar-foot{
-  margin-top:auto;
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,.10);
-}
-.cmfin-sidebar-foot-btn{ cursor:pointer; }
-
 body.cmfin-authenticated > header.brand-shell,
 body.cmfin-authenticated > main{
   margin-left:var(--cmfin-sidebar-w);
@@ -5243,17 +5229,13 @@ body.cmfin-authenticated > main{
 body.cmfin-sidebar-collapsed .cmfin-sidebar{ width:var(--cmfin-sidebar-collapsed-w); padding-left:11px; padding-right:11px; }
 body.cmfin-sidebar-collapsed > header.brand-shell,
 body.cmfin-sidebar-collapsed > main{ margin-left:var(--cmfin-sidebar-collapsed-w); }
-body.cmfin-sidebar-collapsed .cmfin-sidebar-context,
 body.cmfin-sidebar-collapsed .cmfin-nav-label{ display:none; }
-body.cmfin-sidebar-collapsed .cmfin-sidebar-head{ justify-content:center; flex-direction:column; min-height:104px; }
-body.cmfin-sidebar-collapsed .cmfin-sidebar-logo{ width:56px; height:48px; }
-body.cmfin-sidebar-collapsed .cmfin-sidebar-collapse svg,
-body.cmfin-sidebar-collapsed .cmfin-sidebar-foot-btn svg{ transform:rotate(180deg); }
-body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item,
-body.cmfin-sidebar-collapsed .cmfin-sidebar-foot-btn{ justify-content:center; padding-left:6px; padding-right:6px; }
+body.cmfin-sidebar-collapsed .cmfin-sidebar-head{ justify-content:center; min-height:92px; padding-left:0; padding-right:0; }
+body.cmfin-sidebar-collapsed .cmfin-sidebar-logo{ width:58px; height:54px; }
+body.cmfin-sidebar-collapsed .cmfin-sidebar-collapse svg{ transform:rotate(180deg); }
+body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item{ justify-content:center; padding-left:6px; padding-right:6px; }
 body.cmfin-sidebar-collapsed .cmfin-nav-icon{ flex-basis:38px; width:38px; height:38px; }
-body.cmfin-sidebar-collapsed .cmfin-sidebar [data-tooltip]:hover::after,
-body.cmfin-sidebar-collapsed .cmfin-sidebar-foot-btn:hover::after{
+body.cmfin-sidebar-collapsed .cmfin-sidebar [data-tooltip]:hover::after{
   content:attr(data-tooltip);
   position:absolute;
   left:calc(100% + 14px);
@@ -5413,17 +5395,13 @@ main{
     background:rgba(7,29,24,.40);
     backdrop-filter:blur(2px);
   }
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-context{ display:flex; }
   body.cmfin-sidebar-collapsed .cmfin-nav-label{ display:block; }
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-head{ flex-direction:row; min-height:84px; }
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-logo{ width:166px; height:66px; }
-  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item,
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-foot-btn{ justify-content:flex-start; padding:6px 9px; }
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-collapse svg,
-  body.cmfin-sidebar-collapsed .cmfin-sidebar-foot-btn svg{ transform:none; }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar-head{ min-height:98px; }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar-logo{ width:178px; height:74px; }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar .cmfin-nav-item{ justify-content:flex-start; padding:6px 9px; }
+  body.cmfin-sidebar-collapsed .cmfin-sidebar-collapse svg{ transform:none; }
   .cmfin-sidebar-mobile-trigger{ display:flex; }
   .cmfin-sidebar-collapse{ display:none; }
-  .cmfin-sidebar-foot{ display:none; }
   header.brand-shell{ padding:11px 14px; min-height:72px; }
   header.brand-shell .brand-block{ min-width:0; }
   header.brand-shell .brand-kicker{ display:none; }
@@ -6753,15 +6731,10 @@ main{
       <div class="cmfin-sidebar-logo-wrap" title="CMFin - Gestão de Orçamento Inteligente">
         <img id="cmfinSidebarLogo" class="cmfin-sidebar-logo" alt="CMFin">
       </div>
-      <button type="button" class="cmfin-sidebar-collapse" id="cmfinSidebarCollapseBtn" onclick="cmfinToggleSidebar()" aria-label="Recolher menu" title="Recolher menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
-      </button>
     </div>
-
-    <div class="cmfin-sidebar-context">
-      <span class="cmfin-sidebar-context-kicker">CMFin</span>
-      <strong>Orçamento Inteligente</strong>
-    </div>
+    <button type="button" class="cmfin-sidebar-collapse" id="cmfinSidebarCollapseBtn" onclick="cmfinToggleSidebar()" aria-label="Recolher menu" title="Recolher menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
 
     <nav class="cmfin-sidebar-nav">
       <button class="tab-btn cmfin-nav-item active" data-tab="calc" data-tooltip="Orçamento" onclick="openTab('calc')">
@@ -6790,11 +6763,6 @@ main{
       </button>
     </nav>
 
-    <div class="cmfin-sidebar-foot">
-      <button type="button" class="cmfin-sidebar-foot-btn" onclick="cmfinToggleSidebar()" data-tooltip="Recolher / expandir menu">
-        <span class="cmfin-nav-icon"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span><span class="cmfin-nav-label">Recolher menu</span>
-      </button>
-    </div>
   </aside>
   <div class="cmfin-sidebar-backdrop no-print" id="cmfinSidebarBackdrop" onclick="cmfinCloseMobileSidebar()"></div>
 
