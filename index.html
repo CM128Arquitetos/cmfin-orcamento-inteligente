@@ -8,7 +8,8 @@
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
-  <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
+  <!-- v50: botões compactos e profissionais em Ações da Proposta -->
+<!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
@@ -5868,6 +5869,82 @@ main{
     .history-row-action,.history-details-toggle{font-size:.69rem;padding:7px 8px}
   }
 
+</style>
+
+
+
+<style id="cmfin-v50-proposal-actions-compact">
+  /* v50 — Ações da Proposta mais compactas e profissionais */
+  .proposal-actions-details .accordion-body{
+    padding:14px 16px 16px !important;
+  }
+  .proposal-actions-toolbar{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    align-items:center !important;
+    gap:8px !important;
+  }
+  .proposal-action-btn{
+    width:auto !important;
+    min-width:0 !important;
+    max-width:190px !important;
+    min-height:44px !important;
+    flex:1 1 145px !important;
+    padding:7px 11px !important;
+    border-radius:12px !important;
+    gap:8px !important;
+    box-shadow:0 5px 14px rgba(17,44,37,.055) !important;
+  }
+  .proposal-action-btn:hover{
+    transform:translateY(-1px) !important;
+    box-shadow:0 8px 18px rgba(17,44,37,.085) !important;
+  }
+  .proposal-action-btn > span:last-child{
+    gap:0 !important;
+    justify-content:center !important;
+  }
+  .proposal-action-btn strong{
+    font-size:.78rem !important;
+    line-height:1.1 !important;
+    white-space:nowrap !important;
+  }
+  .proposal-action-btn small{
+    display:none !important;
+  }
+  .proposal-action-icon{
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    border-radius:9px !important;
+  }
+  .proposal-action-icon svg{
+    width:15px !important;
+    height:15px !important;
+    stroke-width:1.9 !important;
+  }
+  .proposal-action-sync{flex-basis:155px !important;max-width:185px !important}
+  .proposal-action-save{flex-basis:160px !important;max-width:190px !important}
+  .proposal-action-new{flex-basis:130px !important;max-width:155px !important}
+  .proposal-action-copy{flex-basis:125px !important;max-width:150px !important}
+  .proposal-action-print{flex-basis:135px !important;max-width:165px !important}
+
+  @media (max-width:720px){
+    .proposal-actions-toolbar{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:8px !important;
+    }
+    .proposal-action-btn{
+      width:100% !important;
+      max-width:none !important;
+      min-height:43px !important;
+      padding:7px 10px !important;
+    }
+    .proposal-action-btn strong{white-space:normal !important}
+  }
+  @media (max-width:420px){
+    .proposal-actions-toolbar{grid-template-columns:1fr !important}
+  }
 </style>
 
 </head>
