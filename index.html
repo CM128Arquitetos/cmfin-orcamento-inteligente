@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
-  <!-- Versão v37: mantém prefixo R$, edição inline, alinhamento vertical dos cards e entregáveis longos em largura total -->
+  <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
   <!-- CMFin Orçamento - Favicons e prévia de compartilhamento -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -1640,6 +1640,100 @@
     @media (max-width: 980px) { .viability-form-grid, .viability-output, .deadline-grid { grid-template-columns:1fr; } }
     @media (max-width: 640px) { .viability-price-grid, .viability-form-grid, .viability-output, .deadline-grid { grid-template-columns:1fr; } }
     @media (max-width: 760px) { .viability-head { flex-direction:column; align-items:flex-start; } }
+
+
+    /* V39 - Análise Interna de Viabilidade dinâmica */
+    .viability-price-grid.enhanced { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .viability-mini-card.scenario-card {
+      appearance:none;
+      width:100%;
+      text-align:left;
+      cursor:pointer;
+      font-family:inherit;
+      color:inherit;
+      box-shadow:none;
+      transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+      position:relative;
+    }
+    .viability-mini-card.scenario-card:hover { transform:translateY(-1px); border-color:#c5d4cc; background:#fbfdfc; filter:none; }
+    .viability-mini-card.scenario-card.active {
+      border-color:#183f36;
+      background:linear-gradient(180deg,#ffffff 0%,#f1f7f4 100%);
+      box-shadow:0 0 0 2px rgba(17,44,37,.08), 0 12px 24px rgba(16,37,31,.08);
+    }
+    .viability-mini-card.scenario-card.active::after {
+      content:'Em análise';
+      position:absolute;
+      top:10px;
+      right:10px;
+      padding:5px 7px;
+      border-radius:999px;
+      background:#112c25;
+      color:#fff;
+      font-size:.58rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .viability-mini-card .scenario-total { display:block; margin-top:6px; color:#66736d; font-size:.72rem; font-weight:700; line-height:1.3; }
+    .viability-insight-row { margin-top:12px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .viability-insight { padding:11px 12px; border:1px solid #e1e9e4; border-radius:12px; background:#f8faf8; }
+    .viability-insight small { display:block; color:#66736d; font-size:.67rem; font-weight:900; text-transform:uppercase; letter-spacing:.04em; }
+    .viability-insight strong { display:block; margin-top:5px; color:#10251f; font-size:.94rem; }
+    .viability-scenario-summary { display:grid; grid-template-columns:1.2fr .8fr; gap:14px; align-items:stretch; }
+    .viability-scenario-hero { padding:16px; border-radius:14px; background:linear-gradient(145deg,#10251f 0%,#183a31 70%,#20483d 100%); color:#fff; position:relative; overflow:hidden; }
+    .viability-scenario-hero::after { content:''; position:absolute; width:130px; height:130px; border-radius:50%; right:-45px; bottom:-62px; background:rgba(225,18,28,.16); }
+    .viability-scenario-hero small { display:block; color:rgba(255,255,255,.72); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; font-weight:900; }
+    .viability-scenario-hero h3 { margin:6px 0 0; font-size:1.22rem; color:#fff; letter-spacing:-.025em; }
+    .viability-scenario-hero strong { display:block; margin-top:12px; font-size:1.8rem; line-height:1; color:#fff; letter-spacing:-.04em; }
+    .viability-scenario-hero span { display:block; margin-top:7px; color:rgba(255,255,255,.78); font-size:.78rem; line-height:1.35; max-width:88%; }
+    .viability-scenario-kpis { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .viability-scenario-kpi { padding:13px; border:1px solid #e1e9e4; border-radius:13px; background:#f8faf8; min-height:86px; }
+    .viability-scenario-kpi small { display:block; color:#66736d; font-size:.65rem; font-weight:900; text-transform:uppercase; letter-spacing:.04em; line-height:1.25; }
+    .viability-scenario-kpi strong { display:block; margin-top:7px; color:#10251f; font-size:1rem; line-height:1.2; }
+    .viability-composition-bar { display:flex; width:100%; min-height:20px; overflow:hidden; border-radius:999px; background:#edf2ef; border:1px solid #dce6e0; margin:14px 0 10px; }
+    .viability-composition-segment { min-width:0; transition:width .22s ease; position:relative; }
+    .viability-composition-segment.project { background:#173d33; }
+    .viability-composition-segment.margin { background:#56776d; }
+    .viability-composition-segment.premium { background:#b58100; }
+    .viability-composition-segment.office { background:#9aa9a2; }
+    .viability-composition-segment.complementary { background:#d7dfda; }
+    .viability-composition-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 12px; margin-bottom:14px; }
+    .viability-legend-item { display:flex; align-items:flex-start; gap:8px; color:#566861; font-size:.75rem; line-height:1.32; }
+    .viability-legend-dot { width:9px; height:9px; border-radius:50%; margin-top:3px; flex:0 0 auto; background:#173d33; }
+    .viability-legend-dot.margin { background:#56776d; }
+    .viability-legend-dot.premium { background:#b58100; }
+    .viability-legend-dot.office { background:#9aa9a2; }
+    .viability-legend-dot.complementary { background:#d7dfda; border:1px solid #aebcb5; }
+    .viability-table-wrap { overflow:auto; border:1px solid #e1e9e4; border-radius:13px; background:#fff; }
+    .viability-detail-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .viability-detail-table th, .viability-detail-table td { padding:10px 11px; border-bottom:1px solid #edf1ef; }
+    .viability-detail-table th { font-size:.67rem; background:#f8faf8; }
+    .viability-detail-table tr:last-child td { border-bottom:0; }
+    .viability-detail-table td:last-child, .viability-detail-table th:last-child { text-align:right; white-space:nowrap; }
+    .viability-detail-table .total-row td { background:#f4f8f6; font-weight:900; color:#10251f; }
+    .viability-detail-table .danger-row td { background:#fff5f3; color:#b42318; font-weight:900; }
+    .viability-details { margin-top:12px; border:1px solid #dfe8e3; border-radius:13px; background:#fbfdfc; overflow:hidden; }
+    .viability-details summary { list-style:none; cursor:pointer; padding:12px 14px; font-weight:900; color:#17352d; font-size:.82rem; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .viability-details summary::-webkit-details-marker { display:none; }
+    .viability-details summary::after { content:'+'; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#e9efec; color:#17352d; flex:0 0 auto; }
+    .viability-details[open] summary::after { content:'−'; }
+    .viability-details-body { padding:0 12px 12px; }
+    .viability-prof-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:14px 0 9px; }
+    .viability-prof-head strong { color:#10251f; font-size:.86rem; }
+    .viability-prof-head span { color:#66736d; font-size:.72rem; text-align:right; line-height:1.3; }
+    .viability-sim-base { margin-bottom:12px; }
+    .viability-sim-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .viability-sim-note { color:#66736d; font-size:.74rem; line-height:1.35; max-width:520px; }
+    .viability-deficit-note { display:none; margin-top:10px; padding:10px 12px; border-radius:12px; background:#fff1f0; border:1px solid #f1d2cf; color:#b42318; font-size:.78rem; font-weight:800; }
+    .viability-deficit-note.show { display:block; }
+    @media (max-width: 980px) { .viability-scenario-summary { grid-template-columns:1fr; } }
+    @media (max-width: 640px) {
+      .viability-price-grid.enhanced, .viability-insight-row, .viability-scenario-kpis, .viability-composition-legend { grid-template-columns:1fr; }
+      .viability-mini-card.scenario-card.active::after { position:static; align-self:flex-start; margin-top:8px; width:max-content; }
+      .viability-prof-head { flex-direction:column; }
+      .viability-prof-head span { text-align:left; }
+    }
 
     .inline-action { display:flex; gap:8px; align-items:center; }
     .inline-action input { flex:1; min-width:0; }
@@ -6441,40 +6535,101 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
               <h2>Análise Interna de Viabilidade</h2>
               <div class="viability-body">
                 <div class="viability-head">
-                  <p class="viability-subtitle">Informações exclusivas para tomada de decisão. Estes dados não aparecem na proposta impressa/PDF enviada ao cliente.</p>
+                  <p class="viability-subtitle">Painel interno para comparar estratégias de preço e entender exatamente como cada cenário se distribui. Estes dados não aparecem na proposta impressa/PDF enviada ao cliente.</p>
                   <span id="viabStatusPill" class="viability-pill success">Saudável</span>
                 </div>
+
                 <div class="viability-section-card">
                   <div class="viability-section-head">
-                    <h4>Indicadores de Viabilidade</h4>
-                    <p>Referências internas para entender a faixa de preço ideal e o limite seguro de negociação.</p>
+                    <h4>Cenários de Precificação</h4>
+                    <p>Selecione um cenário para analisar sua composição financeira. Os valores principais abaixo não incluem projetos complementares; o total ao cliente aparece em cada cartão.</p>
                   </div>
                   <div class="viability-section-body">
-                    <div class="viability-price-grid">
-                      <div class="viability-mini-card"><small>Preço mínimo aceitável</small><strong id="viabMinimo">R$ 0,00</strong></div>
-                      <div class="viability-mini-card"><small>Preço ideal</small><strong id="viabIdeal">R$ 0,00</strong></div>
-                      <div class="viability-mini-card"><small>Preço premium</small><strong id="viabPremium">R$ 0,00</strong></div>
-                      <div class="viability-mini-card"><small>Desconto máximo seguro</small><strong id="viabDescontoMax">R$ 0,00</strong></div>
+                    <div class="viability-price-grid enhanced">
+                      <button type="button" class="viability-mini-card scenario-card" data-viab-scenario="minimum" onclick="selectViabilityScenario('minimum')"><small>Cenário mínimo</small><strong id="viabMinimo">R$ 0,00</strong><span class="scenario-total" id="viabMinimoTotal">Total ao cliente: R$ 0,00</span></button>
+                      <button type="button" class="viability-mini-card scenario-card active" data-viab-scenario="ideal" onclick="selectViabilityScenario('ideal')"><small>Cenário ideal</small><strong id="viabIdeal">R$ 0,00</strong><span class="scenario-total" id="viabIdealTotal">Total ao cliente: R$ 0,00</span></button>
+                      <button type="button" class="viability-mini-card scenario-card" data-viab-scenario="premium" onclick="selectViabilityScenario('premium')"><small>Cenário premium</small><strong id="viabPremium">R$ 0,00</strong><span class="scenario-total" id="viabPremiumTotal">Total ao cliente: R$ 0,00</span></button>
+                      <button type="button" class="viability-mini-card scenario-card" data-viab-scenario="commercial" onclick="selectViabilityScenario('commercial')"><small>Comercial atual</small><strong id="viabComercial">R$ 0,00</strong><span class="scenario-total" id="viabComercialTotal">Total ao cliente: R$ 0,00</span></button>
+                    </div>
+                    <div class="viability-insight-row">
+                      <div class="viability-insight"><small>Desconto máximo seguro a partir do ideal</small><strong id="viabDescontoMax">R$ 0,00</strong></div>
+                      <div class="viability-insight"><small>Margem alvo planejada</small><strong id="viabMargemAlvo">R$ 0,00</strong></div>
                     </div>
                   </div>
                 </div>
+
                 <div class="viability-section-card">
                   <div class="viability-section-head">
-                    <h4>Simulador de Desconto e Lucro</h4>
-                    <p>Teste cenários antes de fechar o valor final e veja o impacto na margem e no lucro estimado.</p>
+                    <h4>Composição Financeira do Cenário</h4>
+                    <p>Veja quanto do preço corresponde ao projeto, margem disponível, custos do escritório, adicional premium e complementares.</p>
                   </div>
                   <div class="viability-section-body">
+                    <div class="viability-scenario-summary">
+                      <div class="viability-scenario-hero">
+                        <small>Cenário em análise</small>
+                        <h3 id="viabScenarioName">Cenário ideal</h3>
+                        <strong id="viabScenarioTotal">R$ 0,00</strong>
+                        <span id="viabScenarioDescription">Preço recomendado com margem alvo integral e custos do escritório protegidos.</span>
+                      </div>
+                      <div class="viability-scenario-kpis">
+                        <div class="viability-scenario-kpi"><small>Projeto principal</small><strong id="viabScenarioPrincipal">R$ 0,00</strong></div>
+                        <div class="viability-scenario-kpi"><small>Custos do escritório</small><strong id="viabScenarioOffice">R$ 0,00</strong></div>
+                        <div class="viability-scenario-kpi"><small>Margem disponível</small><strong id="viabScenarioMargin">R$ 0,00</strong></div>
+                        <div class="viability-scenario-kpi"><small>Complementares</small><strong id="viabScenarioComplementary">R$ 0,00</strong></div>
+                      </div>
+                    </div>
+
+                    <div id="viabCompositionBar" class="viability-composition-bar" aria-label="Composição financeira do cenário"></div>
+                    <div class="viability-composition-legend">
+                      <div class="viability-legend-item"><span class="viability-legend-dot"></span><span><strong>Valor técnico do projeto</strong><br><span id="viabLegendProject">R$ 0,00 · 0%</span></span></div>
+                      <div class="viability-legend-item"><span class="viability-legend-dot margin"></span><span><strong>Margem dos profissionais</strong><br><span id="viabLegendMargin">R$ 0,00 · 0%</span></span></div>
+                      <div class="viability-legend-item"><span class="viability-legend-dot premium"></span><span><strong>Adicional premium</strong><br><span id="viabLegendPremium">R$ 0,00 · 0%</span></span></div>
+                      <div class="viability-legend-item"><span class="viability-legend-dot office"></span><span><strong>Custos do escritório</strong><br><span id="viabLegendOffice">R$ 0,00 · 0%</span></span></div>
+                      <div class="viability-legend-item"><span class="viability-legend-dot complementary"></span><span><strong>Complementares / terceirizados</strong><br><span id="viabLegendComplementary">R$ 0,00 · 0%</span></span></div>
+                    </div>
+
+                    <div class="viability-table-wrap">
+                      <table class="viability-detail-table" id="viabCompositionTable"></table>
+                    </div>
+                    <div id="viabDeficitNote" class="viability-deficit-note"></div>
+
+                    <details class="viability-details">
+                      <summary>Ver detalhamento dos custos do escritório <span id="viabOfficeTotalInline">R$ 0,00</span></summary>
+                      <div class="viability-details-body">
+                        <div class="viability-table-wrap"><table class="viability-detail-table" id="viabOfficeCostTable"></table></div>
+                      </div>
+                    </details>
+
+                    <details class="viability-details">
+                      <summary>Ver distribuição analítica entre profissionais <span id="viabProfessionalTotalInline">R$ 0,00</span></summary>
+                      <div class="viability-details-body">
+                        <div class="viability-prof-head"><strong>Repasse analítico no cenário</strong><span>O adicional Premium permanece separado para preservar a regra financeira atual e facilitar a decisão comercial.</span></div>
+                        <div class="viability-table-wrap"><table class="viability-detail-table" id="viabProfessionalTable"></table></div>
+                      </div>
+                    </details>
+                  </div>
+                </div>
+
+                <div class="viability-section-card">
+                  <div class="viability-section-head">
+                    <h4>Simulador de Negociação</h4>
+                    <p>Escolha a referência e teste descontos. O cenário simulado passa a mostrar exatamente qual margem permanece e se existe déficit frente ao mínimo.</p>
+                  </div>
+                  <div class="viability-section-body">
+                    <div class="viability-sim-base"><label>Base da simulação</label><select id="viabSimBase" onchange="selectViabilityScenario('simulated')"><option value="ideal">Cenário ideal</option><option value="premium">Cenário premium</option><option value="commercial">Comercial atual</option></select></div>
                     <div class="viability-form-grid">
-                      <div><label>Desconto simulado (%)</label><input id="viabDescontoPerc" type="number" min="0" step="0.5" value="0" oninput="updateInternalViability()"></div>
-                      <div><label>Desconto simulado (R$)</label><input id="viabDescontoValor" type="number" min="0" step="0.01" value="0" oninput="updateInternalViability()"></div>
+                      <div><label>Desconto simulado (%)</label><input id="viabDescontoPerc" type="number" min="0" step="0.5" value="0" oninput="selectViabilityScenario('simulated')"></div>
+                      <div><label>Desconto simulado (R$)</label><input id="viabDescontoValor" type="number" min="0" step="0.01" value="0" oninput="selectViabilityScenario('simulated')"></div>
                     </div>
                     <div class="viability-output">
-                      <div><small>Valor simulado</small><strong id="viabValorFinal">R$ 0,00</strong></div>
-                      <div><small>Lucro líquido estimado</small><strong id="viabLucroLiquido">R$ 0,00</strong></div>
-                      <div><small>Margem final</small><strong id="viabMargemFinal">0%</strong></div>
+                      <div><small>Total simulado ao cliente</small><strong id="viabValorFinal">R$ 0,00</strong></div>
+                      <div><small>Resultado acima do mínimo</small><strong id="viabLucroLiquido">R$ 0,00</strong></div>
+                      <div><small>Margem comercial final</small><strong id="viabMargemFinal">0%</strong></div>
                     </div>
+                    <div class="viability-sim-actions"><span class="viability-sim-note">A simulação não altera o orçamento nem a proposta. Ela serve apenas para decisão interna até que você informe um desconto ou valor comercial no orçamento.</span><button type="button" class="secondary" onclick="resetViabilitySimulation()">Limpar simulação</button></div>
                   </div>
                 </div>
+
                 <div class="viability-section-card">
                   <div class="viability-section-head">
                     <h4>Prazo Inteligente</h4>
@@ -8024,34 +8179,205 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       return { prazoTecnico, folga, prazoComercial };
     }
 
+    let viabSelectedScenario = 'ideal';
+
+    function viabilityScenarioCatalog(c = lastCalc || {}){
+      const min = Number(c.precoMinimo || 0);
+      const ideal = Number(c.precoAlvo || 0);
+      const premiumExtra = Math.max(Number(c.margemAlvoArquitetos || 0), ideal * 0.15);
+      const premium = ideal + premiumExtra;
+      const commercial = Number(c.sugeridoProjetoPrincipal || ideal || 0);
+      const complementary = Number(c.valorComplementares || 0);
+      const simBaseEl = document.getElementById('viabSimBase');
+      const simBaseKey = simBaseEl?.value || 'ideal';
+      const simBase = simBaseKey === 'premium' ? premium : simBaseKey === 'commercial' ? commercial : ideal;
+      const descontoPerc = Math.max(0, num('viabDescontoPerc'));
+      const descontoValor = Math.max(0, num('viabDescontoValor'));
+      const simulated = Math.max(0, simBase - (simBase * descontoPerc / 100) - descontoValor);
+      return {
+        minimum: { key:'minimum', name:'Cenário mínimo', principal:min, total:min + complementary, description:'Limite técnico-financeiro: cobre o valor do projeto e os custos do escritório, sem margem alvo disponível.' },
+        ideal: { key:'ideal', name:'Cenário ideal', principal:ideal, total:ideal + complementary, description:'Preço recomendado: preserva os custos do escritório e disponibiliza integralmente a margem alvo dos profissionais.' },
+        premium: { key:'premium', name:'Cenário premium', principal:premium, total:premium + complementary, description:'Estratégia de maior valor: mantém o cenário ideal e acrescenta uma camada Premium claramente separada.' },
+        commercial: { key:'commercial', name:'Comercial atual', principal:commercial, total:commercial + complementary, description:'Valor comercial atualmente considerado no orçamento após desconto percentual ou valor final informado.' },
+        simulated: { key:'simulated', name:'Cenário simulado', principal:simulated, total:simulated + complementary, description:'Resultado temporário da negociação simulada. Não altera o orçamento nem a proposta comercial.' }
+      };
+    }
+
+    function viabilityScenarioBreakdown(principal, c = lastCalc || {}){
+      const project = Number(c.valorProjetoBase || 0);
+      const office = Number(c.custosEscritorioTotal || 0);
+      const targetMargin = Number(c.margemAlvoArquitetos || 0);
+      const minimum = Number(c.precoMinimo || (project + office));
+      const ideal = Number(c.precoAlvo || (minimum + targetMargin));
+      const complementary = Number(c.valorComplementares || 0);
+      const marginAvailable = Math.max(0, Math.min(targetMargin, principal - minimum));
+      const premiumExtra = Math.max(0, principal - ideal);
+      const deficit = Math.min(0, principal - minimum);
+      const professionalPool = project + marginAvailable;
+      return { project, office, targetMargin, minimum, ideal, complementary, marginAvailable, premiumExtra, deficit, professionalPool, principal, total: principal + complementary };
+    }
+
+    function viabilityPct(value, total){
+      const n = total > 0 ? (Number(value || 0) / total) * 100 : 0;
+      return `${n.toFixed(1).replace('.', ',')}%`;
+    }
+
+    function selectViabilityScenario(key){
+      viabSelectedScenario = key || 'ideal';
+      updateInternalViability();
+    }
+
+    function resetViabilitySimulation(){
+      const p = document.getElementById('viabDescontoPerc');
+      const v = document.getElementById('viabDescontoValor');
+      const b = document.getElementById('viabSimBase');
+      if(p) p.value = '0';
+      if(v) v.value = '0';
+      if(b) b.value = 'ideal';
+      viabSelectedScenario = 'ideal';
+      updateInternalViability();
+    }
+
+    function renderViabilityOfficeCosts(c){
+      const table = document.getElementById('viabOfficeCostTable');
+      if(!table) return;
+      const rows = [
+        ['Custo fixo rateado', Number(c.custoFixoRateado || 0)],
+        ['Taxa de estrutura', Number(c.taxaEstruturaValor || 0)],
+        ['Reserva financeira', Number(c.reservaValor || 0)],
+        ['Deslocamentos / visitas', Number(c.custoVisitas || 0)],
+        ['RRT/ART de projeto', Number(c.rrtProjetoValor || 0)],
+        ['RRT/ART de execução', Number(c.rrtExecucaoValor || 0)],
+        ['Placa de obra', Number(c.placaValor || 0)],
+        ['Brinde / mimo', Number(c.brindeValor || 0)],
+        ['Adicionais personalizados', Number(c.customExtrasValor || 0)],
+        ['Contingência', Number(c.contingenciaValor || 0)],
+        ['Imposto / nota fiscal', Number(c.impostoValor || 0)]
+      ];
+      table.innerHTML = '<thead><tr><th>Componente</th><th>Valor</th></tr></thead><tbody>' +
+        rows.map(([label, value]) => `<tr><td>${esc(label)}</td><td><strong>${money(value)}</strong></td></tr>`).join('') +
+        `<tr class="total-row"><td>Total dos custos do escritório</td><td>${money(Number(c.custosEscritorioTotal || 0))}</td></tr></tbody>`;
+    }
+
+    function renderViabilityProfessionals(breakdown){
+      const table = document.getElementById('viabProfessionalTable');
+      if(!table) return;
+      const count = getProfessionalCount();
+      const shares = normalizeProfessionalShares(count, false);
+      const names = normalizeProfessionalNames(count);
+      const shareSum = shares.reduce((sum, pct) => sum + Number(pct || 0), 0);
+      const rows = shares.map((pct, i) => {
+        const share = Number(pct || 0);
+        const projectPart = breakdown.project * (share / 100);
+        const marginPart = breakdown.marginAvailable * (share / 100);
+        return `<tr><td>${esc(names[i] || `Profissional ${i + 1}`)}</td><td>${share.toFixed(2).replace('.', ',').replace(',00','')}%</td><td>${money(projectPart)}</td><td>${money(marginPart)}</td><td><strong>${money(projectPart + marginPart)}</strong></td></tr>`;
+      }).join('');
+      table.innerHTML = '<thead><tr><th>Profissional</th><th>Participação</th><th>Projeto</th><th>Margem disponível</th><th>Repasse analítico</th></tr></thead><tbody>' + rows +
+        `<tr class="total-row"><td>Total</td><td>${shareSum.toFixed(2).replace('.', ',').replace(',00','')}%</td><td>${money(breakdown.project)}</td><td>${money(breakdown.marginAvailable)}</td><td>${money(breakdown.professionalPool)}</td></tr></tbody>`;
+    }
+
+    function renderViabilityComposition(scenario, breakdown){
+      const setText = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+      setText('viabScenarioName', scenario.name);
+      setText('viabScenarioTotal', money(breakdown.total));
+      setText('viabScenarioDescription', scenario.description);
+      setText('viabScenarioPrincipal', money(breakdown.principal));
+      setText('viabScenarioOffice', money(breakdown.office));
+      setText('viabScenarioMargin', money(breakdown.marginAvailable));
+      setText('viabScenarioComplementary', money(breakdown.complementary));
+      setText('viabOfficeTotalInline', money(breakdown.office));
+      setText('viabProfessionalTotalInline', money(breakdown.professionalPool));
+
+      const positiveTotal = Math.max(0, breakdown.project) + Math.max(0, breakdown.marginAvailable) + Math.max(0, breakdown.premiumExtra) + Math.max(0, breakdown.office) + Math.max(0, breakdown.complementary);
+      const segments = [
+        ['project', breakdown.project], ['margin', breakdown.marginAvailable], ['premium', breakdown.premiumExtra], ['office', breakdown.office], ['complementary', breakdown.complementary]
+      ];
+      const bar = document.getElementById('viabCompositionBar');
+      if(bar){
+        bar.innerHTML = segments.filter(([,value]) => value > 0).map(([cls,value]) => `<span class="viability-composition-segment ${cls}" style="width:${positiveTotal > 0 ? (value / positiveTotal * 100).toFixed(4) : 0}%" title="${money(value)}"></span>`).join('');
+      }
+      setText('viabLegendProject', `${money(breakdown.project)} · ${viabilityPct(breakdown.project, breakdown.total)}`);
+      setText('viabLegendMargin', `${money(breakdown.marginAvailable)} · ${viabilityPct(breakdown.marginAvailable, breakdown.total)}`);
+      setText('viabLegendPremium', `${money(breakdown.premiumExtra)} · ${viabilityPct(breakdown.premiumExtra, breakdown.total)}`);
+      setText('viabLegendOffice', `${money(breakdown.office)} · ${viabilityPct(breakdown.office, breakdown.total)}`);
+      setText('viabLegendComplementary', `${money(breakdown.complementary)} · ${viabilityPct(breakdown.complementary, breakdown.total)}`);
+
+      const rows = [
+        ['Valor técnico do projeto', breakdown.project],
+        ['Margem disponível aos profissionais', breakdown.marginAvailable],
+        ['Adicional Premium / excedente ao ideal', breakdown.premiumExtra],
+        ['Custos do escritório', breakdown.office],
+        ['Complementares / terceirizados', breakdown.complementary]
+      ];
+      if(breakdown.deficit < 0) rows.push(['Déficit frente ao preço mínimo', breakdown.deficit]);
+      const table = document.getElementById('viabCompositionTable');
+      if(table){
+        table.innerHTML = '<thead><tr><th>Componente</th><th>Valor</th></tr></thead><tbody>' +
+          rows.map(([label,value]) => `<tr class="${value < 0 ? 'danger-row' : ''}"><td>${esc(label)}</td><td><strong>${money(value)}</strong></td></tr>`).join('') +
+          `<tr class="total-row"><td>Total ao cliente no cenário</td><td>${money(breakdown.total)}</td></tr></tbody>`;
+      }
+      const deficitNote = document.getElementById('viabDeficitNote');
+      if(deficitNote){
+        const gap = Math.abs(breakdown.deficit || 0);
+        deficitNote.className = `viability-deficit-note${gap > 0.005 ? ' show' : ''}`;
+        deficitNote.textContent = gap > 0.005 ? `Atenção: este cenário está ${money(gap)} abaixo do preço mínimo do projeto principal. A composição acima evidencia o déficit necessário para fechar esse valor.` : '';
+      }
+      renderViabilityOfficeCosts(lastCalc || {});
+      renderViabilityProfessionals(breakdown);
+    }
+
     function updateInternalViability(){
       if(!lastCalc) return;
       const c = lastCalc;
-      const min = c.precoMinimo || 0;
-      const ideal = c.precoAlvo || 0;
-      const premium = ideal + Math.max(c.margemAlvoArquitetos || 0, ideal * 0.15);
+      const catalog = viabilityScenarioCatalog(c);
+      if(!catalog[viabSelectedScenario]) viabSelectedScenario = 'ideal';
+      const scenario = catalog[viabSelectedScenario];
+      const breakdown = viabilityScenarioBreakdown(scenario.principal, c);
+      const min = catalog.minimum.principal;
+      const ideal = catalog.ideal.principal;
+      const premium = catalog.premium.principal;
+      const commercial = catalog.commercial.principal;
+      const complementary = Number(c.valorComplementares || 0);
       const descontoMax = Math.max(0, ideal - min);
-      const descontoPerc = Math.max(0, num('viabDescontoPerc'));
-      const descontoValor = Math.max(0, num('viabDescontoValor'));
-      const valorProjetoSimulado = Math.max(0, ideal - (ideal * descontoPerc / 100) - descontoValor);
-      const valorClienteSimulado = valorProjetoSimulado + (c.valorComplementares || 0);
-      const lucroLiquido = valorProjetoSimulado - min;
-      const margemFinal = valorProjetoSimulado > 0 ? (lucroLiquido / valorProjetoSimulado) : 0;
+      const simulated = catalog.simulated;
+      const simulatedBreakdown = viabilityScenarioBreakdown(simulated.principal, c);
+      const resultadoSimulado = simulated.principal - min;
+      const margemFinal = simulated.principal > 0 ? (resultadoSimulado / simulated.principal) : 0;
       const setText = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+
       setText('viabMinimo', money(min));
       setText('viabIdeal', money(ideal));
       setText('viabPremium', money(premium));
+      setText('viabComercial', money(commercial));
+      setText('viabMinimoTotal', `Total ao cliente: ${money(min + complementary)}`);
+      setText('viabIdealTotal', `Total ao cliente: ${money(ideal + complementary)}`);
+      setText('viabPremiumTotal', `Total ao cliente: ${money(premium + complementary)}`);
+      setText('viabComercialTotal', `Total ao cliente: ${money(commercial + complementary)}`);
       setText('viabDescontoMax', money(descontoMax));
-      setText('viabValorFinal', money(valorClienteSimulado));
-      setText('viabLucroLiquido', money(lucroLiquido));
+      setText('viabMargemAlvo', money(Number(c.margemAlvoArquitetos || 0)));
+      setText('viabValorFinal', money(simulated.total));
+      setText('viabLucroLiquido', money(resultadoSimulado));
       setText('viabMargemFinal', `${(margemFinal * 100).toFixed(1).replace('.', ',')}%`);
+
+      document.querySelectorAll('[data-viab-scenario]').forEach(el => el.classList.toggle('active', el.dataset.viabScenario === viabSelectedScenario));
+      renderViabilityComposition(scenario, breakdown);
+
       const prazo = suggestedDeadlineData();
       setText('viabPrazoTecnico', `${prazo.prazoTecnico} dias úteis`);
       setText('viabPrazoFolga', `${prazo.folga} dias úteis`);
       setText('viabPrazoComercial', `${prazo.prazoComercial} dias úteis`);
-      let cls = 'success', label = 'Saudável', msg = 'Proposta saudável: o valor cobre custos, impostos, repasses e mantém margem positiva.';
-      if(valorProjetoSimulado < min){ cls = 'danger'; label = 'Abaixo do mínimo'; msg = 'Atenção: o valor simulado está abaixo do mínimo aceitável. Essa proposta pode gerar prejuízo ou comprometer sua margem de lucro.'; }
-      else if(valorProjetoSimulado < ideal){ cls = 'warning'; label = 'Margem apertada'; msg = 'Atenção: o valor simulado cobre o mínimo, mas fica abaixo do preço ideal. Avalie se o desconto realmente vale a pena.'; }
+
+      let cls = 'success', label = 'Saudável', msg = `${scenario.name}: o valor protege o mínimo financeiro e mantém resultado positivo.`;
+      if(breakdown.principal < min){
+        cls = 'danger'; label = 'Abaixo do mínimo';
+        msg = `${scenario.name}: o projeto principal está ${money(min - breakdown.principal)} abaixo do mínimo aceitável. Revise o desconto ou o valor comercial antes de fechar.`;
+      }else if(breakdown.principal < ideal){
+        cls = 'warning'; label = 'Margem apertada';
+        msg = `${scenario.name}: os custos estão cobertos, mas apenas ${money(breakdown.marginAvailable)} da margem alvo de ${money(Number(c.margemAlvoArquitetos || 0))} permanece disponível.`;
+      }else if(breakdown.premiumExtra > 0){
+        cls = 'success'; label = 'Premium';
+        msg = `${scenario.name}: além da margem alvo integral, existe um adicional de ${money(breakdown.premiumExtra)} acima do preço ideal.`;
+      }
       const pill = document.getElementById('viabStatusPill');
       if(pill){ pill.className = `viability-pill ${cls}`; pill.textContent = label; }
       const alert = document.getElementById('viabAlert');
@@ -8149,6 +8475,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
         </div>`).join('');
       cmfinPersistData();
       renderArchitects();
+      if(typeof updateInternalViability === 'function') updateInternalViability();
     }
 
     function updateProfessionalShares(){
@@ -8156,6 +8483,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
       data.professionalNames = getProfessionalNamesFromInputs();
       data.professionalShares = getProfessionalSharesFromInputs();
       cmfinPersistData();
+      if(typeof updateInternalViability === 'function') updateInternalViability();
     }
 
     function updateProfessionalCriterion(){
@@ -10870,6 +11198,8 @@ ${p.obs}` : ''}`;
       setValue('valorComercialManual', '0');
       setValue('viabDescontoPerc', '0');
       setValue('viabDescontoValor', '0');
+      setValue('viabSimBase', 'ideal');
+      if(typeof viabSelectedScenario !== 'undefined') viabSelectedScenario = 'ideal';
       setValue('statusComercial', 'Em análise');
 
       // Itens opcionais voltam ao padrão de uma proposta nova.
