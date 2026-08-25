@@ -6329,6 +6329,396 @@ main{
   }
 </style>
 
+
+<style id="cmfin-budget-workspace-v52">
+  /* V52 — refinamento da aba Orçamento:
+     - remove a navegação redundante de etapas no topo;
+     - mantém o Resumo Financeiro fixo durante toda a área de trabalho;
+     - transforma a Viabilidade em um painel de decisão com navegação interna. */
+
+  #calc .budget-stage-nav { display:none !important; }
+
+  /* Mantém a coluna financeira acompanhando o usuário por toda a aba. */
+  @media (min-width:1101px){
+    #calc,
+    #calc .grid { overflow:visible !important; }
+    #calc .grid {
+      grid-template-columns:minmax(0,1.54fr) minmax(350px,.66fr) !important;
+      grid-template-rows:auto auto;
+      gap:18px !important;
+      align-items:start !important;
+    }
+    #calc .budget-workspace-card {
+      grid-column:1;
+      grid-row:1;
+    }
+    #calc .stack-col-v51 {
+      grid-column:2;
+      grid-row:1 / span 2;
+      position:sticky !important;
+      top:92px !important;
+      align-self:start !important;
+      z-index:8;
+      max-height:calc(100vh - 108px);
+      overflow:auto;
+      overscroll-behavior:contain;
+      scrollbar-width:thin;
+      padding-right:2px;
+    }
+    #calc .stack-col-v51::-webkit-scrollbar { width:6px; }
+    #calc .stack-col-v51::-webkit-scrollbar-thumb { background:#cdd9d3; border-radius:999px; }
+    #calc .viability-workspace-v51 {
+      grid-column:1 !important;
+      grid-row:2 !important;
+      width:100% !important;
+      min-width:0;
+    }
+  }
+
+  /* Resumo financeiro: visual mais enxuto para caber melhor na área fixa. */
+  #calc .financial-summary-card {
+    box-shadow:0 16px 34px rgba(16,37,31,.09);
+    border-color:#d7e2dc;
+  }
+  #calc .financial-summary-card > h2 {
+    padding:14px 16px 13px;
+  }
+  #calc .financial-summary-card > h2::after {
+    content:'Resumo do orçamento em tempo real.';
+    font-size:.7rem;
+  }
+  #calc .financial-summary-card .card-body { padding:13px; }
+  #calc .financial-primary-grid-v51 { gap:7px; }
+  #calc .financial-primary-grid-v51 .metric {
+    min-height:68px;
+    padding:9px 10px;
+  }
+  #calc .financial-primary-grid-v51 .metric.metric-total-v51 {
+    min-height:94px;
+    padding:13px;
+  }
+  #calc .financial-primary-grid-v51 .metric.metric-total-v51 strong { font-size:1.55rem; }
+  #calc .financial-primary-grid-v51 .metric.metric-diagnosis-v51 { min-height:58px; }
+  #calc .financial-details-v51 { margin-top:8px; }
+  #calc .financial-commercial-v51 { margin-top:9px; padding-top:9px; }
+  #calc .financial-commercial-v51 > .hint { display:none; }
+
+  /* ===== Painel de decisão / Viabilidade ===== */
+  #calc .viability-dashboard-v52 {
+    border:1px solid #d9e4de !important;
+    border-radius:20px !important;
+    background:#f8faf9;
+    overflow:hidden;
+    box-shadow:0 18px 40px rgba(16,37,31,.075) !important;
+  }
+  #calc .viability-dashboard-v52::before {
+    height:3px;
+    background:linear-gradient(90deg,#e1121c 0 72px,#123d33 72px 100%);
+    opacity:1;
+  }
+  #calc .viability-dashboard-v52 > h2 {
+    padding:17px 18px 15px;
+    background:#fff;
+    border-bottom:0;
+    font-size:1.02rem;
+  }
+  #calc .viability-dashboard-v52 > h2::after {
+    content:'Painel de decisão para preço, composição, negociação e prazo.';
+    font-size:.72rem;
+    color:#7b8983;
+    margin-top:4px;
+  }
+  #calc .viability-dashboard-v52 .viability-body {
+    display:block !important;
+    padding:0 !important;
+  }
+  #calc .viability-dashboard-v52 .viability-head {
+    margin:0;
+    padding:12px 18px;
+    background:linear-gradient(180deg,#f8fbf9,#f3f7f5);
+    border-top:1px solid #e5ece8;
+    border-bottom:1px solid #e1e9e4;
+    align-items:center;
+  }
+  #calc .viability-dashboard-v52 .viability-subtitle {
+    max-width:680px;
+    font-size:.74rem;
+    line-height:1.4;
+    color:#6f7e77;
+  }
+  #calc .viability-dashboard-v52 .viability-pill {
+    padding:7px 10px;
+    font-size:.64rem;
+    box-shadow:inset 0 0 0 1px rgba(22,112,59,.10);
+  }
+
+  .viability-tabs-v52 {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:7px;
+    padding:10px 12px;
+    background:#eef4f1;
+    border-bottom:1px solid #dce6e1;
+  }
+  .viability-tab-v52 {
+    min-height:48px;
+    padding:8px 10px;
+    border:1px solid transparent;
+    border-radius:12px;
+    background:transparent;
+    color:#53645d;
+    box-shadow:none;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    text-align:left;
+    font-family:inherit;
+    transition:.16s ease;
+  }
+  .viability-tab-v52:hover {
+    transform:none;
+    filter:none;
+    background:#fff;
+    border-color:#d8e3dd;
+  }
+  .viability-tab-v52.active {
+    background:#fff;
+    color:#0f392f;
+    border-color:#cbdad2;
+    box-shadow:0 7px 18px rgba(16,37,31,.07);
+  }
+  .viability-tab-icon-v52 {
+    width:30px;
+    height:30px;
+    flex:0 0 auto;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#dfeae5;
+    color:#16483b;
+    font-size:.74rem;
+    font-weight:900;
+  }
+  .viability-tab-v52.active .viability-tab-icon-v52 {
+    background:#123d33;
+    color:#fff;
+  }
+  .viability-tab-copy-v52 { min-width:0; }
+  .viability-tab-copy-v52 strong {
+    display:block;
+    font-size:.73rem;
+    line-height:1.15;
+    color:inherit;
+  }
+  .viability-tab-copy-v52 span {
+    display:block;
+    margin-top:2px;
+    font-size:.61rem;
+    line-height:1.2;
+    color:#87948e;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  #calc .viability-dashboard-v52 .viability-section-card {
+    display:none;
+    margin:12px;
+    border:1px solid #dce6e1;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 8px 20px rgba(16,37,31,.04);
+    overflow:hidden;
+  }
+  #calc .viability-dashboard-v52 .viability-section-card.v52-panel-active {
+    display:block;
+    animation:cmfinPanelInV52 .18s ease-out;
+  }
+  @keyframes cmfinPanelInV52 {
+    from { opacity:.35; transform:translateY(3px); }
+    to { opacity:1; transform:none; }
+  }
+  #calc .viability-dashboard-v52 .viability-section-head {
+    padding:13px 15px 11px;
+    border-top:0 !important;
+    border-bottom:1px solid #e7ece9;
+    background:linear-gradient(180deg,#fbfdfc,#f8faf9);
+  }
+  #calc .viability-dashboard-v52 .viability-section-head h4 {
+    font-size:.94rem;
+  }
+  #calc .viability-dashboard-v52 .viability-section-head p {
+    margin-top:4px;
+    max-width:760px;
+    font-size:.73rem;
+    line-height:1.38;
+  }
+  #calc .viability-dashboard-v52 .viability-section-body { padding:14px; }
+
+  /* Cenários: cards mais compactos, com leitura de decisão imediata. */
+  #calc .viability-dashboard-v52 .viability-price-grid.enhanced {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+  #calc .viability-dashboard-v52 .viability-mini-card.scenario-card {
+    min-height:88px;
+    padding:12px 13px;
+    border-radius:13px;
+    background:#fbfdfc;
+  }
+  #calc .viability-dashboard-v52 .viability-mini-card.scenario-card.active {
+    background:linear-gradient(180deg,#f4faf7,#edf6f2);
+    border-color:#205244;
+    box-shadow:inset 3px 0 0 #123d33, 0 7px 16px rgba(16,37,31,.06);
+  }
+  #calc .viability-dashboard-v52 .viability-mini-card.scenario-card.active::after {
+    top:9px;
+    right:9px;
+    background:#123d33;
+  }
+  #calc .viability-dashboard-v52 .viability-insight-row {
+    gap:9px;
+    margin-top:9px;
+  }
+  #calc .viability-dashboard-v52 .viability-insight {
+    padding:10px 11px;
+    background:#f6f9f7;
+  }
+
+  /* Composição: destaca o cenário e reduz o peso visual da tabela. */
+  #calc .viability-dashboard-v52 .viability-scenario-summary {
+    grid-template-columns:1.15fr .85fr;
+    gap:11px;
+  }
+  #calc .viability-dashboard-v52 .viability-scenario-hero {
+    min-height:150px;
+    padding:15px;
+    border-radius:13px;
+  }
+  #calc .viability-dashboard-v52 .viability-scenario-hero strong { font-size:1.65rem; }
+  #calc .viability-dashboard-v52 .viability-scenario-kpis { gap:8px; }
+  #calc .viability-dashboard-v52 .viability-scenario-kpi {
+    min-height:70px;
+    padding:10px;
+    border-radius:11px;
+  }
+  #calc .viability-dashboard-v52 .viability-composition-bar {
+    min-height:12px;
+    margin:13px 0 10px;
+  }
+  #calc .viability-dashboard-v52 .viability-composition-legend {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px 10px;
+    padding:10px;
+    margin-bottom:11px;
+    border:1px solid #e2e9e5;
+    border-radius:12px;
+    background:#f8faf9;
+  }
+  #calc .viability-dashboard-v52 .viability-detail-table { font-size:.76rem; }
+  #calc .viability-dashboard-v52 .viability-detail-table th,
+  #calc .viability-dashboard-v52 .viability-detail-table td { padding:8px 10px; }
+  #calc .viability-dashboard-v52 .viability-details {
+    margin-top:8px;
+    border-radius:11px;
+  }
+  #calc .viability-dashboard-v52 .viability-details summary { padding:10px 12px; font-size:.75rem; }
+
+  /* Simulador: área de entrada e resultados com hierarquia de operação. */
+  #calc .viability-dashboard-v52 .viability-simulator-v51 .viability-section-body {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  #calc .viability-dashboard-v52 .viability-sim-base { margin-bottom:0; }
+  #calc .viability-dashboard-v52 .viability-form-grid { margin-bottom:0; gap:9px; }
+  #calc .viability-dashboard-v52 .viability-form-grid input,
+  #calc .viability-dashboard-v52 .viability-sim-base select {
+    min-height:44px;
+    border-radius:11px;
+  }
+  #calc .viability-dashboard-v52 .viability-output { gap:8px; }
+  #calc .viability-dashboard-v52 .viability-output > div {
+    min-height:72px;
+    padding:10px 11px;
+    border-radius:11px;
+    background:#f4f8f6;
+  }
+  #calc .viability-dashboard-v52 .viability-sim-actions {
+    margin-top:0;
+    padding:11px;
+    border:1px solid #e1e9e4;
+    border-radius:12px;
+    background:#fbfdfc;
+  }
+  #calc .viability-dashboard-v52 .viability-sim-note { font-size:.69rem; }
+  #calc .viability-dashboard-v52 .viability-sim-buttons button {
+    min-height:39px;
+    padding:8px 11px;
+    border-radius:10px;
+    font-size:.72rem;
+  }
+
+  /* Prazo: leitura de três etapas e ação final clara. */
+  #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
+    margin-bottom:11px;
+  }
+  #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid > div {
+    min-height:86px;
+    padding:12px;
+    border-radius:12px;
+    background:linear-gradient(180deg,#fbfdfc,#f4f8f6);
+  }
+  #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid > div:last-child {
+    border-color:#bdd7ca;
+    background:#eef7f2;
+  }
+  #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid strong { font-size:1.08rem; }
+  #calc .viability-dashboard-v52 .viability-deadline-v51 .viability-section-body > button {
+    margin-left:auto;
+    margin-right:0;
+    min-height:39px;
+    padding:8px 13px;
+    border-radius:10px;
+    font-size:.72rem;
+  }
+
+  #calc .viability-dashboard-v52 #viabAlert {
+    margin:0 12px 12px;
+    padding:10px 12px;
+    border-radius:11px;
+    font-size:.74rem;
+  }
+
+  @media (max-width:1100px){
+    #calc .grid { grid-template-columns:1fr !important; }
+    #calc .stack-col-v51 {
+      position:static !important;
+      max-height:none;
+      overflow:visible;
+      grid-column:auto;
+      grid-row:auto;
+    }
+    #calc .viability-workspace-v51 { grid-column:auto !important; grid-row:auto !important; }
+  }
+  @media (max-width:760px){
+    .viability-tabs-v52 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    #calc .viability-dashboard-v52 .viability-scenario-summary,
+    #calc .viability-dashboard-v52 .viability-composition-legend { grid-template-columns:1fr; }
+  }
+  @media (max-width:520px){
+    .viability-tabs-v52 { grid-template-columns:1fr; }
+    .viability-tab-copy-v52 span { white-space:normal; }
+    #calc .viability-dashboard-v52 .viability-price-grid.enhanced,
+    #calc .viability-dashboard-v52 .viability-insight-row,
+    #calc .viability-dashboard-v52 .viability-output,
+    #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid { grid-template-columns:1fr; }
+  }
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -14007,6 +14397,90 @@ function toggleProposalMiniSection(btn){
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', organizeBudget, {once:true});
   else organizeBudget();
+})();
+</script>
+
+
+<script id="cmfin-budget-workspace-script-v52">
+(function(){
+  const panelMap = {
+    scenarios: 'viability-scenarios-v51',
+    composition: 'viability-composition-v51',
+    simulator: 'viability-simulator-v51',
+    deadline: 'viability-deadline-v51'
+  };
+
+  function activatePanel(key, focusPanel){
+    const card = document.getElementById('internalViabilityCard');
+    if(!card) return;
+    const targetClass = panelMap[key] || panelMap.scenarios;
+    card.querySelectorAll('.viability-section-card').forEach(section => {
+      section.classList.toggle('v52-panel-active', section.classList.contains(targetClass));
+    });
+    card.querySelectorAll('.viability-tab-v52').forEach(btn => {
+      const active = btn.dataset.panel === key;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    card.dataset.activeViabilityPanel = key;
+    if(focusPanel){
+      const panel = card.querySelector('.' + targetClass);
+      if(panel) panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  }
+  window.cmfinSetViabilityPanel = function(key){ activatePanel(key, false); };
+
+  function enhance(){
+    const calc = document.getElementById('calc');
+    if(!calc || calc.dataset.workspaceV52 === '1') return;
+    const grid = calc.querySelector(':scope > .grid');
+    const budget = grid?.querySelector(':scope > .budget-workspace-card');
+    const stack = grid?.querySelector(':scope > .stack-col-v51');
+    const viability = grid?.querySelector(':scope > .viability-workspace-v51') || document.getElementById('internalViabilityCard');
+    if(!grid || !budget || !stack || !viability){
+      setTimeout(enhance, 40);
+      return;
+    }
+    calc.dataset.workspaceV52 = '1';
+
+    calc.querySelectorAll('.budget-stage-nav').forEach(el => el.remove());
+    stack.classList.add('financial-sticky-v52');
+    viability.classList.add('viability-dashboard-v52');
+
+    const body = viability.querySelector('.viability-body');
+    if(!body) return;
+    const sections = Array.from(body.querySelectorAll(':scope > .viability-section-card'));
+    if(sections[0] && !sections[0].classList.contains(panelMap.scenarios)) sections[0].classList.add(panelMap.scenarios);
+    if(sections[1] && !sections[1].classList.contains(panelMap.composition)) sections[1].classList.add(panelMap.composition);
+    if(sections[2] && !sections[2].classList.contains(panelMap.simulator)) sections[2].classList.add(panelMap.simulator);
+    if(sections[3] && !sections[3].classList.contains(panelMap.deadline)) sections[3].classList.add(panelMap.deadline);
+
+    if(!body.querySelector('.viability-tabs-v52')){
+      const nav = document.createElement('div');
+      nav.className = 'viability-tabs-v52 no-print';
+      nav.setAttribute('role','tablist');
+      nav.setAttribute('aria-label','Áreas da análise de viabilidade');
+      nav.innerHTML = [
+        ['scenarios','01','Cenários','Escolha a estratégia'],
+        ['composition','02','Composição','Entenda os valores'],
+        ['simulator','03','Negociação','Teste descontos'],
+        ['deadline','04','Prazo','Defina a entrega']
+      ].map(([key,num,title,desc]) =>
+        '<button type="button" class="viability-tab-v52" role="tab" data-panel="'+key+'" aria-selected="false" onclick="cmfinSetViabilityPanel(\''+key+'\')">'+
+          '<span class="viability-tab-icon-v52">'+num+'</span>'+
+          '<span class="viability-tab-copy-v52"><strong>'+title+'</strong><span>'+desc+'</span></span>'+
+        '</button>'
+      ).join('');
+      const head = body.querySelector(':scope > .viability-head');
+      if(head) head.insertAdjacentElement('afterend', nav);
+      else body.prepend(nav);
+    }
+
+    activatePanel(viability.dataset.activeViabilityPanel || 'scenarios', false);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enhance, {once:true});
+  else enhance();
 })();
 </script>
 
