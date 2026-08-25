@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
+  <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
   <!-- Ajuste: Padrão CM128 restaurado com tipografia/estilo da versão index_cmfin_orcamento_mobile_scroll_corrigido.html -->
@@ -7820,6 +7821,7 @@ main{
                 <div class="accordion-body">
                   <div class="actions">
                     <button class="secondary" onclick="fillProposalDefaults()">Preencher com Dados do Orçamento</button>
+                    <button id="proposalHistorySaveBtn" class="success" style="display:none" onclick="addToHistory()">Salvar alterações da proposta</button>
                     <button class="danger" onclick="startNewProposal()">Nova Proposta</button>
                     <button onclick="copyProposal()">Copiar texto</button>
                     <button onclick="printProposal()">Imprimir / PDF</button>
@@ -8113,6 +8115,7 @@ main{
     let data = structuredClone(defaultData);
     let lastCalc = {};
     let editingHistoryIndex = null;
+    let editingHistoryMode = null; // 'budget' | 'proposal'
 
     function mergeDefaults(target, defaults){
       for(const key in defaults){
@@ -10674,22 +10677,41 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       toast('Papel timbrado removido. A proposta ficará em modelo limpo.');
     }
 
+    const PROPOSAL_HISTORY_FIELD_IDS = [
+      'propTitulo','propNumero','propData','propCliente','propContato','propObjeto',
+      'propValorTotalManual','propEntradaValor','propEntradaVencimento','propParcelasQtd',
+      'propParcelaValor','propFormaPagamento','propPagamentoManual','propEndereco',
+      'propIntro','propEscopo','propPrazoDias','propObs'
+    ];
+
+    function collectProposalState(){
+      const fields = {};
+      PROPOSAL_HISTORY_FIELD_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) fields[id] = el.value;
+      });
+      return { fields };
+    }
+
     function collectCurrentBudgetState(){
-      const ids = ['cliente','data','servico','complexidade','padrao','prazo','endereco','diasUteisProjeto','diasSabadosProjeto','visitas','kmVisita','modeloVeiculo','kmCidade','kmEstrada','tipoTrajeto','valorCombustivel','manutencaoVisita','deslocamentoSugerido','valorAlimentacao','horasAdicionais','desconto','valorComercialManual','statusComercial','numeroPropostaAtual','qtdProfissionais','criterioDivisaoProfissionais','propTitulo','propNumero','propData','propCliente','propContato','propObjeto','propValorTotalManual','propEntradaValor','propEntradaVencimento','propParcelasQtd','propParcelaValor','propFormaPagamento','propPagamentoManual','propEndereco','propIntro','propEscopo','propPrazoDias','propObs'];
+      const ids = ['cliente','data','servico','complexidade','padrao','prazo','endereco','diasUteisProjeto','diasSabadosProjeto','visitas','kmVisita','modeloVeiculo','kmCidade','kmEstrada','tipoTrajeto','valorCombustivel','manutencaoVisita','deslocamentoSugerido','valorAlimentacao','horasAdicionais','desconto','valorComercialManual','statusComercial','numeroPropostaAtual','qtdProfissionais','criterioDivisaoProfissionais', ...PROPOSAL_HISTORY_FIELD_IDS];
       const checks = ['rrtProjeto','rrtExecucao','notaFiscal','placa','brinde','reserva'];
       const fields = {};
       ids.forEach(id => { const el = document.getElementById(id); if(el) fields[id] = el.value; });
       checks.forEach(id => { const el = document.getElementById(id); if(el) fields[id] = !!el.checked; });
       return { fields, complementaryServices: structuredClone(data.complementaryServices || []) };
     }
+
+    function setHistoryFieldValue(id, value){
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(el.type === 'checkbox') el.checked = !!value;
+      else el.value = value ?? '';
+    }
+
     function applyBudgetState(state){
-      if(!state || !state.fields) return;
-      Object.entries(state.fields).forEach(([id, value]) => {
-        const el = document.getElementById(id);
-        if(!el) return;
-        if(el.type === 'checkbox') el.checked = !!value;
-        else el.value = value ?? '';
-      });
+      if(!state || !state.fields) return false;
+      Object.entries(state.fields).forEach(([id, value]) => setHistoryFieldValue(id, value));
       if(Array.isArray(state.complementaryServices)){
         data.complementaryServices = structuredClone(state.complementaryServices);
         renderComplementaryServices();
@@ -10697,10 +10719,87 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       togglePaymentFields();
       calculate();
       buildProposal();
+      return true;
     }
+
+    function applyLegacyHistoryBudget(h){
+      if(!h) return;
+      setHistoryFieldValue('data', h.data || todayISO());
+      setHistoryFieldValue('cliente', h.cliente || '');
+      setHistoryFieldValue('servico', h.servico || '');
+      setHistoryFieldValue('endereco', h.endereco || '');
+      setHistoryFieldValue('diasUteisProjeto', h.diasUteis || 0);
+      setHistoryFieldValue('diasSabadosProjeto', h.diasSabados || 0);
+      setHistoryFieldValue('complexidade', h.complexidade || 'Média');
+      setHistoryFieldValue('padrao', h.padrao || 'Médio');
+      setHistoryFieldValue('prazo', h.prazo || 'Normal');
+      setHistoryFieldValue('statusComercial', h.statusComercial || 'Em análise');
+      if(Number(h.valorComercialManual || 0) > 0){
+        setHistoryFieldValue('valorComercialManual', Number(h.valorComercialManual));
+      }else if(Number(h.valor || 0) > 0){
+        // Registros antigos não possuíam o estado completo. Mantém ao menos o valor comercial salvo.
+        setHistoryFieldValue('valorComercialManual', Number(h.valor));
+      }
+      calculate();
+    }
+
+    function legacyProposalStateFromHistory(h){
+      const total = Number(h?.valor || 0);
+      const service = String(h?.servico || 'PROJETO').trim();
+      const address = String(h?.endereco || '').trim();
+      return { fields: {
+        propTitulo: `DESCRIÇÃO DA PROPOSTA - ${service.toUpperCase()}`,
+        propNumero: h?.numeroProposta || '',
+        propData: h?.data || todayISO(),
+        propCliente: h?.cliente || '',
+        propContato: '',
+        propObjeto: service,
+        propValorTotalManual: total > 0 ? money(total) : '',
+        propEntradaValor: '',
+        propEntradaVencimento: '',
+        propParcelasQtd: '5',
+        propParcelaValor: '',
+        propFormaPagamento: 'padrao',
+        propPagamentoManual: '',
+        propEndereco: address,
+        propIntro: `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${service.toUpperCase()}${address ? `, localizado em ${address}` : ''}.`,
+        propEscopo: 'PLANTA BAIXA - EXECUTIVA DE OBRA\nPLANTA BAIXA - HUMANIZADA\nPLANTA DE PONTOS ELÉTRICOS\nPLANTA DE FORRO\nPLANTA DE PAGINAÇÃO DE PISO\nCORTES/ELEVAÇÕES\nDETALHAMENTOS',
+        propPrazoDias: '20',
+        propObs: ''
+      } };
+    }
+
+    function proposalStateFromHistory(h){
+      if(h?.proposalState?.fields) return h.proposalState;
+      if(h?.state?.fields){
+        const fields = {};
+        PROPOSAL_HISTORY_FIELD_IDS.forEach(id => {
+          if(Object.prototype.hasOwnProperty.call(h.state.fields, id)) fields[id] = h.state.fields[id];
+        });
+        if(Object.keys(fields).length) return { fields };
+      }
+      return legacyProposalStateFromHistory(h);
+    }
+
+    function applyProposalState(state){
+      if(!state || !state.fields) return;
+      PROPOSAL_HISTORY_FIELD_IDS.forEach(id => {
+        if(Object.prototype.hasOwnProperty.call(state.fields, id)) setHistoryFieldValue(id, state.fields[id]);
+      });
+      togglePaymentFields();
+      syncDeliverableChecks();
+      buildProposal();
+    }
+
     function updateHistorySaveButton(){
       const btn = document.getElementById('historySaveBtn');
       if(btn) btn.textContent = editingHistoryIndex === null ? 'Salvar no Histórico' : 'Salvar alterações no histórico';
+      const proposalBtn = document.getElementById('proposalHistorySaveBtn');
+      if(proposalBtn){
+        const editingProposal = editingHistoryIndex !== null && editingHistoryMode === 'proposal';
+        proposalBtn.style.display = editingProposal ? '' : 'none';
+        proposalBtn.textContent = 'Salvar alterações da proposta';
+      }
     }
 
     function fillProposalDefaults(){
@@ -10770,6 +10869,12 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       };
     }
 
+    function formatCommercialPercent(value){
+      const n = Math.max(0, Number(value || 0));
+      const rounded = Math.round(n * 100) / 100;
+      return `${rounded.toFixed(2).replace(/\.?0+$/, '').replace('.', ',')}%`;
+    }
+
     function updateCommercialConditionsSummary(valorTotal = proposalTotalValue()){
       const info = proposalCommercialAdjustment(valorTotal);
       const setText = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
@@ -10779,7 +10884,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const card = document.getElementById('propCommercialDiscountCard');
       if(card) card.classList.remove('discount-active','adjustment-up');
       if(info.discount > 0.005){
-        setText('propCommercialDiscount', `${info.discountPct.toFixed(2).replace('.', ',')}% · ${money(info.discount)}`);
+        setText('propCommercialDiscount', `${formatCommercialPercent(info.discountPct)} · ${money(info.discount)}`);
         if(card) card.classList.add('discount-active');
       }else if(info.surcharge > 0.005){
         setText('propCommercialDiscount', `Acréscimo de ${money(info.surcharge)}`);
@@ -10794,8 +10899,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const metade = valorTotal / 2;
       const commercial = proposalCommercialAdjustment(valorTotal);
       const base = commercial.discount > 0.005
-        ? `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, objeto desta proposta, o valor de referência é de <strong>${money(commercial.referenceTotal)}</strong>. Considerando desconto comercial de <strong>${commercial.discountPct.toFixed(2).replace('.', ',')}% sobre o projeto principal</strong>, equivalente a <strong>${money(commercial.discount)}</strong>, o(a) CONTRATANTE pagará ao(à) CONTRATADO(a) o valor final de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`
-        : `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, objeto desta proposta, o(a) CONTRATANTE pagará ao(à) CONTRATADO(a) o valor total de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`;
+        ? `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, o valor de referência é de <strong>${money(commercial.referenceTotal)}</strong>. Aplicado o desconto comercial de <strong>${formatCommercialPercent(commercial.discountPct)} (${money(commercial.discount)})</strong>, o valor final da proposta é de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`
+        : `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, o valor total da proposta é de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`;
       if(mode === 'avista'){
         return [base, `<p><strong>O pagamento será realizado à vista</strong>, no valor total de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>, conforme condições acordadas entre as partes.</p>`];
       }
@@ -10830,8 +10935,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const mode = document.getElementById('propFormaPagamento')?.value || 'padrao';
       const commercial = proposalCommercialAdjustment(valorTotal);
       const base = commercial.discount > 0.005
-        ? `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, objeto desta proposta, o valor de referência é de ${money(commercial.referenceTotal)}. Considerando desconto comercial de ${commercial.discountPct.toFixed(2).replace('.', ',')}% sobre o projeto principal, equivalente a ${money(commercial.discount)}, o(a) CONTRATANTE pagará ao(à) CONTRATADO(a) o valor final de ${money(valorTotal)} (${valorExtenso}).`
-        : `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, objeto desta proposta, o(a) CONTRATANTE pagará ao(à) CONTRATADO(a) o valor total de ${money(valorTotal)} (${valorExtenso}).`;
+        ? `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, o valor de referência é de ${money(commercial.referenceTotal)}. Aplicado o desconto comercial de ${formatCommercialPercent(commercial.discountPct)} (${money(commercial.discount)}), o valor final da proposta é de ${money(valorTotal)} (${valorExtenso}).`
+        : `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, o valor total da proposta é de ${money(valorTotal)} (${valorExtenso}).`;
       if(mode === 'avista') return `${base}\n\nO pagamento será realizado à vista, no valor total de ${money(valorTotal)} (${valorExtenso}), conforme condições acordadas entre as partes.`;
       if(mode === 'entrada_parcelas'){
         const entrada = parseBRLCurrency(document.getElementById('propEntradaValor')?.value || '');
@@ -11716,11 +11821,12 @@ ${p.obs}` : ''}`;
       const entry = {
         numeroProposta, statusComercial,
         data: val('data'), cliente: val('cliente'), servico: val('servico'), endereco: val('endereco'), diasUteis: num('diasUteisProjeto'), diasSabados: num('diasSabadosProjeto'), complexidade: val('complexidade'), padrao: val('padrao'), prazo: val('prazo'), valor: lastCalc.sugerido, projetoPrincipal: lastCalc.sugeridoProjetoPrincipal, valorComercialManual: lastCalc.valorComercialManual, ajusteComercial: lastCalc.ajusteComercial, complementares: lastCalc.valorComplementares, minimo: lastCalc.precoMinimo, alvo: lastCalc.precoAlvo, lucro: lastCalc.lucro, status: lastCalc.status,
-        savedAt: new Date().toISOString(), state: collectCurrentBudgetState(), proposalText: buildProposal()
+        savedAt: new Date().toISOString(), state: collectCurrentBudgetState(), proposalState: collectProposalState(), proposalText: buildProposal()
       };
       if(editingHistoryIndex !== null && data.history[editingHistoryIndex]){
         data.history[editingHistoryIndex] = Object.assign({}, data.history[editingHistoryIndex], entry, { updatedAt: new Date().toISOString() });
         editingHistoryIndex = null;
+        editingHistoryMode = null;
         toast('Alterações salvas no histórico.');
       }else{
         data.history.unshift(entry);
@@ -11728,20 +11834,43 @@ ${p.obs}` : ''}`;
       }
       renderHistory(); saveAll(); updateHistorySaveButton(); openTab('history');
     }
-    function editHistory(i){
+    function restoreHistoryEntryForEditing(i, mode = 'budget'){
       const h = data.history[i];
-      if(!h) return;
+      if(!h) return null;
       editingHistoryIndex = i;
-      if(h.state) applyBudgetState(h.state);
+      editingHistoryMode = mode;
+
+      const restoredFullState = !!(h.state && applyBudgetState(h.state));
+      if(!restoredFullState) applyLegacyHistoryBudget(h);
+
       syncProposalNumber(h.numeroProposta || val('numeroPropostaAtual') || val('propNumero') || '');
-      const sc = document.getElementById('statusComercial'); if(sc) sc.value = h.statusComercial || 'Em análise';
-      else{
-        const set = (id, value) => { const el = document.getElementById(id); if(el) el.value = value ?? ''; };
-        set('data', h.data || todayISO()); set('cliente', h.cliente || ''); set('servico', h.servico || ''); set('endereco', h.endereco || ''); set('diasUteisProjeto', h.diasUteis || 0); set('diasSabadosProjeto', h.diasSabados || 0); set('complexidade', h.complexidade || 'Média'); set('padrao', h.padrao || 'Médio'); set('prazo', h.prazo || 'Normal'); calculate(); fillProposalDefaults();
+      setHistoryFieldValue('statusComercial', h.statusComercial || 'Em análise');
+
+      if(mode === 'proposal'){
+        applyProposalState(proposalStateFromHistory(h));
       }
+
       updateHistorySaveButton();
+      return h;
+    }
+
+    function editHistory(i){
+      const h = restoreHistoryEntryForEditing(i, 'budget');
+      if(!h) return;
       openTab('calc');
       toast('Orçamento carregado para edição. Após ajustar, clique em Salvar alterações no histórico.');
+    }
+
+    function editProposalFromHistory(i){
+      const h = restoreHistoryEntryForEditing(i, 'proposal');
+      if(!h) return;
+      openTab('proposal');
+      updateHistorySaveButton();
+      buildProposal();
+      const hasFullProposal = !!(h.proposalState?.fields || h.state?.fields);
+      toast(hasFullProposal
+        ? 'Proposta carregada com os dados salvos. Edite os campos e clique em Salvar alterações da proposta.'
+        : 'Proposta antiga carregada com os dados disponíveis. Alguns campos não existiam no histórico antigo e não podem ser recuperados automaticamente.');
     }
     const HISTORY_MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     let historyYearPageStart = new Date().getFullYear() - 5;
@@ -11918,7 +12047,7 @@ ${p.obs}` : ''}`;
       const rows = filteredHistory();
       renderHistoryDashboard(rows);
       table.innerHTML = `<thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Serviço</th><th>Endereço</th><th>Dias úteis</th><th>Sábados</th><th>Total ao cliente</th><th>Complementares</th><th>Mínimo</th><th>Alvo</th><th>Lucro</th><th>Status financeiro</th><th>Status comercial</th><th class="no-print">Ação</th></tr></thead><tbody>` +
-        (rows.length ? rows.map(({h,i})=>`<tr><td><strong>${esc(h.numeroProposta||'-')}</strong></td><td>${h.data||''}</td><td>${esc(h.cliente||'')}</td><td>${esc(h.servico||'')}</td><td>${esc(h.endereco||'')}</td><td>${h.diasUteis||0}</td><td>${h.diasSabados||0}</td><td>${money(h.valor)}</td><td>${money(h.complementares || 0)}</td><td>${money(h.minimo)}</td><td>${money(h.alvo)}</td><td>${money(h.lucro)}</td><td><span class="history-badge ${historyBadgeClassByFinancial(h.status||'')}">${esc(h.status||'')}</span></td><td><span class="history-badge ${historyBadgeClassByCommercial(h.statusComercial||'Em análise')}">${esc(h.statusComercial||'Em análise')}</span></td><td class="no-print"><div class="table-actions"><button class="secondary" onclick="editHistory(${i})">Editar</button><button class="danger" onclick="deleteHistory(${i})">Excluir</button></div></td></tr>`).join('') : '<tr><td colspan="15" class="hint">Nenhum orçamento encontrado para os filtros atuais.</td></tr>') + `</tbody>`;
+        (rows.length ? rows.map(({h,i})=>`<tr><td><strong>${esc(h.numeroProposta||'-')}</strong></td><td>${h.data||''}</td><td>${esc(h.cliente||'')}</td><td>${esc(h.servico||'')}</td><td>${esc(h.endereco||'')}</td><td>${h.diasUteis||0}</td><td>${h.diasSabados||0}</td><td>${money(h.valor)}</td><td>${money(h.complementares || 0)}</td><td>${money(h.minimo)}</td><td>${money(h.alvo)}</td><td>${money(h.lucro)}</td><td><span class="history-badge ${historyBadgeClassByFinancial(h.status||'')}">${esc(h.status||'')}</span></td><td><span class="history-badge ${historyBadgeClassByCommercial(h.statusComercial||'Em análise')}">${esc(h.statusComercial||'Em análise')}</span></td><td class="no-print"><div class="table-actions"><button class="secondary" onclick="editHistory(${i})">Editar orçamento</button><button class="secondary" onclick="editProposalFromHistory(${i})">Editar proposta</button><button class="danger" onclick="deleteHistory(${i})">Excluir</button></div></td></tr>`).join('') : '<tr><td colspan="15" class="hint">Nenhum orçamento encontrado para os filtros atuais.</td></tr>') + `</tbody>`;
     }
     function deleteHistory(i){ data.history.splice(i,1); renderHistory(); saveAll(); }
     function clearHistory(){ if(confirm('Limpar todo o histórico?')){ data.history=[]; renderHistory(); saveAll(); } }
@@ -12042,6 +12171,7 @@ ${p.obs}` : ''}`;
       syncProfessionalShareRows(true);
 
       editingHistoryIndex = null;
+      editingHistoryMode = null;
       updateHistorySaveButton();
       resetProposalCommercialFields();
 
@@ -12168,6 +12298,7 @@ ${p.obs}` : ''}`;
         applyBrandCustomization();
         cmfinUpdateUserHero();
         editingHistoryIndex = null;
+        editingHistoryMode = null;
         updateHistorySaveButton();
         calculate();
         saveAll();
