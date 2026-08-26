@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v71: novo editor de propostas — descrição livre + itens opcionais + edição direta na folha -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
@@ -50,7 +51,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=AywB2_F4biIYkUzBIZlKzOpm2gtntmHmWKx-pyN-0S1MkNyhRTxCIjwn_-O57NKN5uPyiRL3UbZOeom2AWiIc1K_g8Dm95RTKmYzXbLbBtINYaCftmvAKnJvtUlMOXgpFJ69FKw1YRywHkNJTrM9NAeLh9em4vhi1GlhZE9MVIv5eV3yd0PNr-tA1Wl731TkYRTL2eyp9pBmbPlYY8dgIFZIyLYoXAslz0C3AvAc39cpFViO4hwsxY-XOcAutAL-ovtpeEmUxJP9deP0xqqeug" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=RjbLoRc1zdsdkh9xMBVISDml1hCb4GJMwMcyVcxzWT8TmQUMVydzqLEkJhW1P3uh5UoUM3TFTfrPgToO0Im8DCshSvv2ziAia8re9i1n95YtXZbqk-vUc1WYGRxCbECct-4elQCpBTZx2LmTnP8noJR9kbUesi6XVubemqM7YTKxNmnzCVxZtitWXV9i21a6DdrpI9dl3ZCCWZ0CK31i0mQ8ZXgG0XyWCpGj-fs4CHijvrFLi5UOO6XfAjx10xV-TrTrhDd2r1ZhezpgMRvqCc9jxuR-w27gqyXZY_-BejJhnP6DkhwcGfeY-jMJWUpvDT4ySTU-gA9G0CQF3xN4tB6SCRAOh0bQw-tMR-WDnB8" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -6106,6 +6107,36 @@ main{
   }
 </style>
 
+
+<style id="cmfin-v71-proposal-editor">
+  .proposal-free-scope textarea{min-height:180px;line-height:1.62;font-size:.94rem;padding:14px 15px;background:linear-gradient(180deg,#fff 0%,#fbfdfc 100%);}
+  .proposal-optional-label{display:inline-flex;align-items:center;margin-left:7px;padding:3px 7px;border-radius:999px;background:#eef4f1;color:#607169;font-size:.62rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em;vertical-align:middle;}
+  .proposal-direct-editor{display:grid;gap:14px;padding:17px;border:1px solid #d9e5df;border-radius:18px;background:linear-gradient(145deg,#fff 0%,#f6faf8 100%);box-shadow:0 12px 28px rgba(17,44,37,.055);}
+  .proposal-direct-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+  .proposal-direct-editor-head strong{display:block;color:#10251f;font-size:.96rem;letter-spacing:-.015em;}
+  .proposal-direct-editor-head span:not(.proposal-editor-status){display:block;margin-top:5px;color:#6a7972;font-size:.79rem;line-height:1.45;}
+  .proposal-editor-status{flex:0 0 auto;display:inline-flex;align-items:center;min-height:30px;padding:6px 10px;border:1px solid #dce6e1;border-radius:999px;background:#f5f8f6;color:#61716a;font-size:.70rem;font-weight:850;white-space:nowrap;}
+  .proposal-editor-status.is-editing{background:#fff1f0;border-color:#efcfcc;color:#b42318;}
+  .proposal-editor-status.is-saved{background:#eaf7ee;border-color:#ccebd5;color:#16703b;}
+  .proposal-direct-editor-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .proposal-direct-editor-actions button{min-height:43px;padding:10px 12px;border-radius:12px;box-shadow:none;font-size:.79rem;}
+  .proposal-direct-editor-actions button:disabled{opacity:.48;cursor:not-allowed;transform:none;}
+  .proposal-direct-editor-help{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .proposal-direct-editor-help span{padding:9px 10px;border:1px solid #e2eae6;border-radius:11px;background:#fff;color:#63736c;font-size:.72rem;line-height:1.4;}
+  .proposal-quick-blocks-v71{margin-top:14px;}
+  .proposal-quick-blocks-v71 .template-block-buttons{grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.proposal-visual-edit-on .proposal-paper{box-shadow:0 0 0 3px rgba(225,18,28,.06),0 22px 55px rgba(17,44,37,.14);}
+  body.proposal-visual-edit-on .proposal-page-dynamic{min-height:160px;}
+  body.proposal-visual-edit-on .proposal-page-dynamic::selection{background:rgba(225,18,28,.14);}
+  .proposal-service-description > :first-child,.proposal-deliverables-block > :first-child{margin-top:0;}
+  .proposal-service-description > :last-child,.proposal-deliverables-block > :last-child{margin-bottom:0;}
+  .proposal-deliverables-block{margin-top:10px;}
+  @media(max-width:720px){
+    .proposal-direct-editor-head{flex-direction:column;}
+    .proposal-direct-editor-actions,.proposal-direct-editor-help,.proposal-quick-blocks-v71 .template-block-buttons{grid-template-columns:1fr;}
+  }
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -8041,102 +8072,25 @@ main{
                 </div>
               </details>
 
-              <details>
-                <summary><span class="summary-title">Modelo de Texto da Proposta</span><span class="section-hint">Personalize a ordem, títulos e textos com variáveis automáticas.</span></summary>
-                <div class="accordion-body">
-                  <div class="proposal-template-panel proposal-template-simple">
-                    <div class="template-simple-mode">
-                      <label>Modelo utilizado</label>
-                      <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()">
-                        <option value="standard">Modelo padrão</option>
-                        <option value="custom">Modelo personalizado</option>
-                      </select>
-                    </div>
-
-                    <div class="template-simple-card visual-paper-editor-card">
-                      <div class="template-simple-card-head">
-                        <strong>Editor visual no papel timbrado</strong>
-                        <span>Ative a edição e selecione um trecho do texto na folha para abrir a mini barra de formatação.</span>
-                      </div>
-                      <div class="visual-paper-actions">
-                        <button type="button" class="secondary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Editar no papel timbrado</button>
-                        <button type="button" class="primary" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()">Salvar edição no modelo</button>
-                      </div>
-
-                      <p class="visual-paper-hint">Dica: após ativar, selecione um trecho do texto na folha. A mini barra aparece próxima do trecho selecionado, como no Word.</p>
-                    </div>
-
-                    <div id="proposalTemplateStandardNotice" class="template-simple-notice">
-                      <strong>O modelo padrão está ativo.</strong>
-                      Para editar livremente, selecione <b>Modelo personalizado</b>.
-                    </div>
-
-                    <label>Editor do modelo</label>
-                    <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()" placeholder="Monte aqui seu modelo usando as variáveis abaixo."></textarea>
-
-                    <div class="template-actions-row template-simple-actions">
-                      <button type="button" class="secondary" onclick="loadProposalTemplatePreset('standard')">Carregar modelo padrão</button>
-                      <button type="button" class="danger" onclick="resetProposalTemplateText()">Restaurar modelo</button>
-                    </div>
-
-                    <div class="template-simple-card proposal-mini-card proposal-mini-card-variables is-collapsed">
-                      <div class="template-simple-card-head proposal-mini-card-head">
-                        <div>
-                          <strong>Variáveis</strong>
-                          <span>Clique para inserir no texto.</span>
-                        </div>
-                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="false" title="Minimizar/expandir"></button>
-                      </div>
-                      <div class="template-token-grid proposal-mini-content">
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{cliente}}')">Cliente</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{contato}}')">Contato</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{data}}')">Data</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{objeto}}')">Objeto</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{endereco}}')">Endereço</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor}}')">Valor</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{valor_extenso}}')">Valor por Extenso</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{intro}}')">Intro</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{entregaveis}}')">Entregáveis</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{pagamento}}')">Pagamento</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{prazo}}')">Prazo</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateToken('{{observacoes_bloco}}')">Observações</button>
-                      </div>
-                    </div>
-
-                    <div class="template-simple-card proposal-mini-card proposal-mini-card-blocks is-collapsed">
-                      <div class="template-simple-card-head proposal-mini-card-head">
-                        <div>
-                          <strong>Blocos Rápidos</strong>
-                          <span>Insira estruturas prontas no editor.</span>
-                        </div>
-                        <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="false" title="Minimizar/expandir"></button>
-                      </div>
-                      <div class="template-block-buttons proposal-mini-content">
-                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('section')">Inserir Título de Seção</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('paragraph')">Inserir Parágrafo-Base</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('bullet')">Inserir Item em Lista</button>
-                        <button type="button" class="secondary" onclick="insertProposalTemplateSnippet('divider')">Inserir Espaçamento</button>
-                      </div>
-                    </div>
-
-                    <div class="template-simple-help">
-                      <strong>Guia rápido</strong>
-                      <p>Use <code>##</code> no início da linha para criar títulos de seção. Use <code>-</code> ou <code>•</code> para criar itens de lista.</p>
-                    </div>
-                  </div>
+              <details open>
+                <summary><span class="summary-title">Escopo / Descrição do Serviço</span><span class="section-hint">Texto livre para prestadores de serviços em geral.</span></summary>
+                <div class="accordion-body proposal-free-scope">
+                  <label>Descrição do serviço</label>
+                  <textarea id="propDescricaoServico" oninput="buildProposal()" placeholder="Descreva livremente o serviço, etapas, metodologia, responsabilidades e o que está incluído na contratação."></textarea>
+                  <span class="field-help">Escreva como faria em uma proposta comum. Este campo não exige checklist, produtos ou entregáveis.</span>
                 </div>
               </details>
 
               <details>
-                <summary><span class="summary-title">Pranchas / Entregáveis</span><span class="section-hint">Checklist rápido e campo para inserir novos itens.</span></summary>
+                <summary><span class="summary-title">Itens / Entregáveis <span class="proposal-optional-label">Opcional</span></span><span class="section-hint">Use somente quando precisar listar itens, produtos, etapas ou entregas específicas.</span></summary>
                 <div class="accordion-body">
-                  <label>Pranchas / Entregáveis</label>
-                  <textarea id="propEscopo" oninput="buildProposal(); syncDeliverableChecks()" placeholder="Os itens marcados abaixo entram automaticamente aqui. Você também pode ajustar manualmente."></textarea>
+                  <label>Itens / Entregáveis</label>
+                  <textarea id="propEscopo" oninput="buildProposal(); syncDeliverableChecks()" placeholder="Um item por linha. Ex.: Relatório técnico, visita presencial, produto, desenho, treinamento ou arquivo final."></textarea>
                   <div class="deliverables-box">
                     <div class="deliverables-head">
                       <div>
-                        <strong>Checklist de entregáveis</strong>
-                        <span class="hint">Marque os itens/serviços que farão parte da proposta. O texto acima é atualizado automaticamente.</span>
+                        <strong>Checklist de itens / entregáveis</strong>
+                        <span class="hint">Recurso opcional para quem trabalha com entregas estruturadas. Se não precisar, deixe este card vazio.</span>
                       </div>
                       <div class="deliverables-tools">
                         <button type="button" class="secondary" onclick="selectAllDeliverables()">Marcar todos</button>
@@ -8145,10 +8099,62 @@ main{
                     </div>
                     <div id="deliverablesChecklist" class="deliverables-checklist"></div>
                     <div class="deliverable-insert">
-                      <input id="newDeliverable" placeholder="Inserir novo entregável / item do serviço" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addCustomDeliverable(); }">
+                      <input id="newDeliverable" placeholder="Inserir novo item / entregável" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addCustomDeliverable(); }">
                       <button type="button" onclick="addCustomDeliverable()">Inserir</button>
                     </div>
                   </div>
+                </div>
+              </details>
+
+              <details open>
+                <summary><span class="summary-title">Editor da Proposta</span><span class="section-hint">Edite diretamente na folha, com formatação semelhante ao Word.</span></summary>
+                <div class="accordion-body">
+                  <div class="proposal-direct-editor">
+                    <div class="proposal-direct-editor-head">
+                      <div>
+                        <strong>Editar diretamente na folha</strong>
+                        <span>Clique em editar e escreva sobre a própria proposta. Selecione um trecho para abrir a barra de formatação.</span>
+                      </div>
+                      <span id="proposalVisualEditStatus" class="proposal-editor-status">Estrutura automática</span>
+                    </div>
+                    <div class="proposal-direct-editor-actions">
+                      <button type="button" class="primary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Editar diretamente na folha</button>
+                      <button type="button" class="success" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()" disabled>Salvar alterações nesta proposta</button>
+                      <button type="button" class="secondary" onclick="saveProposalVisualEditAsTemplate()">Salvar como modelo reutilizável</button>
+                      <button type="button" class="secondary" onclick="resetCurrentProposalVisualEdit()">Remover edição manual</button>
+                    </div>
+                    <div class="proposal-direct-editor-help">
+                      <span><b>Campos automáticos</b> como cliente, data, número e valores continuam sincronizados.</span>
+                      <span><b>Texto livre</b> pode ser alterado diretamente na página.</span>
+                    </div>
+                  </div>
+
+                  <div class="template-simple-card proposal-mini-card proposal-mini-card-blocks is-collapsed proposal-quick-blocks-v71">
+                    <div class="template-simple-card-head proposal-mini-card-head">
+                      <div>
+                        <strong>Blocos Rápidos</strong>
+                        <span>Insira estruturas prontas diretamente na folha.</span>
+                      </div>
+                      <button type="button" class="proposal-mini-toggle" onclick="toggleProposalMiniSection(this)" aria-expanded="false" title="Minimizar/expandir"></button>
+                    </div>
+                    <div class="template-block-buttons proposal-mini-content">
+                      <button type="button" class="secondary" onclick="insertProposalVisualSnippet('section')">Título de seção</button>
+                      <button type="button" class="secondary" onclick="insertProposalVisualSnippet('paragraph')">Parágrafo</button>
+                      <button type="button" class="secondary" onclick="insertProposalVisualSnippet('bullet')">Lista com marcador</button>
+                      <button type="button" class="secondary" onclick="insertProposalVisualSnippet('numbered')">Lista numerada</button>
+                      <button type="button" class="secondary" onclick="insertProposalVisualSnippet('note')">Observação</button>
+                    </div>
+                  </div>
+
+                  <div class="cmfin-template-engine-hidden" hidden aria-hidden="true">
+                    <select id="proposalTemplateMode" onchange="updateProposalTemplateFromInputs()">
+                      <option value="standard">Modelo padrão</option>
+                      <option value="custom">Modelo personalizado</option>
+                    </select>
+                    <textarea id="proposalTemplateText" oninput="updateProposalTemplateFromInputs()"></textarea>
+                    <div id="proposalTemplateStandardNotice"></div>
+                  </div>
+                  <textarea id="propVisualHtml" hidden aria-hidden="true"></textarea>
                 </div>
               </details>
 
@@ -10447,10 +10453,10 @@ Nº: {{numero}}
 
 {{intro}}
 
-## 1. DA PROPOSTA
-A proposta contempla exclusivamente o(a) {{objeto}}, com os seguintes itens de escopo e entregáveis:
+## 1. DO SERVIÇO
+{{descricao_servico}}
 
-{{entregaveis}}
+{{itens_bloco}}
 
 ## 2. DO INVESTIMENTO E FORMA DE PAGAMENTO
 {{pagamento}}
@@ -10939,6 +10945,8 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
 
       const modeEl = document.getElementById('proposalTemplateMode');
       const textEl = document.getElementById('proposalTemplateText');
+      const visualField = document.getElementById('propVisualHtml');
+      if(visualField) visualField.value = '';
 
       if(modeEl) modeEl.value = 'standard';
       if(textEl){
@@ -10951,7 +10959,7 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
       buildProposal();
       syncDeliverableChecks();
 
-      if(showToast) toast('Modelo padrão restaurado. Checklist de entregáveis voltou a controlar a proposta.');
+      if(showToast) toast('Modelo padrão restaurado. A proposta voltou à estrutura automática.');
     }
 
     function updateProposalTemplateDesignerState(){
@@ -11128,7 +11136,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       'propTitulo','propNumero','propData','propCliente','propContato','propObjeto',
       'propValorTotalManual','propEntradaValor','propEntradaVencimento','propParcelasQtd',
       'propParcelaValor','propFormaPagamento','propPagamentoManual','propEndereco',
-      'propIntro','propEscopo','propPrazoDias','propObs'
+      'propIntro','propDescricaoServico','propEscopo','propPrazoDias','propObs','propVisualHtml'
     ];
 
     function collectProposalState(){
@@ -11260,9 +11268,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       set('propData', val('data') || todayISO());
       set('propObjeto', val('servico') || 'SERVIÇO');
       set('propEndereco', val('endereco') || 'Endereço a definir');
-      set('propTitulo', `DESCRIÇÃO DA PROPOSTA - ${String(val('servico') || 'PROJETO').toUpperCase()}`);
-      set('propIntro', `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${String(val('servico') || 'projeto').toUpperCase()}, localizado em ${val('endereco') || 'endereço a definir'}.`);
-      set('propEscopo', 'DESCREVA OS ITENS, ETAPAS E ENTREGÁVEIS INCLUÍDOS NO SERVIÇO');
+      set('propTitulo', `DESCRIÇÃO DA PROPOSTA - ${String(val('servico') || 'SERVIÇO').toUpperCase()}`);
+      set('propIntro', `Segue a proposta comercial referente ao serviço de ${String(val('servico') || 'SERVIÇO').toUpperCase()}, conforme condições apresentadas a seguir.`);
+      set('propDescricaoServico', '');
+      set('propEscopo', '');
+      set('propVisualHtml', '');
       set('propPrazoDias', '20');
       buildProposal();
     }
@@ -11272,6 +11282,29 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         .map(line => line.trim())
         .filter(Boolean)
         .map(line => `<div class="proposal-list-row">${esc(line)}</div>`);
+    }
+    function proposalFreeTextBlocks(text){
+      const raw = String(text || '').trim();
+      if(!raw) return [];
+      const blocks = [];
+      let paragraph = [];
+      const flush = () => {
+        const value = paragraph.join(' ').trim();
+        if(value) blocks.push(`<p>${esc(value)}</p>`);
+        paragraph = [];
+      };
+      raw.split(/\r?\n/).forEach(lineRaw => {
+        const line = lineRaw.trim();
+        if(!line){ flush(); return; }
+        if(/^[-•]\s+/.test(line)){
+          flush();
+          blocks.push(`<div class="proposal-list-row">${esc(line.replace(/^[-•]\s+/, ''))}</div>`);
+          return;
+        }
+        paragraph.push(line);
+      });
+      flush();
+      return blocks;
     }
     function ensureComplementaryDeliverable(tipo){
       const clean = String(tipo || '').trim().toUpperCase();
@@ -11521,12 +11554,12 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     function prazoText(){
       const dias = prazoDiasValue();
       const extenso = numeroPorExtensoBR(dias);
-      return `Prazo de entrega dos serviços: até ${dias} (${extenso}) dias úteis a partir da assinatura do contrato da proposta de serviço, desconsiderando períodos de aprovação pelo cliente e eventuais ajustes de escopo.`;
+      return `Prazo de entrega dos serviços: até ${dias} (${extenso}) dias úteis a partir da aprovação desta proposta, desconsiderando períodos de aprovação intermediária pelo cliente e eventuais ajustes de escopo.`;
     }
     function prazoHtml(){
       const dias = prazoDiasValue();
       const extenso = numeroPorExtensoBR(dias);
-      return `<p>Prazo de entrega dos serviços: <u>até ${dias} (${esc(extenso)}) dias úteis</u> a partir da assinatura do contrato da proposta de serviço, desconsiderando períodos de aprovação pelo cliente e eventuais ajustes de escopo.</p>`;
+      return `<p>Prazo de entrega dos serviços: <u>até ${dias} (${esc(extenso)}) dias úteis</u> a partir da aprovação desta proposta, desconsiderando períodos de aprovação intermediária pelo cliente e eventuais ajustes de escopo.</p>`;
     }
 
     function replaceProposalTemplateTokens(template, ctx){
@@ -11541,7 +11574,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         valor: money(ctx.valorTotal),
         valor_extenso: ctx.valorExtenso,
         intro: ctx.intro,
-        entregaveis: ctx.escopo,
+        descricao_servico: ctx.descricaoServico || '',
+        descricao: ctx.descricaoServico || '',
+        entregaveis: ctx.escopo || '',
+        itens: ctx.escopo || '',
+        itens_bloco: ctx.escopo ? `Itens / entregáveis incluídos:\n${ctx.escopo}` : '',
         pagamento: paymentPlainText(ctx.objeto, ctx.valorTotal, ctx.valorExtenso),
         prazo: ctx.prazo,
         prazo_dias: String(prazoDiasValue()),
@@ -11625,8 +11662,15 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       });
       const toggleBtn = document.getElementById('proposalVisualEditToggle');
       const saveBtn = document.getElementById('proposalVisualEditSave');
-      if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Desativar edição visual' : 'Editar no papel timbrado';
+      const status = document.getElementById('proposalVisualEditStatus');
+      const hasManual = !!String(document.getElementById('propVisualHtml')?.value || '').trim();
+      if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Encerrar edição' : 'Editar diretamente na folha';
       if(saveBtn) saveBtn.disabled = !proposalVisualEditEnabled;
+      if(status){
+        status.textContent = proposalVisualEditEnabled ? 'Editando agora' : (hasManual ? 'Edição manual salva' : 'Estrutura automática');
+        status.classList.toggle('is-editing', !!proposalVisualEditEnabled);
+        status.classList.toggle('is-saved', !proposalVisualEditEnabled && hasManual);
+      }
     }
 
     function toggleProposalVisualEdit(force){
@@ -11635,9 +11679,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       proposalVisualEditEnabled = typeof force === 'boolean' ? force : !proposalVisualEditEnabled;
       applyProposalVisualEditState();
       if(proposalVisualEditEnabled){
-        toast('Editor visual ativado. Selecione um trecho do texto na folha para abrir a mini barra.');
+        toast('Edição direta ativada. Clique na folha para escrever e selecione um trecho para formatar.');
       } else {
-        toast('Editor visual desativado.');
+        toast('Edição direta encerrada.');
       }
     }
 
@@ -11682,6 +11726,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         data: formatDateBR(ctx?.dataProp || ''),
         objeto: String(ctx?.objeto || '').toUpperCase(),
         endereco: ctx?.endereco || '',
+        descricao_servico: ctx?.descricaoServico || '',
+        descricao: ctx?.descricaoServico || '',
         valor: money(valorTotal),
         valor_extenso: ctx?.valorExtenso || '',
         metade_valor: money(metade),
@@ -11702,6 +11748,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const values = proposalVisualTextReplacements(ctx);
       const rich = {
         intro_html: proposalIntroHtml(ctx?.intro || '', ctx?.objeto || '').replace(/^<p>|<\/p>$/g, ''),
+        descricao_html: proposalFreeTextBlocks(ctx?.descricaoServico || '').join(''),
         entregaveis_html: proposalListBlocks(ctx?.escopo || '').join(''),
         pagamento_html: paymentHtmlBlocks(ctx?.objeto || '', Number(ctx?.valorTotal || 0), ctx?.valorExtenso || '').join(''),
         prazo_html: prazoHtml().replace(/^<p>|<\/p>$/g, ''),
@@ -11894,11 +11941,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return template.innerHTML;
     }
 
-    function saveProposalVisualEditToTemplate(){
-      const editedText = captureProposalVisualEditText();
-      const rawEditedHtml = captureProposalVisualEditHtml();
+    function currentProposalVisualSaveContext(){
       const valorTotal = proposalTotalValue();
-      const saveCtx = {
+      return {
         titulo: prop('propTitulo', ''),
         numero: displayProposalNumber(prop('propNumero', val('numeroPropostaAtual') || '')),
         cliente: prop('propCliente', val('cliente') || ''),
@@ -11907,17 +11952,42 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         objeto: prop('propObjeto', val('servico') || ''),
         endereco: prop('propEndereco', val('endereco') || ''),
         intro: prop('propIntro', ''),
+        descricaoServico: prop('propDescricaoServico', ''),
         escopo: prop('propEscopo', ''),
         prazo: prazoText(),
         obs: prop('propObs', ''),
         valorTotal,
         valorExtenso: moedaPorExtensoBR(valorTotal)
       };
-      const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
-      if(!editedText && !editedHtml){
+    }
+
+    function saveProposalVisualEditToTemplate(){
+      const editedText = captureProposalVisualEditText();
+      const rawEditedHtml = captureProposalVisualEditHtml();
+      if(!editedText && !rawEditedHtml){
         toast('Nenhum texto encontrado na proposta para salvar.');
         return;
       }
+      const saveCtx = currentProposalVisualSaveContext();
+      const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
+      const field = document.getElementById('propVisualHtml');
+      if(field) field.value = editedHtml || esc(editedText).replace(/\n/g, '<br>');
+      proposalVisualEditEnabled = false;
+      cmfinPersistData();
+      buildProposal();
+      applyProposalVisualEditState();
+      toast('Alterações salvas somente nesta proposta.');
+    }
+
+    function saveProposalVisualEditAsTemplate(){
+      const rawEditedHtml = captureProposalVisualEditHtml();
+      const editedText = captureProposalVisualEditText();
+      if(!rawEditedHtml && !editedText){
+        toast('Ative a edição na folha antes de salvar um modelo.');
+        return;
+      }
+      const saveCtx = currentProposalVisualSaveContext();
+      const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
       const tpl = proposalTemplateData();
       tpl.mode = 'custom';
       tpl.text = editedText || defaultProposalTemplateText();
@@ -11926,16 +11996,48 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const modeEl = document.getElementById('proposalTemplateMode');
       const textEl = document.getElementById('proposalTemplateText');
       if(modeEl) modeEl.value = 'custom';
-      if(textEl){
-        textEl.disabled = false;
-        textEl.value = tpl.text;
-      }
-      proposalVisualEditEnabled = false;
-      updateProposalTemplateDesignerState();
+      if(textEl) textEl.value = tpl.text;
       cmfinPersistData();
+      updateProposalTemplateDesignerState();
+      toast('Modelo reutilizável salvo para as próximas propostas.');
+    }
+
+    function resetCurrentProposalVisualEdit(){
+      const field = document.getElementById('propVisualHtml');
+      if(field) field.value = '';
+      proposalVisualEditEnabled = false;
+      document.dispatchEvent(new CustomEvent('cmfin:proposal-reset'));
       buildProposal();
       applyProposalVisualEditState();
-      toast('Edição visual e formatação salvas no modelo personalizado.');
+      toast('Edição manual removida. A proposta voltou à estrutura automática.');
+    }
+
+    function insertProposalVisualSnippet(type){
+      if(!proposalVisualEditEnabled) toggleProposalVisualEdit(true);
+      const area = document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
+      if(!area) return;
+      const snippets = {
+        section: '<h4>Novo título de seção</h4><p><br></p>',
+        paragraph: '<p>Digite aqui o texto do novo parágrafo.</p>',
+        bullet: '<ul><li>Novo item</li></ul>',
+        numbered: '<ol><li>Novo item</li></ol>',
+        note: '<p><strong>Observação:</strong> Digite aqui a observação.</p>'
+      };
+      area.focus();
+      const sel = window.getSelection && window.getSelection();
+      if(sel && (!sel.rangeCount || !area.contains(sel.anchorNode))){
+        const range = document.createRange();
+        range.selectNodeContents(area);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      try{
+        document.execCommand('insertHTML', false, snippets[type] || snippets.paragraph);
+      }catch(e){
+        area.insertAdjacentHTML('beforeend', snippets[type] || snippets.paragraph);
+      }
+      toast('Bloco inserido. Continue editando diretamente na folha.');
     }
 
     function buildProposal(){
@@ -11944,19 +12046,30 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const valorExtenso = moedaPorExtensoBR(valorTotal);
       const valorExtensoInput = document.getElementById('propValorExtenso');
       if(valorExtensoInput) valorExtensoInput.value = valorExtenso;
-      const titulo = prop('propTitulo', `DESCRIÇÃO DA PROPOSTA - ${String(val('servico') || 'PROJETO').toUpperCase()}`);
+      const titulo = prop('propTitulo', `DESCRIÇÃO DA PROPOSTA - ${String(val('servico') || 'SERVIÇO').toUpperCase()}`);
       const numero = displayProposalNumber(prop('propNumero', val('numeroPropostaAtual') || ''));
       syncProposalNumber(numero);
       const cliente = prop('propCliente', val('cliente') || 'Cliente a definir');
       const contato = prop('propContato', 'Contato a definir');
       const dataProp = prop('propData', val('data') || todayISO());
-      const objeto = prop('propObjeto', val('servico') || 'PROJETO');
-      const endereco = prop('propEndereco', val('endereco') || 'Endereço a definir');
-      const intro = prop('propIntro', `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${String(objeto).toUpperCase()}, localizado em ${endereco}.`);
-      const escopo = prop('propEscopo', 'DESCREVA OS ITENS, ETAPAS E ENTREGÁVEIS INCLUÍDOS NO SERVIÇO');
+      const objeto = prop('propObjeto', val('servico') || 'SERVIÇO');
+      const endereco = prop('propEndereco', val('endereco') || 'Localização a definir');
+      const intro = prop('propIntro', `Segue a proposta comercial referente ao serviço de ${String(objeto).toUpperCase()}, conforme condições apresentadas a seguir.`);
+      const descricaoServico = prop('propDescricaoServico', '');
+      const escopo = prop('propEscopo', '');
       const prazo = prazoText();
       const obs = prop('propObs', '');
-      const ctx = {titulo, numero, cliente, contato, dataProp, objeto, endereco, intro, escopo, prazo, obs, valorTotal, valorExtenso};
+      const ctx = {titulo, numero, cliente, contato, dataProp, objeto, endereco, intro, descricaoServico, escopo, prazo, obs, valorTotal, valorExtenso};
+
+      const proposalVisualOverride = String(document.getElementById('propVisualHtml')?.value || '').trim();
+      if(proposalVisualOverride){
+        const liveVisualHtml = syncProposalVisualHtml(proposalVisualOverride, ctx);
+        renderProposalPages([liveVisualHtml]);
+        applyBrandCustomization();
+        applyProposalVisualEditState();
+        return proposalHtmlToText(liveVisualHtml);
+      }
+
       const tpl = proposalTemplateData();
       if((tpl.mode || 'standard') === 'custom'){
         if(tpl.editorType === 'visual' && String(tpl.visualHtml || '').trim()){
@@ -11973,14 +12086,20 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         applyBrandCustomization();
         return customText;
       }
+
+      const descriptionBlocks = proposalFreeTextBlocks(descricaoServico);
+      const itemBlocks = proposalListBlocks(escopo);
+      const serviceBlocks = descriptionBlocks.length
+        ? descriptionBlocks
+        : (!itemBlocks.length ? ['<p>Descrição do serviço a definir.</p>'] : []);
       const blocks = [
         ...(numero ? [`<div class="proposal-number-between">Nº: ${esc(numero)}</div>`] : []),
         `<h3 class="proposal-title-doc">${esc(titulo)}</h3>`,
         `<div class="proposal-client-line"><div><strong>Cliente:</strong> ${esc(cliente)}</div><div><strong>Contato:</strong> ${esc(contato)}</div><div class="proposal-meta-line"><strong>Data:</strong><span>${esc(formatDateBR(dataProp))}</span></div></div>`,
         proposalIntroHtml(intro, objeto),
-        `<h4>1. DA PROPOSTA</h4>`,
-        `<p>A proposta contempla exclusivamente o(a) <strong>${esc(String(objeto).toUpperCase())}</strong>, com os seguintes itens de escopo e entregáveis:</p>`,
-        ...proposalListBlocks(escopo),
+        `<h4>1. DO SERVIÇO</h4>`,
+        `<div class="proposal-service-description">${serviceBlocks.join('')}</div>`,
+        ...(itemBlocks.length ? [`<div class="proposal-deliverables-block"><p><strong>Itens / entregáveis incluídos:</strong></p>${itemBlocks.join('')}</div>`] : []),
         `<h4>2. DO INVESTIMENTO E FORMA DE PAGAMENTO</h4>`,
         ...paymentHtmlBlocks(objeto, valorTotal, valorExtenso),
         `<h4>3. PRAZOS</h4>`,
@@ -11992,6 +12111,12 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return proposalPlainText(ctx);
     }
     function proposalPlainText(p){
+      const description = String(p.descricaoServico || '').trim();
+      const items = String(p.escopo || '').trim();
+      const serviceText = [
+        description,
+        items ? `Itens / entregáveis incluídos:\n${items}` : ''
+      ].filter(Boolean).join('\n\n') || 'Descrição do serviço a definir.';
       return `${p.titulo}
 
 Cliente: ${p.cliente}
@@ -12001,9 +12126,8 @@ Nº: ${displayProposalNumber(p.numero)}` : ''}
 
 ${p.intro}
 
-1. DA PROPOSTA
-A proposta contempla exclusivamente o(a) ${String(p.objeto).toUpperCase()}, com os seguintes itens de escopo e entregáveis:
-${p.escopo}
+1. DO SERVIÇO
+${serviceText}
 
 2. DO INVESTIMENTO E FORMA DE PAGAMENTO
 ${paymentPlainText(p.objeto, p.valorTotal, p.valorExtenso)}
@@ -12385,13 +12509,13 @@ ${p.obs}` : ''}`;
       [
         'propCliente', 'propContato', 'propObjeto',
         'propValorTotalManual', 'propValorExtenso', 'propEndereco',
-        'propIntro', 'propEscopo', 'propEntradaValor',
+        'propIntro', 'propDescricaoServico', 'propEscopo', 'propVisualHtml', 'propEntradaValor',
         'propEntradaVencimento', 'propParcelaValor',
         'propPagamentoManual', 'propObs', 'newDeliverable'
       ].forEach(id => setValue(id, ''));
 
       // Toda nova proposta começa com este título-base para o usuário
-      // complementar normalmente com o tipo e as características do projeto.
+      // complementar normalmente com o tipo e as características do serviço.
       setValue('propTitulo', 'DESCRIÇÃO DA PROPOSTA');
       setValue('propData', todayISO());
       setValue('propFormaPagamento', 'padrao');
