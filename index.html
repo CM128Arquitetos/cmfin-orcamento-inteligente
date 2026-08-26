@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v75: edição auto-salva ao sair da folha + impressão limpa + margem inferior do timbrado mais aproveitada -->
   <!-- v74: melhor aproveitamento da área útil até o rodapé + editor sem compressão de largura -->
   <!-- v73: edição da proposta ativada automaticamente ao clicar diretamente na folha -->
   <!-- v72: editor visual protegido contra sobreposição do rodapé + itens sem título automático -->
@@ -54,7 +55,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=8YRrXDagWPaVlH7O_3xxSwLM8S06K6jGiMfq_jkjWB0c3u_CfqfXC3TEvFAMaoNG-4oLsN3Ms_fOCZ6r24SUzGMhUTzG4LUxHHnn2cfmbsedCU9OlWNZTy_BK0axq77JOmkLjn-92EqEvu6LAgY_L-kmLrVo5nuhfUmKqiXXCSCDQ8B262phaS0x2fgJrQrjXq0cvwj2X6AxMuweTQi1Kj1G_4_qunB082sgu4xwjz76JkgC6meaHtz2LPtvjyK9owsnt-LZ5vZPXdpV_KK4Pw" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=M6WQoziRID-NJLow-LxSCO7VbKs7dO5kS-GRXatBaR1XTXzLsYSStDefROooI3SdBewhN4zGjugQ7uzltcZjRLr0gssXc3RkcqDBLc3IhVhPP-b4DkQIcWg34eVw1R1SHRvxjseAQCStKG3oX8WHcAIXfUl8v3aMjihcK7HJxrwP7GtqBz8DXGaiHiI_nMS60hUo4dlNbTKQwwot_Cmiq-6DG7ijiPZER2OzBLsyHUWhmdn-xvmz8SvzVLWvPYrV0jz6ETzNpv18-dUFz935ByLGFY3gLEUEFOzktJZG7c4hV-NwUOAGlw-O4XfZ4qJslTA1jQ0H82yff96XettbtgUOchmETpLNAgV05oKHvnX1z5oS6ewGhBFyaOy5Qp-t" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -6136,6 +6137,8 @@ main{
   .proposal-service-description > :first-child,.proposal-deliverables-block > :first-child{margin-top:0;}
   .proposal-service-description > :last-child,.proposal-deliverables-block > :last-child{margin-bottom:0;}
   .proposal-deliverables-block{margin-top:10px;}
+  body.printing-proposal .proposal-page-dynamic,
+  body.printing-proposal .proposal-page-dynamic:focus{outline:none !important;box-shadow:none !important;background:transparent !important;}
   @media(max-width:720px){
     .proposal-direct-editor-head{flex-direction:column;}
     .proposal-direct-editor-actions,.proposal-direct-editor-help,.proposal-quick-blocks-v71 .template-block-buttons{grid-template-columns:1fr;}
@@ -11442,6 +11445,14 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return !!proposalTab && proposalTab.classList.contains('active');
     }
     function prepareProposalForPrint(){
+      // Nunca leva o estado visual do editor para impressão/PDF.
+      // Se houver edição ativa, salva silenciosamente antes de montar as páginas finais.
+      if(typeof proposalVisualEditEnabled !== 'undefined' && proposalVisualEditEnabled && typeof commitProposalVisualEdit === 'function'){
+        commitProposalVisualEdit({ silent:true, rebuild:false });
+      }
+      document.body.classList.remove('proposal-visual-edit-on');
+      const editToolbar = document.getElementById('cmfinWordSelectionToolbar');
+      if(editToolbar) editToolbar.classList.remove('is-visible');
       const root = document.documentElement;
       if(!root.hasAttribute('data-cmfin-print-zoom-restore')){
         root.setAttribute('data-cmfin-print-zoom-restore', root.style.zoom || '');
@@ -11508,6 +11519,18 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
           ${tpl.bar}
         </div>`;
     }
+    function proposalEffectiveBottomPadding(paper, content){
+      const contentStyle = getComputedStyle(content);
+      const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
+      // No papel timbrado personalizado o rodapé faz parte da própria imagem.
+      // A margem cadastrada continua sendo referência, mas a paginação pode usar
+      // um pouco mais da área branca antes do rodapé, sem avançar até a borda.
+      if(paper?.classList?.contains('letterhead-custom-mode')){
+        return Math.max(72, paddingBottom - 48);
+      }
+      return paddingBottom;
+    }
+
     function renderProposalPages(blocks){
       const wrap = document.querySelector('.proposal-paper-wrap');
       if(!wrap) return;
@@ -11528,15 +11551,14 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       document.body.appendChild(measure);
       const target = measure.querySelector('.proposal-page-dynamic');
       const content = measure.querySelector('.proposal-paper-content');
-      const reserveBeforeFooter = 8;
+      const reserveBeforeFooter = 4;
 
       const configureMeasure = index => {
         measure.className = `${proposalPaperClass(index)} proposal-measure`;
         measure.setAttribute('style', proposalPaperStyle(index));
         const paperRect = measure.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
-        const contentStyle = getComputedStyle(content);
-        const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
+        const paddingBottom = proposalEffectiveBottomPadding(measure, content);
         const footer = measure.querySelector('.proposal-paper-footer');
         const bar = measure.querySelector('.proposal-footer-bar');
         const bottomLimits = [];
@@ -11696,9 +11718,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if(!paper || !content) return 0;
       const paperRect = paper.getBoundingClientRect();
       const areaRect = area.getBoundingClientRect();
-      const contentStyle = getComputedStyle(content);
-      const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
-      const reserve = 8;
+      const paddingBottom = proposalEffectiveBottomPadding(paper, content);
+      const reserve = 4;
       const footer = paper.querySelector('.proposal-paper-footer');
       const bar = paper.querySelector('.proposal-footer-bar');
       const bottomLimits = [];
@@ -11805,6 +11826,18 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
     document.addEventListener('pointerdown', activateProposalVisualEditFromPaper, true);
+
+    function autoSaveProposalVisualEditOutsidePaper(event){
+      if(!proposalVisualEditEnabled) return;
+      const target = event?.target;
+      if(target?.closest?.('.proposal-paper')) return;
+      // A barra contextual fica fora da folha, mas ainda faz parte da edição.
+      if(target?.closest?.('#cmfinWordSelectionToolbar')) return;
+      commitProposalVisualEdit({ silent:true, rebuild:true });
+      const toolbar = document.getElementById('cmfinWordSelectionToolbar');
+      if(toolbar) toolbar.classList.remove('is-visible');
+    }
+    document.addEventListener('pointerdown', autoSaveProposalVisualEditOutsidePaper, true);
 
 
     window.addEventListener('resize', () => {
@@ -12090,12 +12123,16 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       };
     }
 
-    function saveProposalVisualEditToTemplate(){
+    function commitProposalVisualEdit(options = {}){
+      const silent = !!options.silent;
+      const rebuild = options.rebuild !== false;
       const editedText = captureProposalVisualEditText();
       const rawEditedHtml = captureProposalVisualEditHtml();
       if(!editedText && !rawEditedHtml){
-        toast('Nenhum texto encontrado na proposta para salvar.');
-        return;
+        proposalVisualEditEnabled = false;
+        applyProposalVisualEditState();
+        if(!silent) toast('Nenhum texto encontrado na proposta para salvar.');
+        return false;
       }
       const saveCtx = currentProposalVisualSaveContext();
       const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
@@ -12103,9 +12140,14 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if(field) field.value = editedHtml || esc(editedText).replace(/\n/g, '<br>');
       proposalVisualEditEnabled = false;
       cmfinPersistData();
-      buildProposal();
-      applyProposalVisualEditState();
-      toast('Alterações salvas somente nesta proposta.');
+      if(rebuild) buildProposal();
+      else applyProposalVisualEditState();
+      if(!silent) toast('Alterações salvas somente nesta proposta.');
+      return true;
+    }
+
+    function saveProposalVisualEditToTemplate(){
+      commitProposalVisualEdit({ silent:false, rebuild:true });
     }
 
     function saveProposalVisualEditAsTemplate(){
