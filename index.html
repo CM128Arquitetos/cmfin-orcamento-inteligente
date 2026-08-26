@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- v68: limpeza técnica 07 — remove ciclo legado da navegação por etapas da aba Orçamento (v51 → v52), sem alterar cálculos ou layout final -->
   <!-- v66: limpeza técnica 05 — remoção de CSS órfão da antiga proposalVisualToolbar/cmfin-mini-toolbar -->
   <!-- v63: limpeza técnica 02 — remoção de regras CSS exatamente duplicadas, sem alteração visual ou funcional -->
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
@@ -46,7 +47,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=e9v_C-oh6xTtpsUUADIztLZPOtxNshEb-mpyqlwj-wRNE2PvcN6eGPOL4rForfM-6xN0ABv8L7BI5cCnaujzUoc4aUnPy3TQIKioHlvVuMr3VHwUWKxGlzBZQAvegczcAHS2moJf3jXdZ18cGShsATgDQT4gVxQqNi3V5cbLSRe-LfIHs7VqdSL9X_SFIegNGJnBVaQ2kzSEMvdklrAXVZ9Tcqm7WTuO7R4Chy1rMGzv_5xxKQOxapBJY4kHmhm6CDpS93SO97KrE92uri0tfR5savYVORdrz-WW4DcsNj5KWmSln5HCiGcrNS3syE-PCuxiXqFAorWTwSenFcdD1wYRDkJkmqYhecEZp6gZb255y7DrWN4kJu50uEI3_NGw" charset="UTF-8"></script><style>
+<style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -5265,7 +5266,11 @@ main{
 </style>
 
 
-<style id="cmfin-budget-workspace-v51">
+<style id="cmfin-budget-workspace-v67">
+  /* V67 — consolidação técnica segura dos estilos da aba Orçamento (V51 → V52 → V53).
+     A ordem original da cascata foi preservada. Foram removidas apenas regras comprovadamente
+     ocultas/substituídas pelas versões seguintes, sem alterar a estrutura ou a lógica do sistema. */
+
   /* V51 — Nova organização visual da aba principal do Orçamento.
      Mantém toda a lógica e todos os IDs existentes; altera somente hierarquia e apresentação. */
   #calc .grid {
@@ -5278,10 +5283,7 @@ main{
   #calc .grid > .viability-card {
     border-radius: 20px;
   }
-  #calc .grid > .budget-workspace-card {
-    overflow: visible;
-  }
-  #calc .budget-workspace-card > h2,
+#calc .budget-workspace-card > h2,
   #calc .financial-summary-card > h2,
   #calc .viability-card > h2 {
     padding: 16px 18px;
@@ -5300,58 +5302,12 @@ main{
     letter-spacing:0;
   }
   #calc .budget-workspace-card > h2::after { content:'Organize os dados por etapa. O cálculo continua automático enquanto você preenche.'; }
-  #calc .financial-summary-card > h2::after { content:'Acompanhe os números principais sem perder o contexto do orçamento.'; }
-
-  #calc .budget-workspace-card .card-body {
+#calc .budget-workspace-card .card-body {
     padding: 16px;
     display:grid;
     gap: 14px;
   }
-  .budget-stage-nav {
-    display:grid;
-    grid-template-columns: repeat(4,minmax(0,1fr));
-    gap:8px;
-    padding:8px;
-    border:1px solid #dfe8e3;
-    border-radius:15px;
-    background:#f7faf8;
-  }
-  .budget-stage-nav button {
-    min-height:42px;
-    padding:9px 10px;
-    border-radius:11px;
-    background:transparent;
-    color:#53635d;
-    border:1px solid transparent;
-    box-shadow:none;
-    font-size:.76rem;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-  }
-  .budget-stage-nav button:hover {
-    transform:none;
-    filter:none;
-    background:#fff;
-    border-color:#dbe5df;
-    color:#12362d;
-  }
-  .budget-stage-nav .stage-number {
-    width:24px;
-    height:24px;
-    border-radius:8px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:#e7efeb;
-    color:#12362d;
-    font-size:.67rem;
-    font-weight:900;
-  }
-
-  .budget-section-v51 {
+.budget-section-v51 {
     scroll-margin-top: 116px;
     border:1px solid #dce5e0;
     border-radius:17px;
@@ -5449,8 +5405,7 @@ main{
     display:grid;
     gap:16px;
   }
-  #calc .financial-summary-card .card-body { padding:15px; }
-  .financial-primary-grid-v51 {
+.financial-primary-grid-v51 {
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:9px;
@@ -5623,8 +5578,7 @@ main{
   @media (max-width: 980px) {
     #calc .grid { grid-template-columns:1fr; }
     #calc .stack-col-v51 { position:static; }
-    .budget-stage-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    #calc .viability-workspace-v51 { grid-column:1; }
+#calc .viability-workspace-v51 { grid-column:1; }
   }
   @media (max-width: 680px) {
     .budget-grid-v51.cols-2,
@@ -5644,16 +5598,11 @@ main{
     #calc .viability-workspace-v51 #viabAlert { grid-column:1; }
     #calc .viability-workspace-v51 .deadline-grid { grid-template-columns:1fr; }
   }
-</style>
 
 
-<style id="cmfin-budget-workspace-v52">
   /* V52 — refinamento da aba Orçamento:
-     - remove a navegação redundante de etapas no topo;
      - mantém o Resumo Financeiro fixo durante toda a área de trabalho;
      - transforma a Viabilidade em um painel de decisão com navegação interna. */
-
-  #calc .budget-stage-nav { display:none !important; }
 
   /* Mantém a coluna financeira acompanhando o usuário por toda a aba. */
   @media (min-width:1101px){
@@ -5672,19 +5621,9 @@ main{
     #calc .stack-col-v51 {
       grid-column:2;
       grid-row:1 / span 2;
-      position:sticky !important;
-      top:92px !important;
-      align-self:start !important;
       z-index:8;
-      max-height:calc(100vh - 108px);
-      overflow:auto;
-      overscroll-behavior:contain;
-      scrollbar-width:thin;
-      padding-right:2px;
     }
-    #calc .stack-col-v51::-webkit-scrollbar { width:6px; }
-    #calc .stack-col-v51::-webkit-scrollbar-thumb { background:#cdd9d3; border-radius:999px; }
-    #calc .viability-workspace-v51 {
+#calc .viability-workspace-v51 {
       grid-column:1 !important;
       grid-row:2 !important;
       width:100% !important;
@@ -6034,10 +5973,8 @@ main{
     #calc .viability-dashboard-v52 .viability-output,
     #calc .viability-dashboard-v52 .viability-deadline-v51 .deadline-grid { grid-template-columns:1fr; }
   }
-</style>
 
 
-<style id="cmfin-budget-workspace-v53">
   /* V53 — acabamento da aba Orçamento:
      - remove a rolagem interna do Resultado Financeiro;
      - mantém a lateral direita sticky, usando a rolagem normal da página;
@@ -6084,6 +6021,7 @@ main{
   #calc .financial-commercial-v51 {
     max-height:none !important;
   }
+
 </style>
 
 <style id="cmfin-v54-general-services">
@@ -13588,7 +13526,6 @@ function toggleProposalMiniSection(btn){
   function makeSection(step, title, subtitle, className){
     const section = document.createElement('section');
     section.className = 'budget-section-v51 ' + (className || '');
-    section.id = 'budgetStage' + step;
     section.innerHTML = '<div class="budget-section-head-v51"><span class="budget-section-step-v51">0'+step+'</span><div><h3>'+title+'</h3><p>'+subtitle+'</p></div></div><div class="budget-section-body-v51"></div>';
     return section;
   }
@@ -13600,12 +13537,6 @@ function toggleProposalMiniSection(btn){
   function moveFields(grid, ids){
     ids.forEach(id => { const w = fieldWrap(id); if(w) grid.appendChild(w); });
   }
-  function scrollStage(step){
-    const el = document.getElementById('budgetStage'+step);
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-  window.cmfinScrollBudgetStage = scrollStage;
-
   function organizeBudget(){
     const calc = document.getElementById('calc');
     if(!calc || calc.dataset.workspaceV51 === '1') return;
@@ -13623,12 +13554,6 @@ function toggleProposalMiniSection(btn){
 
     const body = budgetCard.querySelector(':scope > .card-body');
     if(body){
-      const nav = document.createElement('div');
-      nav.className = 'budget-stage-nav no-print';
-      nav.innerHTML = [
-        ['1','Serviço'],['2','Esforço'],['3','Deslocamento'],['4','Comercial']
-      ].map(([n,t]) => '<button type="button" onclick="cmfinScrollBudgetStage('+n+')"><span class="stage-number">0'+n+'</span><span>'+t+'</span></button>').join('');
-
       const s1 = makeSection(1,'Dados do serviço','Identificação do cliente, serviço e localização.','budget-project-v51');
       const g1 = makeGrid(2);
       moveFields(g1,['cliente','data','servico','endereco']);
@@ -13661,7 +13586,6 @@ function toggleProposalMiniSection(btn){
       body.querySelectorAll(':scope > .form-grid, :scope > .divider, :scope > .checks').forEach(el => {
         if(!el.children.length || el.classList.contains('form-grid')) el.remove();
       });
-      body.prepend(nav);
       body.appendChild(s1);
       body.appendChild(s2);
       body.appendChild(s3);
@@ -13765,7 +13689,6 @@ function toggleProposalMiniSection(btn){
     }
     calc.dataset.workspaceV52 = '1';
 
-    calc.querySelectorAll('.budget-stage-nav').forEach(el => el.remove());
     stack.classList.add('financial-sticky-v52');
     viability.classList.add('viability-dashboard-v52');
 
