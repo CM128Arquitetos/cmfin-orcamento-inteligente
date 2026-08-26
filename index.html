@@ -8,6 +8,7 @@
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
+  <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
   <!-- v50: botões compactos e profissionais em Ações da Proposta -->
 <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
@@ -6768,6 +6769,44 @@ main{
     max-height:none !important;
   }
 </style>
+
+<style id="cmfin-v54-general-services">
+  /* V54 — produto neutro para prestadores de serviços. */
+  #calc .budget-project-v51 { overflow:visible !important; position:relative; z-index:30; }
+  #calc .budget-project-v51 .budget-section-body-v51,
+  #calc .budget-project-v51 .budget-grid-v51 { overflow:visible !important; }
+  #calc .budget-effort-v51 { position:relative; z-index:1; }
+  #customDatePicker.custom-date-picker {
+    z-index:3000 !important;
+    width:min(340px, calc(100vw - 48px));
+    max-height:min(470px, calc(100vh - 130px));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    box-shadow:0 24px 60px rgba(17,44,37,.24) !important;
+  }
+  .financial-additional-editor {
+    grid-template-columns:minmax(160px,1fr) minmax(210px,1.25fr) minmax(190px,.85fr) minmax(125px,.55fr) minmax(175px,.72fr) auto !important;
+    align-items:end !important;
+  }
+  .financial-additional-editor .extra-default-check { min-height:50px; margin:0; align-self:end; }
+  .financial-additional-item .extra-type-badge {
+    display:inline-flex; width:max-content; margin-top:6px; padding:4px 8px; border-radius:999px;
+    background:#edf4f0; border:1px solid #dbe7e1; color:#365047; font-size:.68rem; font-weight:800;
+  }
+  .custom-extras-empty {
+    grid-column:1/-1; display:flex; flex-direction:column; gap:3px; padding:12px 14px;
+    border:1px dashed #d5e1db; border-radius:14px; background:#fafcfb; color:#53665d;
+  }
+  .custom-extras-empty strong { color:#243b33; font-size:.8rem; }
+  .custom-extras-empty span { font-size:.74rem; line-height:1.35; }
+  @media (max-width:1200px){
+    .financial-additional-editor { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  }
+  @media (max-width:700px){
+    .financial-additional-editor { grid-template-columns:1fr !important; }
+    #customDatePicker.custom-date-picker { left:0 !important; right:auto !important; }
+  }
+</style>
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -8091,8 +8130,8 @@ main{
       <button class="tab-btn cmfin-nav-item" data-tab="complementary" data-tooltip="Complementares / Terceirizados" onclick="openTab('complementary')">
         <span class="cmfin-nav-icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4-8 4-8-4 8-4zM4 12l8 4 8-4M4 17l8 4 8-4"/></svg></span><span class="cmfin-nav-label">Complementares / Terceirizados</span>
       </button>
-      <button class="tab-btn cmfin-nav-item" data-tab="architects" data-tooltip="Arquitetos" onclick="openTab('architects')">
-        <span class="cmfin-nav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19c.6-3.4 2.6-5 5.5-5s4.9 1.6 5.5 5M14 15c2.9-.4 5.2 1 6 4"/></svg></span><span class="cmfin-nav-label">Arquitetos</span>
+      <button class="tab-btn cmfin-nav-item" data-tab="architects" data-tooltip="Equipe / Profissionais" onclick="openTab('architects')">
+        <span class="cmfin-nav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 19c.6-3.4 2.6-5 5.5-5s4.9 1.6 5.5 5M14 15c2.9-.4 5.2 1 6 4"/></svg></span><span class="cmfin-nav-label">Equipe / Profissionais</span>
       </button>
       <button class="tab-btn cmfin-nav-item" data-tab="proposal" data-tooltip="Proposta" onclick="openTab('proposal')">
         <span class="cmfin-nav-icon"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg></span><span class="cmfin-nav-label">Proposta</span>
@@ -8160,7 +8199,7 @@ main{
           <h2>Dados do Orçamento</h2>
           <div class="card-body">
             <div class="form-grid">
-              <div><label>Cliente</label><input id="cliente" list="clienteHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('cliente'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)"><datalist id="clienteHistoryOptions"></datalist></div>
+              <div><label>Cliente</label><input id="cliente" placeholder="" autocomplete="off" oninput="syncBudgetFieldToProposal('cliente'); calculate()"></div>
               <div>
                 <label>Data</label>
                 <div class="date-input-wrap" onclick="openDatePicker('data')">
@@ -8199,11 +8238,11 @@ main{
                   </div>
                 </div>
               </div>
-              <div><label>Serviço</label><input id="servico" list="servicoHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('servico'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)"><datalist id="servicoHistoryOptions"></datalist></div>
+              <div><label>Serviço</label><input id="servico" placeholder="" autocomplete="off" oninput="syncBudgetFieldToProposal('servico'); calculate()"></div>
               <div><label>Complexidade</label><select id="complexidade" onchange="calculate()"><option>Baixa</option><option selected>Média</option><option>Alta</option><option>Muito alta</option></select></div>
-              <div><label>Padrão do projeto</label><select id="padrao" onchange="calculate()"><option>Econômico</option><option selected>Médio</option><option>Alto</option><option>Luxo</option></select></div>
+              <div><label>Padrão do serviço</label><select id="padrao" onchange="calculate()"><option>Econômico</option><option selected>Médio</option><option>Alto</option><option>Luxo</option></select></div>
               <div><label>Prazo</label><select id="prazo" onchange="calculate()"><option selected>Normal</option><option>Urgente</option><option>Emergencial</option></select><p class="hint">Os acréscimos de urgência são definidos nas Configurações.</p></div>
-              <div><label>Endereço / Localização</label><input id="endereco" list="enderecoHistoryOptions" placeholder="" oninput="syncBudgetFieldToProposal('endereco'); calculate(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)"><datalist id="enderecoHistoryOptions"></datalist></div>
+              <div><label>Endereço / Localização</label><input id="endereco" placeholder="" autocomplete="off" oninput="syncBudgetFieldToProposal('endereco'); calculate()"></div>
               <div><label>Dias trabalhados úteis</label><input id="diasUteisProjeto" type="number" step="0.5" value="0" oninput="calculate()"></div>
               <div><label>Dias trabalhados sábados</label><input id="diasSabadosProjeto" type="number" step="0.5" value="0" oninput="calculate()"></div>
               <div><label>Horas adicionais manuais</label><input id="horasAdicionais" type="number" step="0.25" value="0" oninput="calculate()"></div>
@@ -8224,14 +8263,6 @@ main{
               <div><label>Valor comercial final</label><input id="valorComercialManual" type="number" step="0.01" value="0" oninput="calculate()"><span class="field-help">Opcional: informe um valor fechado. Se ficar 0, o sistema usa o cálculo automático.</span></div>
             </div>
             <div class="divider"></div>
-            <div class="checks">
-              <label class="checkline"><input id="rrtProjeto" type="checkbox" onchange="calculate()"> Incluir RRT/ART de projeto</label>
-              <label class="checkline"><input id="rrtExecucao" type="checkbox" onchange="calculate()"> Incluir RRT/ART de execução</label>
-              <label class="checkline"><input id="notaFiscal" type="checkbox" checked onchange="calculate()"> Considerar imposto/nota fiscal</label>
-              <label class="checkline"><input id="placa" type="checkbox" onchange="calculate()"> Incluir placa de obra</label>
-              <label class="checkline"><input id="brinde" type="checkbox" onchange="calculate()"> Incluir brinde/mimo</label>
-              <label class="checkline"><input id="reserva" type="checkbox" checked onchange="calculate()"> Incluir reserva financeira</label>
-            </div>
             <div class="checks" id="customExtrasChecks" style="margin-top:8px;"></div>
           </div>
         </div>
@@ -8245,7 +8276,7 @@ main{
               <div class="metric"><small>Custo-hora real</small><strong id="outHoraReal">R$ 0,00</strong></div>
               <div class="metric"><small>Diária útil</small><strong id="outDiariaUtil">R$ 0,00</strong></div>
               <div class="metric"><small>Diária sábado</small><strong id="outDiariaSabado">R$ 0,00</strong></div>
-              <div class="metric"><small>Valor do projeto</small><strong id="outValorProjetoBase">R$ 0,00</strong></div>
+              <div class="metric"><small>Valor do serviço</small><strong id="outValorProjetoBase">R$ 0,00</strong></div>
               <div class="metric"><small>Complementares / terceirizados</small><strong id="outComplementares">R$ 0,00</strong></div>
               <div class="metric"><small>Custos do escritório</small><strong id="outCustoTotal">R$ 0,00</strong></div>
               <div class="metric"><small>Valor sem margem alvo</small><strong id="outMinimo">R$ 0,00</strong></div>
@@ -8266,7 +8297,7 @@ main{
               <button class="secondary" onclick="copyProposal()">Copiar Proposta</button>
               <button class="secondary" onclick="startNewProposal()">Novo Orçamento</button>
             </div>
-            <p class="hint">Regra principal: Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado). A margem alvo forma o repasse dos profissionais; os demais custos entram como custos do escritório e são somados ao valor cobrado do cliente.</p>
+            <p class="hint">Regra principal: Valor do Serviço = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado). A margem alvo forma o repasse dos profissionais; os demais custos entram como custos da empresa e são somados ao valor cobrado do cliente.</p>
           </div>
         </div>
 
@@ -8300,7 +8331,7 @@ main{
                 <div class="viability-section-card">
                   <div class="viability-section-head">
                     <h4>Composição Financeira do Cenário</h4>
-                    <p>Veja quanto do preço corresponde ao projeto, margem disponível, custos do escritório, adicional premium e complementares.</p>
+                    <p>Veja quanto do preço corresponde ao projeto, margem disponível, custos da empresa, adicional premium e complementares.</p>
                   </div>
                   <div class="viability-section-body">
                     <div class="viability-scenario-summary">
@@ -8308,10 +8339,10 @@ main{
                         <small>Cenário em análise</small>
                         <h3 id="viabScenarioName">Cenário ideal</h3>
                         <strong id="viabScenarioTotal">R$ 0,00</strong>
-                        <span id="viabScenarioDescription">Preço recomendado com margem alvo integral e custos do escritório protegidos.</span>
+                        <span id="viabScenarioDescription">Preço recomendado com margem alvo integral e custos da empresa protegidos.</span>
                       </div>
                       <div class="viability-scenario-kpis">
-                        <div class="viability-scenario-kpi"><small>Projeto principal</small><strong id="viabScenarioPrincipal">R$ 0,00</strong></div>
+                        <div class="viability-scenario-kpi"><small>Serviço principal</small><strong id="viabScenarioPrincipal">R$ 0,00</strong></div>
                         <div class="viability-scenario-kpi"><small>Custos do escritório</small><strong id="viabScenarioOffice">R$ 0,00</strong></div>
                         <div class="viability-scenario-kpi"><small>Margem disponível</small><strong id="viabScenarioMargin">R$ 0,00</strong></div>
                         <div class="viability-scenario-kpi"><small>Complementares</small><strong id="viabScenarioComplementary">R$ 0,00</strong></div>
@@ -8333,7 +8364,7 @@ main{
                     <div id="viabDeficitNote" class="viability-deficit-note"></div>
 
                     <details class="viability-details">
-                      <summary>Ver detalhamento dos custos do escritório <span id="viabOfficeTotalInline">R$ 0,00</span></summary>
+                      <summary>Ver detalhamento dos custos da empresa <span id="viabOfficeTotalInline">R$ 0,00</span></summary>
                       <div class="viability-details-body">
                         <div class="viability-table-wrap"><table class="viability-detail-table" id="viabOfficeCostTable"></table></div>
                       </div>
@@ -8404,17 +8435,23 @@ main{
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
         </div>
 
-        <div class="custom-extra-panel no-print">
+        <div class="custom-extra-panel no-print financial-additional-panel">
           <div class="custom-extra-head">
             <div>
-              <h3>Gastos Adicionais Personalizados</h3>
-              <p>Cadastre outros custos do escritório para aparecerem como opção na aba Orçamento.</p>
+              <h3>Configurações Financeiras Adicionais</h3>
+              <p>Cadastre cobranças, custos, taxas e reservas usadas no seu negócio. Somente os itens criados por esta conta aparecerão em Condições comerciais e adicionais.</p>
             </div>
           </div>
-          <div class="custom-extra-editor">
-            <div><label>Título</label><input id="extraTitulo" placeholder="Ex.: Impressão / plotagem"></div>
-            <div><label>Descrição</label><input id="extraDescricao" placeholder="Texto curto explicando o custo"></div>
-            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"></div>
+          <div class="custom-extra-editor financial-additional-editor">
+            <div><label>Nome do adicional</label><input id="extraTitulo" placeholder="Ex.: Taxa de deslocamento"></div>
+            <div><label>Descrição</label><input id="extraDescricao" placeholder="Explique quando este item deve ser utilizado"></div>
+            <div><label>Tipo de cálculo</label><select id="extraTipo" onchange="updateCustomExtraValueHelp()">
+              <option value="fixo">Valor fixo</option>
+              <option value="percentual_servico">Percentual sobre o serviço</option>
+              <option value="imposto">Imposto / taxa sobre o preço final</option>
+            </select></div>
+            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"><span class="field-help" id="extraValueHelp">Informe o valor em reais.</span></div>
+            <label class="checkline extra-default-check"><input id="extraPadraoAtivo" type="checkbox"> <span class="check-content"><span>Ativo por padrão</span><span class="check-help">Marcar automaticamente em novos orçamentos.</span></span></label>
             <button class="success" type="button" onclick="addCustomExtra()">Adicionar</button>
           </div>
           <div class="custom-extra-list" id="customExtrasList"></div>
@@ -8452,8 +8489,8 @@ main{
         </div>
 
         <div class="divider"></div>
-        <p class="hint"><strong>Fórmula base por dias trabalhados:</strong> Diária útil = Horas p/ dia útil × Hora trabalhada útil. Diária sábado = Horas p/ dia sábado × Hora trabalhada sábado. Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado).</p>
-        <p class="hint"><strong>Taxa de estrutura da empresa:</strong> aplicada sobre o valor do projeto para formar caixa de estrutura, ferramentas, marketing, melhorias e novos investimentos.</p>
+        <p class="hint"><strong>Fórmula base por dias trabalhados:</strong> Diária útil = Horas p/ dia útil × Hora trabalhada útil. Diária sábado = Horas p/ dia sábado × Hora trabalhada sábado. Valor do Serviço = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado).</p>
+        <p class="hint"><strong>Taxa de estrutura da empresa:</strong> aplicada sobre o valor do serviço para formar caixa de estrutura, ferramentas, marketing, melhorias e novos investimentos.</p>
         <p class="hint"><strong>Rateio do custo fixo:</strong> Custo fixo semanal = Custo fixo mensal ÷ 4. O sistema considera a quantidade estimada de semanas do projeto para incluir uma parcela do custo fixo em cada orçamento.</p>
         <p class="hint"><strong>Margem alvo:</strong> margem ideal para o projeto ser saudável, pagar seu trabalho, cobrir custos e deixar lucro real.</p>
         <p class="hint"><strong>Contingência padrão:</strong> reserva aplicada sobre os custos para cobrir retrabalho, reuniões extras, ajustes, imprevistos e variações de escopo.</p>
@@ -8533,7 +8570,7 @@ main{
       <div class="card"><h2>Projetos Complementares / Serviços Terceirizados</h2><div class="card-body">
         <p class="hint" style="margin-top:0">Cadastre aqui os serviços de parceiros que entram como valor à parte no orçamento final do cliente. Eles não entram no repasse dos profissionais e não recebem margem adicional.</p>
         <div class="complementary-editor">
-          <div><label>Tipo de serviço</label><input id="compTipo" list="compTipoOptions" placeholder="PROJETO ELÉTRICO"><datalist id="compTipoOptions"></datalist></div>
+          <div><label>Tipo de serviço</label><input id="compTipo" autocomplete="off" placeholder="Digite o serviço terceirizado"></div>
           <div><label>Fornecedor / profissional</label><input id="compFornecedor" placeholder="Nome do parceiro ou empresa"></div>
           <div><label>Valor do serviço</label><input id="compValor" type="number" step="0.01" value="0"></div>
           <button class="success" onclick="addComplementaryService()">Adicionar</button>
@@ -8658,7 +8695,7 @@ main{
           <div class="metric"><small>Valor médio por profissional</small><strong id="archCada">R$ 0,00</strong></div>
         </div>
         <div class="table-wrap"><table id="architectsTable"></table></div>
-        <p class="hint" style="margin-top:12px;">Regra: os custos do escritório não saem do repasse. O repasse é formado pelo Valor do projeto + Margem alvo e dividido conforme os percentuais definidos para cada profissional. Custos como RRT, placa, brinde, imposto, deslocamento, estrutura, reserva, contingência e custo fixo são somados ao orçamento do cliente separadamente.</p>
+        <p class="hint" style="margin-top:12px;">Regra: os custos da empresa não saem do repasse. O repasse é formado pelo valor do serviço + margem alvo e dividido conforme os percentuais definidos para cada profissional. Custos operacionais e adicionais configurados pelo usuário são somados ao orçamento do cliente separadamente.</p>
       </div></div>
     </section>
 
@@ -8675,13 +8712,13 @@ main{
                     <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA"></div>
                     <div><label>Nº da proposta</label><input id="propNumero" readonly placeholder="Gerado automaticamente"></div>
                     <div><label>Data da proposta</label><input id="propData" type="date" oninput="buildProposal()"></div>
-                    <div><label>Cliente</label><input id="propCliente" list="clienteHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('cliente', this.value)" placeholder="Nome do cliente"></div>
+                    <div><label>Cliente</label><input id="propCliente" autocomplete="off" oninput="buildProposal()" placeholder="Nome do cliente"></div>
                     <div><label>Contato</label><input id="propContato" oninput="buildProposal()" placeholder="+55 88 9.0000-0000"></div>
-                    <div><label>Tipo/objeto</label><input id="propObjeto" list="servicoHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('servico', this.value)" placeholder="PROJETO DE INTERIORES + FACHADA"></div>
+                    <div><label>Tipo/objeto</label><input id="propObjeto" autocomplete="off" oninput="buildProposal()" placeholder="Ex.: Consultoria, instalação, atendimento ou serviço contratado"></div>
                     <div><label>Valor total</label><input id="propValorTotalManual" inputmode="decimal" onfocus="ensureCurrencyPrefix(this)" oninput="liveCurrencyInput(event, this); buildProposal()" onblur="formatCurrencyInput(this); buildProposal()" onkeydown="currencyEnterFormat(event, this)" placeholder="Ex.: R$ 8.000,00"></div>
                     <div><label>Valor por extenso</label><input id="propValorExtenso" readonly placeholder="preenchido automaticamente"></div>
                   </div>
-                  <div style="margin-top:12px"><label>Endereço/Localização</label><textarea id="propEndereco" class="mini" list="enderecoHistoryOptions" oninput="buildProposal(); renderSmartSuggestions()" onblur="saveSmartSuggestion('endereco', this.value)" placeholder="Endereço completo do projeto"></textarea></div>
+                  <div style="margin-top:12px"><label>Endereço/Localização</label><textarea id="propEndereco" class="mini" autocomplete="off" oninput="buildProposal()" placeholder="Endereço ou local de execução do serviço"></textarea></div>
                 </div>
               </details>
 
@@ -9127,45 +9164,12 @@ main{
         padrao: { 'Econômico': .9, 'Médio': 1, 'Alto': 1.2, 'Luxo': 1.4 },
         localizacao: { 'Online': 1, 'Local': 1, 'Outra cidade': 1.1, 'Outro estado': 1.2 }
       },
-      services: [
-        {codigo:'ARQ-01', nome:'Projeto arquitetônico', unidade:'m²', valorRef:35, horasBase:12, horasUnid:.40, obs:'Estudo + anteprojeto + legal'},
-        {codigo:'ARQ-02', nome:'Projeto arquitetônico + executivo', unidade:'m²', valorRef:65, horasBase:20, horasUnid:.75, obs:'Anteprojeto + executivo completo'},
-        {codigo:'INT-01', nome:'Interiores residencial', unidade:'m²', valorRef:85, horasBase:24, horasUnid:1.10, obs:'Layout + 3D + executivo interiores'},
-        {codigo:'COM-01', nome:'Comercial / loja', unidade:'m²', valorRef:95, horasBase:28, horasUnid:1.25, obs:'Layout + fachada + executivo'},
-        {codigo:'REG-01', nome:'Regularização / prefeitura', unidade:'unidade', valorRef:2500, horasBase:18, horasUnid:0, obs:'Peças e protocolo básico'},
-        {codigo:'3D-01', nome:'Imagem 3D avulsa', unidade:'imagem', valorRef:650, horasBase:4, horasUnid:0, obs:'Imagem renderizada'},
-        {codigo:'EXEC-01', nome:'Detalhamento executivo avulso', unidade:'m²', valorRef:45, horasBase:16, horasUnid:.55, obs:'Detalhes técnicos e pranchas'}
-      ],
-      deliverables: [
-        'PLANTA DE SITUAÇÃO',
-        'PLANTA BAIXA - EXECUTIVA DE OBRA',
-        'PLANTA BAIXA - HUMANIZADA',
-        'PLANTA BAIXA - CONSTRUIR/DEMOLIR',
-        'PLANTA DE PONTOS ELÉTRICOS',
-        'PLANTA DE PONTOS HIDRAÚLICOS',
-        'PLANTA DE FORRO',
-        'PLANTA DE PAGINAÇÃO DE PISO',
-        'CORTES/ELEVAÇÕES (Longitudinal e Transversal)',
-        'DETALHAMENTOS (Marcenaria / Móveis Planejados / Marmoraria)',
-        'RRT DE PROJETO ARQUITETÔNICO',
-        'RRT DE EXECUÇÃO DE PROJETO',
-        'RRT DE REFORMA',
-        'PROJETO ELÉTRICO',
-        'PROJETO HIDROSSANITÁRIO',
-        'PROJETO DE INCÊNDIO',
-        'ORÇAMENTO DE OBRA',
-        'PROJETO DE DRENAGEM',
-        'ACOMPANHAMENTO DE OBRA/EXECUÇÃO: Vistorias técnicas pontuais para conferência da implantação e conformidade com o projeto.'
-      ],
-      complementaryServiceTypes: [
-        'PROJETO ELÉTRICO',
-        'PROJETO HIDROSSANITÁRIO',
-        'PROJETO DE INCÊNDIO',
-        'ORÇAMENTO DE OBRA',
-        'PROJETO DE DRENAGEM'
-      ],
+      services: [],
+      deliverables: [],
+      complementaryServiceTypes: [],
       complementaryServices: [],
       customExtras: [],
+      customExtrasMigrationV54: false,
       vehicleCatalog: structuredClone(baseVehicleCatalog),
       vehicles: [],
       myVehicles: [],
@@ -9230,18 +9234,8 @@ main{
     }
 
     function setDefaultBudgetCheckboxes(){
-      const defaults = {
-        rrtProjeto: false,
-        rrtExecucao: false,
-        notaFiscal: true,
-        placa: false,
-        brinde: false,
-        reserva: true
-      };
-      Object.entries(defaults).forEach(([id, value]) => {
-        const el = document.getElementById(id);
-        if(el) el.checked = value;
-      });
+      renderCustomExtrasChecks();
+      resetCustomExtraChecksToDefaults();
     }
 
     function loadAll(){
@@ -9266,7 +9260,7 @@ main{
       normalizeVehicles();
       cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
-      renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); renderSmartSuggestions(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
+      renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
       // Cada abertura do site inicia um orçamento novo, mantendo configurações,
       // perfil, personalização e histórico já salvos.
       resetBudget();
@@ -9296,7 +9290,7 @@ main{
       if(event.key === 'Escape') closeActionMenu();
     });
 
-    function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); cmfinPersistData(); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); renderSmartSuggestions(); updateHistorySaveButton(); cmfinSalvarDadosNuvem(true); }
+    function saveAll(){ if(document.getElementById('configFields')) applyConfigInputs(); cmfinPersistData(); const el=document.getElementById('configPending'); if(el) el.style.display='none'; calculate(); updateHistorySaveButton(); cmfinSalvarDadosNuvem(true); }
     function toast(msg, options = {}){
       const host = document.getElementById('cmfinToastHost');
       const title = options.title || 'Notificação do sistema';
@@ -9431,13 +9425,59 @@ main{
     }
 
     
+    function normalizeCustomExtraType(type){
+      return ['fixo','percentual_servico','imposto'].includes(type) ? type : 'fixo';
+    }
+
+    function customExtraTypeLabel(type){
+      const map = {
+        fixo: 'Valor fixo',
+        percentual_servico: 'Percentual sobre o serviço',
+        imposto: 'Imposto / taxa sobre o preço final'
+      };
+      return map[normalizeCustomExtraType(type)] || map.fixo;
+    }
+
+    function customExtraDisplayValue(item){
+      const type = normalizeCustomExtraType(item?.tipo);
+      const value = Number(item?.valor || 0);
+      return type === 'fixo' ? money(value) : `${value.toFixed(2).replace('.', ',').replace(',00','')}%`;
+    }
+
+    function migrateLegacyFinancialExtras(){
+      if(data.customExtrasMigrationV54 === true) return;
+      if(!Array.isArray(data.customExtras)) data.customExtras = [];
+      const cfg = data.config || {};
+      const normalizedTitles = new Set(data.customExtras.map(item => String(item?.titulo || '').trim().toLowerCase()));
+      const addLegacy = (titulo, descricao, tipo, valor, padraoAtivo, legacyKey) => {
+        const numeric = Number(valor || 0);
+        if(!(numeric > 0) || normalizedTitles.has(titulo.toLowerCase())) return;
+        data.customExtras.push({
+          id: 'extra_legacy_' + legacyKey,
+          titulo, descricao, tipo, valor:numeric, padraoAtivo:!!padraoAtivo, legacyKey
+        });
+        normalizedTitles.add(titulo.toLowerCase());
+      };
+      addLegacy('RRT/ART Projeto', 'Responsabilidade técnica de projeto.', 'fixo', cfg.rrtProjeto, false, 'rrtProjeto');
+      addLegacy('RRT/ART Execução', 'Responsabilidade técnica de execução.', 'fixo', cfg.rrtExecucao, false, 'rrtExecucao');
+      addLegacy('Placa de obra', 'Custo de placa quando incluída no orçamento.', 'fixo', cfg.placa, false, 'placa');
+      addLegacy('Brinde/Mimo', 'Custo de brinde, apresentação ou mimo ao cliente.', 'fixo', cfg.brinde, false, 'brinde');
+      addLegacy('Reserva financeira', 'Reserva adicional aplicada sobre o valor do serviço.', 'percentual_servico', (Number(cfg.reservaFinanceira || 0) * 100), true, 'reservaFinanceira');
+      addLegacy('Imposto/Nota fiscal', 'Imposto ou taxa calculada sobre o preço final.', 'imposto', (Number(cfg.imposto || 0) * 100), true, 'imposto');
+      data.customExtrasMigrationV54 = true;
+    }
+
     function ensureCustomExtras(){
       if(!Array.isArray(data.customExtras)) data.customExtras = [];
+      migrateLegacyFinancialExtras();
       data.customExtras = data.customExtras.map((item, index) => ({
         id: item.id || ('extra_' + Date.now() + '_' + index),
         titulo: item.titulo || item.title || '',
         descricao: item.descricao || item.description || '',
-        valor: Number(item.valor ?? item.value ?? 0) || 0
+        tipo: normalizeCustomExtraType(item.tipo || item.type || 'fixo'),
+        valor: Number(item.valor ?? item.value ?? 0) || 0,
+        padraoAtivo: !!(item.padraoAtivo ?? item.defaultActive ?? false),
+        legacyKey: item.legacyKey || ''
       })).filter(item => item.titulo);
     }
 
@@ -9445,21 +9485,35 @@ main{
       ensureCustomExtras();
       const box = document.getElementById('customExtrasChecks');
       if(!box) return;
+      const currentState = new Map(
+        Array.from(box.querySelectorAll('input[type="checkbox"]')).map(el => [el.id, !!el.checked])
+      );
       if(!data.customExtras.length){
-        box.innerHTML = '';
-        box.style.display = 'none';
+        box.innerHTML = '<div class="custom-extras-empty"><strong>Nenhum adicional configurado.</strong><span>Crie itens em Configurações → Configurações Financeiras Adicionais.</span></div>';
+        box.style.display = 'grid';
         return;
       }
-      box.style.display = '';
-      box.innerHTML = data.customExtras.map(item => `
+      box.style.display = 'grid';
+      box.innerHTML = data.customExtras.map(item => {
+        const id = 'customExtra_' + item.id;
+        const isChecked = currentState.has(id) ? currentState.get(id) : !!item.padraoAtivo;
+        return `
         <label class="checkline">
-          <input id="customExtra_${esc(item.id)}" type="checkbox" onchange="calculate()">
+          <input id="${esc(id)}" type="checkbox" ${isChecked ? 'checked' : ''} onchange="calculate()">
           <span class="check-content">
             <span>Incluir ${esc(item.titulo)}</span>
-            ${item.descricao ? `<span class="check-help">${esc(item.descricao)}</span>` : ''}
+            <span class="check-help">${esc(customExtraTypeLabel(item.tipo))}: ${esc(customExtraDisplayValue(item))}${item.descricao ? ` · ${esc(item.descricao)}` : ''}</span>
           </span>
-        </label>
-      `).join('');
+        </label>`;
+      }).join('');
+    }
+
+    function resetCustomExtraChecksToDefaults(){
+      ensureCustomExtras();
+      data.customExtras.forEach(item => {
+        const el = document.getElementById('customExtra_' + item.id);
+        if(el) el.checked = !!item.padraoAtivo;
+      });
     }
 
     function renderCustomExtrasConfig(){
@@ -9467,40 +9521,55 @@ main{
       const list = document.getElementById('customExtrasList');
       if(!list) return;
       if(!data.customExtras.length){
-        list.innerHTML = '<div class="hint">Nenhum gasto adicional personalizado cadastrado.</div>';
+        list.innerHTML = '<div class="hint">Nenhuma configuração financeira adicional cadastrada. O sistema ficará neutro até você criar os itens usados no seu negócio.</div>';
         return;
       }
       list.innerHTML = data.customExtras.map((item, index) => `
-        <div class="custom-extra-item">
-          <div><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || 'Sem descrição.')}</span></div>
-          <div class="money-mini">${money(item.valor)}</div>
+        <div class="custom-extra-item financial-additional-item">
+          <div><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || 'Sem descrição.')}</span><span class="extra-type-badge">${esc(customExtraTypeLabel(item.tipo))}${item.padraoAtivo ? ' · ativo por padrão' : ''}</span></div>
+          <div class="money-mini">${esc(customExtraDisplayValue(item))}</div>
           <button type="button" class="danger mini-btn" onclick="removeCustomExtra(${index})">Excluir</button>
         </div>
       `).join('');
+    }
+
+    function updateCustomExtraValueHelp(){
+      const type = document.getElementById('extraTipo')?.value || 'fixo';
+      const help = document.getElementById('extraValueHelp');
+      if(!help) return;
+      help.textContent = type === 'fixo' ? 'Informe o valor em reais.' : 'Informe o percentual. Ex.: 6 = 6%.';
     }
 
     function addCustomExtra(){
       ensureCustomExtras();
       const titulo = val('extraTitulo');
       const descricao = val('extraDescricao');
+      const tipo = normalizeCustomExtraType(document.getElementById('extraTipo')?.value || 'fixo');
       const valor = num('extraValor');
-      if(!titulo) return toast('Informe o título do gasto adicional.');
+      const padraoAtivo = checked('extraPadraoAtivo');
+      if(!titulo) return toast('Informe o nome do adicional.');
+      if(!(valor >= 0)) return toast('Informe um valor válido.');
       data.customExtras.push({
         id: 'extra_' + Date.now(),
         titulo,
         descricao,
-        valor
+        tipo,
+        valor,
+        padraoAtivo
       });
       ['extraTitulo','extraDescricao','extraValor'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = id === 'extraValor' ? '0' : '';
       });
+      const typeEl = document.getElementById('extraTipo'); if(typeEl) typeEl.value = 'fixo';
+      const defaultEl = document.getElementById('extraPadraoAtivo'); if(defaultEl) defaultEl.checked = false;
+      updateCustomExtraValueHelp();
       renderCustomExtrasConfig();
       renderCustomExtrasChecks();
       calculate();
       cmfinPersistData();
       cmfinSalvarDadosNuvem(false);
-      toast('Gasto personalizado adicionado.', { title:'Configuração atualizada', type:'success', icon:'✓' });
+      toast('Configuração financeira adicional criada.', { title:'Configuração atualizada', type:'success', icon:'✓' });
     }
 
     function removeCustomExtra(index){
@@ -9521,8 +9590,28 @@ main{
       return data.customExtras.filter(item => checked('customExtra_' + item.id));
     }
 
+    function calculateCustomFinancialExtras(serviceValue, subtotalBeforeTax){
+      const selected = customSelectedExtras().map(item => ({...item, valorCalculado:0}));
+      let nonTaxTotal = 0;
+      selected.forEach(item => {
+        if(item.tipo === 'fixo') item.valorCalculado = Number(item.valor || 0);
+        else if(item.tipo === 'percentual_servico') item.valorCalculado = Number(serviceValue || 0) * (Number(item.valor || 0) / 100);
+        if(item.tipo !== 'imposto') nonTaxTotal += item.valorCalculado;
+      });
+      const taxItems = selected.filter(item => item.tipo === 'imposto');
+      const taxRate = Math.min(.95, taxItems.reduce((sum,item) => sum + (Number(item.valor || 0) / 100), 0));
+      const taxBase = Number(subtotalBeforeTax || 0);
+      const taxTotal = taxRate > 0 && taxBase > 0 ? (taxBase / (1 - taxRate)) - taxBase : 0;
+      const rawRate = taxItems.reduce((sum,item) => sum + (Number(item.valor || 0) / 100), 0);
+      taxItems.forEach(item => {
+        const rate = Number(item.valor || 0) / 100;
+        item.valorCalculado = rawRate > 0 ? taxTotal * (rate / rawRate) : 0;
+      });
+      return { selected, nonTaxTotal, taxRate, taxTotal, total:nonTaxTotal + taxTotal };
+    }
+
     function customSelectedExtrasTotal(){
-      return customSelectedExtras().reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
+      return customSelectedExtras().reduce((sum, item) => sum + (item.tipo === 'fixo' ? Number(item.valor || 0) : 0), 0);
     }
 
     function renderConfig(){
@@ -9537,21 +9626,14 @@ main{
         ['diasUteis','Dias úteis/mês', 'Referência administrativa do mês. O custo fixo agora é rateado por semana, não por hora.'],
         ['horasDia','Horas p/ dia (dia útil)', 'Quantidade de horas consideradas em uma diária útil. Ex.: 8h.'],
         ['horasDiaSabado','Horas p/ dia (sábado)', 'Quantidade de horas consideradas em uma diária de sábado. Ex.: 4h.'],
-        ['custoFixoMensal','Custo fixo mensal', 'Softwares, internet, energia, contador, escritório e custos recorrentes. O sistema divide por 4 semanas e rateia por projeto.'],
-        ['taxaEstrutura','Taxa de estrutura da empresa (%)', 'Percentual aplicado sobre o valor do projeto para formar caixa de estrutura, melhorias, ferramentas, marketing e investimentos. Ex.: 10 = 10%.'],
-        ['reservaFinanceira','Reserva financeira (%)', 'Percentual adicional sobre o valor do projeto para formar caixa e proteger o escritório. Ex.: 5 = 5%.'],
-        ['imposto','Imposto/nota fiscal (%)', 'Percentual estimado de imposto sobre o valor cobrado. Ex.: 6 = 6%.'],
-        ['margemAlvo','Margem alvo (%)', 'Lucro ideal para o projeto ser financeiramente saudável. Ex.: 20 = 20%.'],
+        ['custoFixoMensal','Custo fixo mensal', 'Softwares, internet, energia, contador, estrutura e custos recorrentes. O sistema divide por 4 semanas e rateia por serviço.'],
+        ['taxaEstrutura','Taxa de estrutura da empresa (%)', 'Percentual aplicado sobre o valor do serviço para formar caixa de estrutura, melhorias, ferramentas, marketing e investimentos. Ex.: 10 = 10%.'],
+        ['margemAlvo','Margem alvo (%)', 'Margem ideal para o serviço ser financeiramente saudável. Ex.: 20 = 20%.'],
         ['contingenciaPadrao','Contingência padrão (%)', 'Reserva para retrabalho, reuniões extras e imprevistos. Ex.: 3 = 3%.'],
         ['prazoUrgente','Acréscimo prazo urgente (%)', 'Percentual aplicado quando o prazo for Urgente. Ex.: 15 = 15%.'],
         ['prazoEmergencial','Acréscimo prazo emergencial (%)', 'Percentual aplicado quando o prazo for Emergencial. Ex.: 20 = 20%.'],
-        ['visitaHoras','Horas por visita', 'Tempo médio gasto em cada visita, incluindo atendimento e deslocamento.'],
-        ['rrtProjeto','RRT/ART projeto', 'Valor unitário previsto para responsabilidade técnica de projeto.'],
-        ['rrtExecucao','RRT/ART execução', 'Valor unitário previsto para responsabilidade técnica de execução.'],
-        ['placa','Placa de obra', 'Custo previsto para placa, quando inclusa no orçamento.'],
-        ['brinde','Brinde/mimo', 'Custo previsto para brinde, apresentação ou mimo ao cliente.']
       ];
-      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
+      const percentKeys = ['taxaEstrutura','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
       const box = document.getElementById('configFields'); box.innerHTML='';
       fields.forEach(([k,label,help])=>{
         if(data.config[k] === undefined) data.config[k] = 0;
@@ -9571,7 +9653,7 @@ main{
     }
 
     function applyConfigInputs(){
-      const percentKeys = ['taxaEstrutura','reservaFinanceira','imposto','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
+      const percentKeys = ['taxaEstrutura','margemAlvo','contingenciaPadrao','prazoUrgente','prazoEmergencial'];
       document.querySelectorAll('#configFields input[id^="cfg_"]').forEach(input=>{
         const key = input.id.replace('cfg_','');
         const raw = parseFloat(input.value || 0);
@@ -9808,10 +9890,7 @@ main{
         .reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
     }
     function renderComplementaryTypes(){
-      const list = document.getElementById('compTipoOptions');
-      if(!list) return;
-      const defaults = Array.isArray(data.complementaryServiceTypes) ? data.complementaryServiceTypes : [];
-      list.innerHTML = defaults.map(t => `<option value="${esc(t)}"></option>`).join('');
+      // V54: o tipo de serviço terceirizado é sempre digitado manualmente.
     }
     function addComplementaryService(){
       const tipo = (document.getElementById('compTipo')?.value || '').trim().toUpperCase();
@@ -9879,7 +9958,7 @@ main{
       const horasServico = (usaDiasTrabalhados ? horasPorDias : horasPorServico) + horasAdicionais;
 
       // Fórmula principal solicitada:
-      // Valor do Projeto = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado)
+      // Valor do Serviço = (Dias úteis × Diária útil) + (Dias sábados × Diária sábado)
       const horaUtil = cfg.custoHoraTecnica || 0;
       const horaSabado = cfg.horaSabado || cfg.custoHoraTecnica || 0;
       const diariaUtil = horaUtil * (cfg.horasDia || 0);
@@ -9903,8 +9982,8 @@ main{
       const custoFixoRateado = custoFixoSemanal * semanasCustoFixo;
       const custoHoraReal = horaUtil + (horasServico > 0 ? (custoFixoRateado / horasServico) : 0);
       const taxaEstruturaValor = valorProjetoBase * (cfg.taxaEstrutura || 0);
-      const reservaValor = checked('reserva') ? (valorProjetoBase * cfg.reservaFinanceira) : 0;
-      const custoTecnico = valorProjetoBase + (horasAdicionais * horaUtil) + custoFixoRateado + taxaEstruturaValor + reservaValor;
+      const reservaValor = 0; // compatibilidade: reservas agora são adicionais configuráveis por usuário.
+      const custoTecnico = valorProjetoBase + (horasAdicionais * horaUtil) + custoFixoRateado + taxaEstruturaValor;
       const visitasQtd = num('visitas');
       const kmLitroSelecionado = getKmLitroSelecionado();
       const valorAlimentacao = num('valorAlimentacao');
@@ -9915,18 +9994,18 @@ main{
       const outSug = document.getElementById('deslocamentoSugerido');
       if(outSug) outSug.value = custoVisitas.toFixed(2);
       const deslocamentoSugerido = custoVisitas;
-      const rrtProjetoValor = checked('rrtProjeto') ? cfg.rrtProjeto : 0;
-      const rrtExecucaoValor = checked('rrtExecucao') ? cfg.rrtExecucao : 0;
-      const placaValor = checked('placa') ? cfg.placa : 0;
-      const brindeValor = checked('brinde') ? cfg.brinde : 0;
-      const customExtrasSelecionados = customSelectedExtras();
-      const customExtrasValor = customExtrasSelecionados.reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
-      const extras = rrtProjetoValor + rrtExecucaoValor + placaValor + brindeValor + customExtrasValor;
+      const rrtProjetoValor = 0;
+      const rrtExecucaoValor = 0;
+      const placaValor = 0;
+      const brindeValor = 0;
+      const customExtrasPreTax = calculateCustomFinancialExtras(valorProjetoBase, 0);
+      const customExtrasValor = customExtrasPreTax.nonTaxTotal;
+      const extras = customExtrasValor;
       const riscoPerc = cfg.contingenciaPadrao;
 
       // Regra CM128 revisada:
-      // 1) O repasse dos profissionais NÃO paga os custos do escritório.
-      // 2) Total distribuível aos profissionais = Valor do projeto + Margem alvo.
+      // 1) O repasse dos profissionais NÃO paga os custos da empresa.
+      // 2) Total distribuível aos profissionais = Valor do serviço + Margem alvo.
       // 3) Custos do escritório são somados por fora para formar o valor cobrado do cliente.
       const margemAlvoArquitetos = valorProjetoBase * (cfg.margemAlvo || 0);
       const totalDistribuivelArquitetos = valorProjetoBase + margemAlvoArquitetos;
@@ -9941,9 +10020,9 @@ main{
       const baseParaContingencia = totalDistribuivelArquitetos + custosEscritorioAntesContingencia;
       const contingenciaValor = baseParaContingencia * riscoPerc;
       const subtotalSemImposto = baseParaContingencia + contingenciaValor;
-      const impostoValor = checked('notaFiscal') && (cfg.imposto || 0) < 1
-        ? (subtotalSemImposto / (1 - (cfg.imposto || 0))) - subtotalSemImposto
-        : 0;
+      const customFinancialExtras = calculateCustomFinancialExtras(valorProjetoBase, subtotalSemImposto);
+      const customExtrasSelecionados = customFinancialExtras.selected;
+      const impostoValor = customFinancialExtras.taxTotal;
 
       const custosEscritorioTotal = custosEscritorioAntesContingencia + contingenciaValor + impostoValor;
       const custoComRisco = custosEscritorioTotal;
@@ -9958,10 +10037,10 @@ main{
       const ajusteComercial = sugeridoProjetoPrincipal - sugeridoProjetoPrincipalCalculado;
       const sugerido = sugeridoProjetoPrincipal + valorComplementares;
       const lucro = margemAlvoArquitetos;
-      let cls='success', status='SAUDÁVEL', text='Orçamento com custos do escritório separados do repasse dos profissionais.';
-      if(sugeridoProjetoPrincipal < precoMinimo){ cls='danger'; status='RISCO DE PREJUÍZO'; text='Valor do projeto principal abaixo do preço mínimo aceitável.'; }
-      else if(sugeridoProjetoPrincipal < precoAlvo){ cls='warning'; status='ABAIXO DO ALVO'; text='Projeto principal aceitável, mas com margem apertada.'; }
-      lastCalc = { service, horasServico, custoHoraReal, custoFixoSemanal, semanasCustoFixo, custoFixoRateado, taxaEstruturaValor, reservaValor, diariaUtil, diariaSabado, valorProjetoBase, valorProjetoSemPrazo, prazoPerc, acrescimoPrazo, diasUteisProjeto, diasSabadosProjeto, endereco: val('endereco'), modeloVeiculo: val('modeloVeiculo'), kmVisita: num('kmVisita'), kmIdaVoltaPorVisita: num('kmVisita') * 2, kmTotalVisitas: num('kmVisita') * 2 * num('visitas'), kmCidade: num('kmCidade'), kmEstrada: num('kmEstrada'), tipoTrajeto: val('tipoTrajeto'), kmLitroSelecionado, valorCombustivel: num('valorCombustivel'), manutencaoVisita: num('manutencaoVisita'), deslocamentoSugerido, valorDeslocamentoVisita, valorAlimentacao, custoTecnico, margemAlvoArquitetos, totalDistribuivelArquitetos, custosEscritorioAntesContingencia, custosEscritorioTotal, custoVisitas, rrtProjetoValor, rrtExecucaoValor, placaValor, brindeValor, customExtrasValor, customExtrasSelecionados, extras, riscoPerc, contingenciaValor, custoComRisco, impostoValor, referenciaMercado, precoMinimo, precoAlvo, valorComplementares, sugeridoProjetoPrincipalCalculado, valorComercialManual, ajusteComercial, sugeridoProjetoPrincipal, sugerido, lucro, status, text };
+      let cls='success', status='SAUDÁVEL', text='Orçamento com custos da empresa separados do repasse dos profissionais.';
+      if(sugeridoProjetoPrincipal < precoMinimo){ cls='danger'; status='RISCO DE PREJUÍZO'; text='Valor do serviço principal abaixo do preço mínimo aceitável.'; }
+      else if(sugeridoProjetoPrincipal < precoAlvo){ cls='warning'; status='ABAIXO DO ALVO'; text='Serviço principal aceitável, mas com margem apertada.'; }
+      lastCalc = { service, horasServico, custoHoraReal, custoFixoSemanal, semanasCustoFixo, custoFixoRateado, taxaEstruturaValor, reservaValor, diariaUtil, diariaSabado, valorProjetoBase, valorProjetoSemPrazo, prazoPerc, acrescimoPrazo, diasUteisProjeto, diasSabadosProjeto, endereco: val('endereco'), modeloVeiculo: val('modeloVeiculo'), kmVisita: num('kmVisita'), kmIdaVoltaPorVisita: num('kmVisita') * 2, kmTotalVisitas: num('kmVisita') * 2 * num('visitas'), kmCidade: num('kmCidade'), kmEstrada: num('kmEstrada'), tipoTrajeto: val('tipoTrajeto'), kmLitroSelecionado, valorCombustivel: num('valorCombustivel'), manutencaoVisita: num('manutencaoVisita'), deslocamentoSugerido, valorDeslocamentoVisita, valorAlimentacao, custoTecnico, margemAlvoArquitetos, totalDistribuivelArquitetos, custosEscritorioAntesContingencia, custosEscritorioTotal, custoVisitas, rrtProjetoValor, rrtExecucaoValor, placaValor, brindeValor, customExtrasValor, customExtrasSelecionados, customFinancialExtras, extras, riscoPerc, contingenciaValor, custoComRisco, impostoValor, referenciaMercado, precoMinimo, precoAlvo, valorComplementares, sugeridoProjetoPrincipalCalculado, valorComercialManual, ajusteComercial, sugeridoProjetoPrincipal, sugerido, lucro, status, text };
       document.getElementById('outHoras').textContent = `${horasServico.toFixed(1)} h`;
       document.getElementById('outHoraReal').textContent = money(custoHoraReal);
       document.getElementById('outDiariaUtil').textContent = money(diariaUtil);
@@ -10012,8 +10091,8 @@ main{
       const descontoValor = Math.max(0, num('viabDescontoValor'));
       const simulated = Math.max(0, simBase - (simBase * descontoPerc / 100) - descontoValor);
       return {
-        minimum: { key:'minimum', name:'Cenário mínimo', principal:min, total:min + complementary, description:'Limite técnico-financeiro: cobre o valor do projeto e os custos do escritório, sem margem alvo disponível.' },
-        ideal: { key:'ideal', name:'Cenário ideal', principal:ideal, total:ideal + complementary, description:'Preço recomendado: preserva os custos do escritório e disponibiliza integralmente a margem alvo dos profissionais.' },
+        minimum: { key:'minimum', name:'Cenário mínimo', principal:min, total:min + complementary, description:'Limite técnico-financeiro: cobre o valor do serviço e os custos da empresa, sem margem alvo disponível.' },
+        ideal: { key:'ideal', name:'Cenário ideal', principal:ideal, total:ideal + complementary, description:'Preço recomendado: preserva os custos da empresa e disponibiliza integralmente a margem alvo dos profissionais.' },
         premium: { key:'premium', name:'Cenário premium', principal:premium, total:premium + complementary, description:'Estratégia de maior valor: mantém o cenário ideal e acrescenta uma camada Premium claramente separada.' },
         commercial: { key:'commercial', name:'Comercial atual', principal:commercial, total:commercial + complementary, description:'Valor comercial atualmente considerado no orçamento após desconto percentual ou valor final informado.' },
         simulated: { key:'simulated', name:'Cenário simulado', principal:simulated, total:simulated + complementary, description:'Resultado temporário da negociação simulada. Não altera o orçamento nem a proposta comercial.' }
@@ -10088,22 +10167,19 @@ main{
     function renderViabilityOfficeCosts(c){
       const table = document.getElementById('viabOfficeCostTable');
       if(!table) return;
+      const dynamicRows = Array.isArray(c.customExtrasSelecionados)
+        ? c.customExtrasSelecionados.map(item => [item.titulo || 'Adicional', Number(item.valorCalculado || 0)])
+        : [];
       const rows = [
         ['Custo fixo rateado', Number(c.custoFixoRateado || 0)],
         ['Taxa de estrutura', Number(c.taxaEstruturaValor || 0)],
-        ['Reserva financeira', Number(c.reservaValor || 0)],
         ['Deslocamentos / visitas', Number(c.custoVisitas || 0)],
-        ['RRT/ART de projeto', Number(c.rrtProjetoValor || 0)],
-        ['RRT/ART de execução', Number(c.rrtExecucaoValor || 0)],
-        ['Placa de obra', Number(c.placaValor || 0)],
-        ['Brinde / mimo', Number(c.brindeValor || 0)],
-        ['Adicionais personalizados', Number(c.customExtrasValor || 0)],
-        ['Contingência', Number(c.contingenciaValor || 0)],
-        ['Imposto / nota fiscal', Number(c.impostoValor || 0)]
+        ...dynamicRows,
+        ['Contingência', Number(c.contingenciaValor || 0)]
       ];
       table.innerHTML = '<thead><tr><th>Componente</th><th>Valor</th></tr></thead><tbody>' +
         rows.map(([label, value]) => `<tr><td>${esc(label)}</td><td><strong>${money(value)}</strong></td></tr>`).join('') +
-        `<tr class="total-row"><td>Total dos custos do escritório</td><td>${money(Number(c.custosEscritorioTotal || 0))}</td></tr></tbody>`;
+        `<tr class="total-row"><td>Total dos custos da empresa</td><td>${money(Number(c.custosEscritorioTotal || 0))}</td></tr></tbody>`;
     }
 
     function renderViabilityProfessionals(breakdown){
@@ -10167,7 +10243,7 @@ main{
       if(deficitNote){
         const gap = Math.abs(breakdown.deficit || 0);
         deficitNote.className = `viability-deficit-note${gap > 0.005 ? ' show' : ''}`;
-        deficitNote.textContent = gap > 0.005 ? `Atenção: este cenário está ${money(gap)} abaixo do preço mínimo do projeto principal. A composição acima evidencia o déficit necessário para fechar esse valor.` : '';
+        deficitNote.textContent = gap > 0.005 ? `Atenção: este cenário está ${money(gap)} abaixo do preço mínimo do serviço principal. A composição acima evidencia o déficit necessário para fechar esse valor.` : '';
       }
       renderViabilityOfficeCosts(lastCalc || {});
       renderViabilityProfessionals(breakdown);
@@ -10217,7 +10293,7 @@ main{
       let cls = 'success', label = 'Saudável', msg = `${scenario.name}: o valor protege o mínimo financeiro e mantém resultado positivo.`;
       if(breakdown.principal < min){
         cls = 'danger'; label = 'Abaixo do mínimo';
-        msg = `${scenario.name}: o projeto principal está ${money(min - breakdown.principal)} abaixo do mínimo aceitável. Revise o desconto ou o valor comercial antes de fechar.`;
+        msg = `${scenario.name}: o serviço principal está ${money(min - breakdown.principal)} abaixo do mínimo aceitável. Revise o desconto ou o valor comercial antes de fechar.`;
       }else if(breakdown.principal < ideal){
         cls = 'warning'; label = 'Margem apertada';
         msg = `${scenario.name}: os custos estão cobertos, mas apenas ${money(breakdown.marginAvailable)} da margem alvo de ${money(Number(c.margemAlvoArquitetos || 0))} permanece disponível.`;
@@ -10390,10 +10466,10 @@ main{
       const profissionalRows = shares.map((pct, i) => [`${esc(names[i] || `Profissional ${i + 1}`)} — ${Number(pct||0).toFixed(2).replace('.', ',').replace(',00','')}%`, totalDistribuivelArquitetos * ((Number(pct)||0) / 100)]);
       const rows = [
         ['Valor total ao cliente', valorTotalCliente],
-        ['Valor do projeto principal ao cliente', valorProjetoPrincipalAoCliente],
+        ['Valor do serviço principal ao cliente', valorProjetoPrincipalAoCliente],
         ['Projetos complementares / terceirizados', valorComplementares],
         ['Repasse dos profissionais', ''],
-        ['Valor do projeto', valorProjeto],
+        ['Valor do serviço', valorProjeto],
         ['(+) Margem alvo dos profissionais', margemAlvoArquitetos],
         ['Total distribuível aos profissionais', totalDistribuivelArquitetos],
         ['Quantidade de profissionais', qtdProfissionais],
@@ -10401,18 +10477,13 @@ main{
         ['Valor médio por profissional', valorMedio],
         ['Distribuição individual', ''],
         ...profissionalRows,
-        ['Custos do escritório somados por fora', ''],
+        ['Custos da empresa somados por fora', ''],
         ['Custo fixo semanal rateado', c.custoFixoRateado || 0],
         ['Taxa de estrutura da empresa', c.taxaEstruturaValor || 0],
-        ['Reserva financeira', c.reservaValor || 0],
-        ['Imposto/nota fiscal', c.impostoValor || 0],
         ['Deslocamento/visitas', c.custoVisitas || 0],
         ['Contingência padrão', contingenciaValor],
-        ['RRT/ART projeto', rrtProjeto],
-        ['RRT/ART execução', rrtExecucao],
-        ['Placa de obra', placa],
-        ['Brinde/mimo', brinde],
-        ['Total de custos do escritório', custosEscritorioTotal],
+        ...(Array.isArray(c.customExtrasSelecionados) ? c.customExtrasSelecionados.map(item => [item.titulo || 'Adicional', Number(item.valorCalculado || 0)]) : []),
+        ['Total de custos da empresa', custosEscritorioTotal],
         ['Terceirizados não distribuídos aos profissionais', valorComplementares]
       ];
       table.innerHTML = '<thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>' + rows.map(([a,b]) => `<tr><td>${a}</td><td><strong>${typeof b === 'number' ? (a.includes('Quantidade') ? String(b) : money(b)) : b}</strong></td></tr>`).join('') + '</tbody>';
@@ -10908,12 +10979,7 @@ main{
       data.smartHistory = data.smartHistory || { cliente: [], servico: [], endereco: [] };
       data.smartHistory[key] = Array.isArray(data.smartHistory[key]) ? data.smartHistory[key] : [];
       const fromHistory = Array.isArray(data.history) ? data.history.map(h => h[key]).filter(Boolean) : [];
-      const defaults = key === 'servico' ? [
-        'PROJETO DE ARQUITETURA RESIDENCIAL',
-        'PROJETO DE ARQUITETURA',
-        'PROJETO DE INTERIORES RESIDENCIAL',
-        'PROJETO DE INTERIORES COMERCIAL'
-      ] : [];
+      const defaults = [];
       const seen = new Set();
       return [...defaults, ...data.smartHistory[key], ...fromHistory]
         .map(v => String(v || '').trim())
@@ -11787,7 +11853,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
 
     function collectCurrentBudgetState(){
       const ids = ['cliente','data','servico','complexidade','padrao','prazo','endereco','diasUteisProjeto','diasSabadosProjeto','visitas','kmVisita','modeloVeiculo','kmCidade','kmEstrada','tipoTrajeto','valorCombustivel','manutencaoVisita','deslocamentoSugerido','valorAlimentacao','horasAdicionais','desconto','valorComercialManual','statusComercial','numeroPropostaAtual','qtdProfissionais','criterioDivisaoProfissionais', ...PROPOSAL_HISTORY_FIELD_IDS];
-      const checks = ['rrtProjeto','rrtExecucao','notaFiscal','placa','brinde','reserva'];
+      const checks = Array.from(document.querySelectorAll('#customExtrasChecks input[type="checkbox"]')).map(el => el.id);
       const fields = {};
       ids.forEach(id => { const el = document.getElementById(id); if(el) fields[id] = el.value; });
       checks.forEach(id => { const el = document.getElementById(id); if(el) fields[id] = !!el.checked; });
@@ -11803,6 +11869,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
 
     function applyBudgetState(state){
       if(!state || !state.fields) return false;
+      renderCustomExtrasChecks();
       Object.entries(state.fields).forEach(([id, value]) => setHistoryFieldValue(id, value));
       if(Array.isArray(state.complementaryServices)){
         data.complementaryServices = structuredClone(state.complementaryServices);
@@ -11855,7 +11922,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         propPagamentoManual: '',
         propEndereco: address,
         propIntro: `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${service.toUpperCase()}${address ? `, localizado em ${address}` : ''}.`,
-        propEscopo: 'PLANTA BAIXA - EXECUTIVA DE OBRA\nPLANTA BAIXA - HUMANIZADA\nPLANTA DE PONTOS ELÉTRICOS\nPLANTA DE FORRO\nPLANTA DE PAGINAÇÃO DE PISO\nCORTES/ELEVAÇÕES\nDETALHAMENTOS',
+        propEscopo: 'DESCREVA OS ITENS, ETAPAS E ENTREGÁVEIS INCLUÍDOS NO SERVIÇO',
         propPrazoDias: '20',
         propObs: ''
       } };
@@ -11902,11 +11969,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       set('propCliente', val('cliente'));
       set('propContato', '');
       set('propData', val('data') || todayISO());
-      set('propObjeto', val('servico') || 'PROJETO DE ARQUITETURA');
+      set('propObjeto', val('servico') || 'SERVIÇO');
       set('propEndereco', val('endereco') || 'Endereço a definir');
       set('propTitulo', `DESCRIÇÃO DA PROPOSTA - ${String(val('servico') || 'PROJETO').toUpperCase()}`);
       set('propIntro', `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${String(val('servico') || 'projeto').toUpperCase()}, localizado em ${val('endereco') || 'endereço a definir'}.`);
-      set('propEscopo', 'PLANTA BAIXA - EXECUTIVA DE OBRA\nPLANTA BAIXA - HUMANIZADA\nPLANTA DE PONTOS ELÉTRICOS\nPLANTA DE FORRO\nPLANTA DE PAGINAÇÃO DE PISO\nCORTES/ELEVAÇÕES\nDETALHAMENTOS\nVISTORIAS TÉCNICAS PONTUAIS, QUANDO PREVISTAS');
+      set('propEscopo', 'DESCREVA OS ITENS, ETAPAS E ENTREGÁVEIS INCLUÍDOS NO SERVIÇO');
       set('propPrazoDias', '20');
       buildProposal();
     }
@@ -12841,7 +12908,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const objeto = prop('propObjeto', val('servico') || 'PROJETO');
       const endereco = prop('propEndereco', val('endereco') || 'Endereço a definir');
       const intro = prop('propIntro', `Segue, conforme combinado, a PROPOSTA DE ORÇAMENTO para a elaboração do ${String(objeto).toUpperCase()}, localizado em ${endereco}.`);
-      const escopo = prop('propEscopo', 'PLANTA BAIXA - EXECUTIVA DE OBRA\nPLANTA BAIXA - HUMANIZADA\nPLANTA DE PONTOS ELÉTRICOS\nPLANTA DE FORRO\nPLANTA DE PAGINAÇÃO DE PISO\nCORTES/ELEVAÇÕES\nDETALHAMENTOS');
+      const escopo = prop('propEscopo', 'DESCREVA OS ITENS, ETAPAS E ENTREGÁVEIS INCLUÍDOS NO SERVIÇO');
       const prazo = prazoText();
       const obs = prop('propObs', '');
       const ctx = {titulo, numero, cliente, contato, dataProp, objeto, endereco, intro, escopo, prazo, obs, valorTotal, valorExtenso};
@@ -13315,14 +13382,9 @@ ${p.obs}` : ''}`;
       if(typeof viabSelectedScenario !== 'undefined') viabSelectedScenario = 'ideal';
       setValue('statusComercial', 'Em análise');
 
-      // Itens opcionais voltam ao padrão de uma proposta nova.
-      setChecked('rrtProjeto', false);
-      setChecked('rrtExecucao', false);
-      setChecked('notaFiscal', true);
-      setChecked('placa', false);
-      setChecked('brinde', false);
-      setChecked('reserva', true);
-      document.querySelectorAll('#customExtrasChecks input[type="checkbox"]').forEach(el => { el.checked = false; });
+      // Adicionais financeiros voltam ao padrão definido por esta conta.
+      renderCustomExtrasChecks();
+      resetCustomExtraChecksToDefaults();
 
       // Limpa também os campos auxiliares de serviços terceirizados.
       setValue('compTipo', '');
@@ -14242,9 +14304,9 @@ function toggleProposalMiniSection(btn){
 (function(){
   const SIDEBAR_KEY = 'cmfinOrcamentoSidebarCollapsedV40';
   const pageMeta = {
-    calc: ['Orçamento', 'Dados do orçamento, resultado financeiro e análise interna de viabilidade.'],
-    complementary: ['Complementares / Terceirizados', 'Gerencie projetos complementares, fornecedores e serviços terceirizados.'],
-    architects: ['Arquitetos', 'Distribuição financeira e participação dos profissionais no projeto.'],
+    calc: ['Orçamento', 'Dados do serviço, resultado financeiro e análise interna de viabilidade.'],
+    complementary: ['Complementares / Terceirizados', 'Gerencie fornecedores, parceiros e serviços terceirizados.'],
+    architects: ['Equipe / Profissionais', 'Distribuição financeira e participação dos profissionais no serviço.'],
     proposal: ['Proposta', 'Monte, personalize e gere a proposta comercial do orçamento.'],
     history: ['Histórico', 'Consulte, filtre e edite os orçamentos e propostas já registrados.'],
     vehicles: ['Veículos', 'Cadastre veículos e referências de consumo para os cálculos de deslocamento.'],
@@ -14353,15 +14415,15 @@ function toggleProposalMiniSection(btn){
       const nav = document.createElement('div');
       nav.className = 'budget-stage-nav no-print';
       nav.innerHTML = [
-        ['1','Projeto'],['2','Esforço'],['3','Deslocamento'],['4','Comercial']
+        ['1','Serviço'],['2','Esforço'],['3','Deslocamento'],['4','Comercial']
       ].map(([n,t]) => '<button type="button" onclick="cmfinScrollBudgetStage('+n+')"><span class="stage-number">0'+n+'</span><span>'+t+'</span></button>').join('');
 
-      const s1 = makeSection(1,'Dados do projeto','Identificação do cliente, serviço e localização.','budget-project-v51');
+      const s1 = makeSection(1,'Dados do serviço','Identificação do cliente, serviço e localização.','budget-project-v51');
       const g1 = makeGrid(2);
       moveFields(g1,['cliente','data','servico','endereco']);
       s1.querySelector('.budget-section-body-v51').appendChild(g1);
 
-      const s2 = makeSection(2,'Escopo e esforço','Defina complexidade, padrão, prazo e tempo estimado de trabalho.','budget-effort-v51');
+      const s2 = makeSection(2,'Escopo e esforço','Defina complexidade, padrão do serviço, prazo e tempo estimado de trabalho.','budget-effort-v51');
       const g2 = makeGrid(3);
       moveFields(g2,['complexidade','padrao','prazo','diasUteisProjeto','diasSabadosProjeto','horasAdicionais']);
       s2.querySelector('.budget-section-body-v51').appendChild(g2);
