@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v73: edição da proposta ativada automaticamente ao clicar diretamente na folha -->
   <!-- v72: editor visual protegido contra sobreposição do rodapé + itens sem título automático -->
   <!-- v71: novo editor de propostas — descrição livre + itens opcionais + edição direta na folha -->
   <meta charset="UTF-8" />
@@ -52,7 +53,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=lF3DtLu9qwrIF2HgBCfzVSTa-Og7R5Klcu8gKqqUfh6uf09qAB6TZoGTG6oOKZTiZ4XYxd4VMtB8JYK2_ZieKK3MslKfVb48TpHKN1ZZz2ov1-xvklgBMc2Q1O7m7cZdan5x0UIyjxYa-KVGETRuPETe1ckDz5zx7BbRwmQ3B8BpHn8kK1JiTud-C6XNjvgtMeyVmgsIg0zVrmGzZDTwWfLyuiWzL568eeYlgLposjDWH8iEVIweZA7n3568Ny58jZwM_RcPnF5RIqJAGQxrlJbp4sNE4YGWQe48RsB69hy2Hbq9PC1jxv342wfzZNErzEuz33Yu-M_BBO49ZFIj_dLPeGFsIywCWvdatAlbZPMsbDNMq3z38t_aSFPgbhaE" charset="UTF-8"></script><style>
+<style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -8115,13 +8116,13 @@ main{
                   <div class="proposal-direct-editor">
                     <div class="proposal-direct-editor-head">
                       <div>
-                        <strong>Editar diretamente na folha</strong>
-                        <span>Clique em editar e escreva sobre a própria proposta. Selecione um trecho para abrir a barra de formatação.</span>
+                        <strong>Edição direta na folha</strong>
+                        <span>Clique em qualquer texto da proposta para começar a editar. Ao selecionar uma palavra ou trecho, a barra de formatação aparece automaticamente.</span>
                       </div>
                       <span id="proposalVisualEditStatus" class="proposal-editor-status">Estrutura automática</span>
                     </div>
                     <div class="proposal-direct-editor-actions">
-                      <button type="button" class="primary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Editar diretamente na folha</button>
+                      <button type="button" class="primary" id="proposalVisualEditToggle" onclick="toggleProposalVisualEdit()">Ativar edição manualmente</button>
                       <button type="button" class="success" id="proposalVisualEditSave" onclick="saveProposalVisualEditToTemplate()" disabled>Salvar alterações nesta proposta</button>
                       <button type="button" class="secondary" onclick="saveProposalVisualEditAsTemplate()">Salvar como modelo reutilizável</button>
                       <button type="button" class="secondary" onclick="resetCurrentProposalVisualEdit()">Remover edição manual</button>
@@ -11757,7 +11758,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const saveBtn = document.getElementById('proposalVisualEditSave');
       const status = document.getElementById('proposalVisualEditStatus');
       const hasManual = !!String(document.getElementById('propVisualHtml')?.value || '').trim();
-      if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Encerrar edição' : 'Editar diretamente na folha';
+      if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Encerrar edição' : 'Ativar edição manualmente';
       if(saveBtn) saveBtn.disabled = !proposalVisualEditEnabled;
       if(status){
         status.textContent = proposalVisualEditEnabled ? 'Editando agora' : (hasManual ? 'Edição manual salva' : 'Estrutura automática');
@@ -11779,6 +11780,18 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       }
     }
 
+    function activateProposalVisualEditFromPaper(event){
+      const area = event?.target?.closest?.('.proposal-page-dynamic');
+      if(!area || proposalVisualEditEnabled) return;
+
+      // V73: a própria folha é o gatilho. Ativa antes da ação padrão do ponteiro,
+      // permitindo que o mesmo clique posicione o cursor ou inicie a seleção.
+      proposalVisualEditEnabled = true;
+      applyProposalVisualEditState();
+      area.setAttribute('contenteditable', 'true');
+    }
+
+    document.addEventListener('pointerdown', activateProposalVisualEditFromPaper, true);
 
 
     window.addEventListener('resize', () => {
