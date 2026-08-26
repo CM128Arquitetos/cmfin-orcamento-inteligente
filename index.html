@@ -10,6 +10,7 @@
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
   <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
   <!-- v55: configurações adicionais em card próprio + opção de fixar individualmente nas condições comerciais -->
+  <!-- v62: correção do cálculo quando existem adicionais financeiros não fixados nas condições -->
   <!-- v61: correção da edição pelo Histórico — navegação imediata, restauração híbrida de registros antigos/parciais e fallback seguro de valor histórico -->
   <!-- v57: edição de configurações adicionais + Personalização compacta no padrão CMFin -->
   <!-- v60: limpeza técnica inicial — removidas injeções externas indevidas; estrutura funcional preservada -->
@@ -41,7 +42,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=x1AHYWM-UTe3-r4GP3XjpuiWF8qxP2r2DUeohayi-KFcpUIIEhJzGUCaeutCuhMj64AADZyJ3q1QHJ1CqML2cl1oUVETrHCxChsxH91dT72FHQflQ2fQ0VD5QEtnBG2sHq5pSKR1gnMzY_cSkbby0xAiVh0FZu-_F4uuTP_NHKcDwJObEQ_vtqZvrpptB2J0-bn4l83jvhni3ddNXyTxLx94fONhDZOfkxpZum9glpV0_jME177MyTNtfEBLRQ9FAfZ4NjDWIN6fJYWQ4-hi28dc08m8XRzbubrW2uE0mkSrDMshFqw03gRFciwVT4yhU5H5wnGJFQvb47a2gaTOhhQcZrwBqOHrLdly7n_lYQjkQkT5NXVBLwBDF6KLqxsN" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=ET0S8caTNNU-GHdnYiN7DLhz66gabXEGL5wrVnmukriLRw9Jlhw5PxnBIskZt357B82a2-P1BHGqYVMJqsrK77w5mNojClgj4iz8Jf1wQa7D0crwunqGMdWdLhn5zUnzINOL4zmmWt0qmi0KHDePolBkRg7pQ7v8HyFUdoGMJxwrsrsYYEwqk7BcjWdXYwJf6WzOtEo-aGmfqyFPH26p8lalQMdV0VNo2bneqfCbD-d6A7Ql2re5sOJOjyNNIRzyinkEK-s7WDl5ZP0Osspp4OR-kprjTj9lg9OQ8tNFLLO_WeUByEqHEG-vPlu9RKEmLo6uH0h3us6bU1TpjFmcT2phuBYvEbMUMA1LhBGQwaqIJfpJim6zWnD6_zVQTDzT" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -9929,7 +9930,14 @@ main{
 
     function customSelectedExtras(){
       ensureCustomExtras();
-      return data.customExtras.filter(item => checked('customExtra_' + item.id));
+      // V62: somente adicionais fixados possuem checkbox em Condições comerciais.
+      // Itens não fixados não podem ser consultados via checked(), pois o elemento não existe
+      // e interrompia calculate() antes de atualizar o Resultado Financeiro.
+      return data.customExtras.filter(item => {
+        if(!item.fixadoCondicoes) return false;
+        const el = document.getElementById('customExtra_' + item.id);
+        return !!el?.checked;
+      });
     }
 
     function calculateCustomFinancialExtras(serviceValue, subtotalBeforeTax){
