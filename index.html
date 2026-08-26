@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v74: melhor aproveitamento da área útil até o rodapé + editor sem compressão de largura -->
   <!-- v73: edição da proposta ativada automaticamente ao clicar diretamente na folha -->
   <!-- v72: editor visual protegido contra sobreposição do rodapé + itens sem título automático -->
   <!-- v71: novo editor de propostas — descrição livre + itens opcionais + edição direta na folha -->
@@ -53,7 +54,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=8YRrXDagWPaVlH7O_3xxSwLM8S06K6jGiMfq_jkjWB0c3u_CfqfXC3TEvFAMaoNG-4oLsN3Ms_fOCZ6r24SUzGMhUTzG4LUxHHnn2cfmbsedCU9OlWNZTy_BK0axq77JOmkLjn-92EqEvu6LAgY_L-kmLrVo5nuhfUmKqiXXCSCDQ8B262phaS0x2fgJrQrjXq0cvwj2X6AxMuweTQi1Kj1G_4_qunB082sgu4xwjz76JkgC6meaHtz2LPtvjyK9owsnt-LZ5vZPXdpV_KK4Pw" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -6128,9 +6129,9 @@ main{
   .proposal-quick-blocks-v71{margin-top:14px;}
   .proposal-quick-blocks-v71 .template-block-buttons{grid-template-columns:repeat(2,minmax(0,1fr));}
   body.proposal-visual-edit-on .proposal-paper{box-shadow:0 0 0 3px rgba(225,18,28,.06),0 22px 55px rgba(17,44,37,.14);}
-  body.proposal-visual-edit-on .proposal-page-dynamic{min-height:160px;max-width:100%;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;}
-  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar{width:8px;}
-  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar-thumb{background:#c9d8d1;border-radius:999px;}
+  body.proposal-visual-edit-on .proposal-page-dynamic{min-height:160px;width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:auto;scrollbar-width:none;-ms-overflow-style:none;}
+  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar{width:0;height:0;display:none;}
+  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar-thumb{display:none;}
   body.proposal-visual-edit-on .proposal-page-dynamic::selection{background:rgba(225,18,28,.14);}
   .proposal-service-description > :first-child,.proposal-deliverables-block > :first-child{margin-top:0;}
   .proposal-service-description > :last-child,.proposal-deliverables-block > :last-child{margin-bottom:0;}
@@ -11527,7 +11528,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       document.body.appendChild(measure);
       const target = measure.querySelector('.proposal-page-dynamic');
       const content = measure.querySelector('.proposal-paper-content');
-      const reserveBeforeFooter = 18;
+      const reserveBeforeFooter = 8;
 
       const configureMeasure = index => {
         measure.className = `${proposalPaperClass(index)} proposal-measure`;
@@ -11536,16 +11537,21 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         const targetRect = target.getBoundingClientRect();
         const contentStyle = getComputedStyle(content);
         const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
-        let safeBottom = paperRect.bottom - paddingBottom;
         const footer = measure.querySelector('.proposal-paper-footer');
         const bar = measure.querySelector('.proposal-footer-bar');
+        const bottomLimits = [];
         if(footer && getComputedStyle(footer).display !== 'none'){
-          safeBottom = Math.min(safeBottom, footer.getBoundingClientRect().top - reserveBeforeFooter);
+          bottomLimits.push(footer.getBoundingClientRect().top - reserveBeforeFooter);
         }
         if(bar && getComputedStyle(bar).display !== 'none'){
-          safeBottom = Math.min(safeBottom, bar.getBoundingClientRect().top - reserveBeforeFooter);
+          bottomLimits.push(bar.getBoundingClientRect().top - reserveBeforeFooter);
         }
-        return Math.max(320, Math.floor(safeBottom - targetRect.top - 4));
+        // Quando há rodapé/barra visível, a posição real deles define a área útil.
+        // O padding inferior permanece como fallback apenas para timbrados sem rodapé nativo.
+        const safeBottom = bottomLimits.length
+          ? Math.min(...bottomLimits)
+          : (paperRect.bottom - paddingBottom);
+        return Math.max(320, Math.floor(safeBottom - targetRect.top - 2));
       };
 
       let maxHeight = configureMeasure(pageIndex);
@@ -11692,17 +11698,20 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const areaRect = area.getBoundingClientRect();
       const contentStyle = getComputedStyle(content);
       const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
-      let safeBottom = paperRect.bottom - paddingBottom;
-      const reserve = 18;
+      const reserve = 8;
       const footer = paper.querySelector('.proposal-paper-footer');
       const bar = paper.querySelector('.proposal-footer-bar');
+      const bottomLimits = [];
       if(footer && getComputedStyle(footer).display !== 'none'){
-        safeBottom = Math.min(safeBottom, footer.getBoundingClientRect().top - reserve);
+        bottomLimits.push(footer.getBoundingClientRect().top - reserve);
       }
       if(bar && getComputedStyle(bar).display !== 'none'){
-        safeBottom = Math.min(safeBottom, bar.getBoundingClientRect().top - reserve);
+        bottomLimits.push(bar.getBoundingClientRect().top - reserve);
       }
-      return Math.max(72, Math.floor(safeBottom - areaRect.top - 4));
+      const safeBottom = bottomLimits.length
+        ? Math.min(...bottomLimits)
+        : (paperRect.bottom - paddingBottom);
+      return Math.max(72, Math.floor(safeBottom - areaRect.top - 2));
     }
 
     function refreshProposalVisualEditBounds(){
@@ -11713,6 +11722,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
           area.style.removeProperty('overflow-y');
           area.style.removeProperty('overflow-x');
           area.style.removeProperty('scrollbar-gutter');
+          area.style.removeProperty('scrollbar-width');
+          area.style.removeProperty('-ms-overflow-style');
           area.removeAttribute('data-cmfin-edit-max-height');
           return;
         }
@@ -11722,7 +11733,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
           area.style.minHeight = `${Math.min(160, maxHeight)}px`;
           area.style.overflowY = 'auto';
           area.style.overflowX = 'hidden';
-          area.style.scrollbarGutter = 'stable';
+          area.style.scrollbarGutter = 'auto';
+          area.style.scrollbarWidth = 'none';
+          area.style.msOverflowStyle = 'none';
           area.setAttribute('data-cmfin-edit-max-height', String(maxHeight));
         }
       });
