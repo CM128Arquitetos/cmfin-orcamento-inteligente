@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- v66: limpeza técnica 05 — remoção de CSS órfão da antiga proposalVisualToolbar/cmfin-mini-toolbar -->
   <!-- v63: limpeza técnica 02 — remoção de regras CSS exatamente duplicadas, sem alteração visual ou funcional -->
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
@@ -45,7 +46,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=DYtA7DtCTL2rLzeEkgGf7BjLEKUcD6R6ips1q9zwRK75FzODR29JpCPgIpFl9A91bY-P1xgzykU7XujKPAsbdQUqwCkeqC6JwiHFS2rFKeV9bVfnIeqsicWIOdnPIak0Z5_pHZxZy7HXdGFavBfE4LBmj_ZiHsSZm_MDyVnW41NVHJpJItFvaU6xM34b9RQ0TpjthL2bPvTcn2_NgQNQojPDUVJb233O3mvK8Jp6NCBOspgvO8ubGgkOdSHPpGOWYZMPYUcCfPccx-EItcHQ6TrC0q7JJlXOMIyNxiTdAUaK1vCqtQunn8hNWMOFBHz8Qf2_7-jrlljhj_vSIu7V99pFGsnZzT89U4Im-z0xbYFaMG8rZ53PGFiT2mUaoKTh" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=e9v_C-oh6xTtpsUUADIztLZPOtxNshEb-mpyqlwj-wRNE2PvcN6eGPOL4rForfM-6xN0ABv8L7BI5cCnaujzUoc4aUnPy3TQIKioHlvVuMr3VHwUWKxGlzBZQAvegczcAHS2moJf3jXdZ18cGShsATgDQT4gVxQqNi3V5cbLSRe-LfIHs7VqdSL9X_SFIegNGJnBVaQ2kzSEMvdklrAXVZ9Tcqm7WTuO7R4Chy1rMGzv_5xxKQOxapBJY4kHmhm6CDpS93SO97KrE92uri0tfR5savYVORdrz-WW4DcsNj5KWmSln5HCiGcrNS3syE-PCuxiXqFAorWTwSenFcdD1wYRDkJkmqYhecEZp6gZb255y7DrWN4kJu50uEI3_NGw" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -3323,167 +3324,9 @@ body:not(.cmfin-authenticated) {
    CMFIN — MINI BARRA CONTEXTUAL ESTILO WORD/CANVA
    Corrige aplicação visual do editor e dos cards laterais.
    ========================================================= */
-body .cmfin-mini-toolbar,
-body .cmfin-mini-toolbar *,
 body .proposal-template-simple,
 body .proposal-template-simple * {
   box-sizing: border-box !important;
-}
-
-body .cmfin-mini-toolbar {
-  position: fixed !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  z-index: 999999 !important;
-  display: none !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  padding: 10px !important;
-  border-radius: 18px !important;
-  border: 1px solid rgba(214,228,222,.95) !important;
-  background: rgba(19,27,24,.97) !important;
-  box-shadow: 0 24px 60px rgba(0,0,0,.28) !important;
-  backdrop-filter: blur(18px) !important;
-  width: auto !important;
-  max-width: min(940px, calc(100vw - 20px)) !important;
-}
-
-body .cmfin-mini-toolbar.active {
-  display: flex !important;
-}
-
-body .cmfin-mini-toolbar__group {
-  display: flex !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  min-width: 0 !important;
-}
-
-body .cmfin-mini-toolbar__group--font {
-  flex: 0 1 auto !important;
-}
-
-body .cmfin-mini-toolbar__divider {
-  width: 1px !important;
-  align-self: stretch !important;
-  min-height: 32px !important;
-  background: rgba(255,255,255,.14) !important;
-  border-radius: 999px !important;
-}
-
-body .cmfin-mini-toolbar select,
-body .cmfin-mini-toolbar button,
-body .cmfin-mini-toolbar__color {
-  min-height: 38px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255,255,255,.12) !important;
-  background: rgba(255,255,255,.06) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-  font-size: .77rem !important;
-  font-weight: 800 !important;
-  font-family: inherit !important;
-}
-
-body .cmfin-mini-toolbar select {
-  padding: 8px 10px !important;
-  min-width: 0 !important;
-  outline: none !important;
-}
-
-body .cmfin-mini-toolbar select option {
-  color: #10251f !important;
-  background: #ffffff !important;
-}
-
-body .cmfin-mini-toolbar__group--font select:first-child {
-  width: 150px !important;
-}
-
-body .cmfin-mini-toolbar__group--font select:last-child {
-  width: 82px !important;
-}
-
-body .cmfin-mini-toolbar button {
-  padding: 8px 10px !important;
-  min-width: 38px !important;
-  cursor: pointer !important;
-  justify-content: center !important;
-  text-align: center !important;
-}
-
-body .cmfin-mini-toolbar button:hover,
-body .cmfin-mini-toolbar__color:hover,
-body .cmfin-mini-toolbar select:hover {
-  background: rgba(255,255,255,.12) !important;
-  border-color: rgba(255,255,255,.22) !important;
-}
-
-body .cmfin-mini-toolbar__color {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 8px 10px !important;
-  cursor: pointer !important;
-  margin: 0 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-}
-
-body .cmfin-mini-toolbar__color input {
-  width: 18px !important;
-  min-width: 18px !important;
-  height: 18px !important;
-  min-height: 18px !important;
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 999px !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-}
-
-body .cmfin-mini-toolbar__color input::-webkit-color-swatch-wrapper {
-  padding: 0 !important;
-}
-
-body .cmfin-mini-toolbar__color input::-webkit-color-swatch {
-  border: 1px solid rgba(255,255,255,.28) !important;
-  border-radius: 999px !important;
-}
-
-body .cmfin-mini-toolbar__save {
-  background: linear-gradient(135deg,#1f8f68 0%,#16674d 100%) !important;
-  border-color: rgba(255,255,255,.10) !important;
-}
-
-body .cmfin-mini-toolbar__close {
-  background: rgba(255,255,255,.08) !important;
-}
-
-/* Esconde barras antigas que estavam poluindo a tela */
-body .visual-editor-toolbar,
-body .cmfin-floating-editor {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  height: 0 !important;
-  width: 0 !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Mantém a mini toolbar ativa mesmo com a regra acima */
-body .cmfin-mini-toolbar.active {
-  display: flex !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  height: auto !important;
-  width: auto !important;
-  overflow: visible !important;
 }
 
 /* Destaque discreto da área editável */
@@ -3689,59 +3532,11 @@ body .template-simple-help {
   body .visual-paper-actions {
     grid-template-columns: 1fr !important;
   }
-  body .cmfin-mini-toolbar {
-    padding: 8px !important;
-    gap: 6px !important;
-    max-width: calc(100vw - 20px) !important;
-  }
-  body .cmfin-mini-toolbar__divider {
-    display: none !important;
-  }
-  body .cmfin-mini-toolbar__group--font {
-    width: 100% !important;
-  }
-  body .cmfin-mini-toolbar__group--font select:first-child,
-  body .cmfin-mini-toolbar__group--font select:last-child {
-    width: auto !important;
-    flex: 1 1 120px !important;
-  }
-}
-
-
-/* Garantia final da mini barra contextual */
-body .cmfin-mini-toolbar {
-  z-index: 2147483000 !important;
-  opacity: 0 !important;
-  transform: translateY(4px) scale(.98) !important;
-  transition: opacity .12s ease, transform .12s ease !important;
-}
-
-body .cmfin-mini-toolbar.active {
-  opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
-  display: flex !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-}
-
-
-/* Mini barra contextual — ajuste de visibilidade final */
-body .cmfin-mini-toolbar {
-  width: auto !important;
-  max-width: min(760px, calc(100vw - 20px)) !important;
-  z-index: 2147483640 !important;
-}
-
-body .cmfin-mini-toolbar.active {
-  display: flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
 }
 
 
 /* =========================================================
-   AJUSTE FINAL CMFIN — CARD LEGÍVEL + BOTÕES PREMIUM + MINI BARRA
+   AJUSTE FINAL CMFIN — CARD LEGÍVEL + BOTÕES PREMIUM
    ========================================================= */
 
 /* Card verde superior da personalização */
@@ -3893,73 +3688,6 @@ body .proposal-template-simple .template-block-buttons button.secondary:hover {
   box-shadow: 0 16px 30px rgba(17,44,37,.12) !important;
 }
 
-/* Mini barra estilo Word: visibilidade forçada */
-body #proposalVisualToolbar.cmfin-mini-toolbar {
-  position: fixed !important;
-  z-index: 2147483647 !important;
-  display: none !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  width: auto !important;
-  max-width: min(780px, calc(100vw - 20px)) !important;
-  padding: 10px !important;
-  border-radius: 18px !important;
-  border: 1px solid rgba(255,255,255,.14) !important;
-  background: rgba(18, 27, 24, .98) !important;
-  box-shadow: 0 26px 68px rgba(0,0,0,.35) !important;
-  backdrop-filter: blur(18px) saturate(1.1) !important;
-  opacity: 0 !important;
-  transform: translateY(4px) scale(.98) !important;
-  transition: opacity .12s ease, transform .12s ease !important;
-  pointer-events: none !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar.active {
-  display: flex !important;
-  opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
-  pointer-events: auto !important;
-  visibility: visible !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar select,
-body #proposalVisualToolbar.cmfin-mini-toolbar button,
-body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color {
-  min-height: 38px !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255,255,255,.13) !important;
-  background: rgba(255,255,255,.07) !important;
-  color: #ffffff !important;
-  box-shadow: none !important;
-  font-size: .77rem !important;
-  font-weight: 850 !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar select {
-  padding: 8px 10px !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar select option {
-  color: #10251f !important;
-  background: #fff !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar button {
-  padding: 8px 10px !important;
-  min-width: 38px !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__save {
-  background: linear-gradient(135deg,#1f8f68 0%,#16674d 100%) !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 8px 10px !important;
-}
-body #proposalVisualToolbar.cmfin-mini-toolbar .cmfin-mini-toolbar__color input {
-  width: 18px !important;
-  height: 18px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
 @media (max-width: 760px) {
   body .proposal-template-simple .template-token-grid {
     grid-template-columns: 1fr !important;
@@ -4002,11 +3730,6 @@ body .proposal-template-simple .template-block-buttons button.secondary {
 
 body .proposal-template-simple .template-simple-card-head strong {
   font-weight: 850 !important;
-}
-
-/* Esconde definitivamente qualquer mini barra antiga que possa estar conflitando */
-body #proposalVisualToolbar.cmfin-mini-toolbar {
-  display: none !important;
 }
 
 </style>
