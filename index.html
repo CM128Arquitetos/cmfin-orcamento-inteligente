@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v72: editor visual protegido contra sobreposição do rodapé + itens sem título automático -->
   <!-- v71: novo editor de propostas — descrição livre + itens opcionais + edição direta na folha -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -51,7 +52,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=RjbLoRc1zdsdkh9xMBVISDml1hCb4GJMwMcyVcxzWT8TmQUMVydzqLEkJhW1P3uh5UoUM3TFTfrPgToO0Im8DCshSvv2ziAia8re9i1n95YtXZbqk-vUc1WYGRxCbECct-4elQCpBTZx2LmTnP8noJR9kbUesi6XVubemqM7YTKxNmnzCVxZtitWXV9i21a6DdrpI9dl3ZCCWZ0CK31i0mQ8ZXgG0XyWCpGj-fs4CHijvrFLi5UOO6XfAjx10xV-TrTrhDd2r1ZhezpgMRvqCc9jxuR-w27gqyXZY_-BejJhnP6DkhwcGfeY-jMJWUpvDT4ySTU-gA9G0CQF3xN4tB6SCRAOh0bQw-tMR-WDnB8" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=lF3DtLu9qwrIF2HgBCfzVSTa-Og7R5Klcu8gKqqUfh6uf09qAB6TZoGTG6oOKZTiZ4XYxd4VMtB8JYK2_ZieKK3MslKfVb48TpHKN1ZZz2ov1-xvklgBMc2Q1O7m7cZdan5x0UIyjxYa-KVGETRuPETe1ckDz5zx7BbRwmQ3B8BpHn8kK1JiTud-C6XNjvgtMeyVmgsIg0zVrmGzZDTwWfLyuiWzL568eeYlgLposjDWH8iEVIweZA7n3568Ny58jZwM_RcPnF5RIqJAGQxrlJbp4sNE4YGWQe48RsB69hy2Hbq9PC1jxv342wfzZNErzEuz33Yu-M_BBO49ZFIj_dLPeGFsIywCWvdatAlbZPMsbDNMq3z38t_aSFPgbhaE" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -6126,7 +6127,9 @@ main{
   .proposal-quick-blocks-v71{margin-top:14px;}
   .proposal-quick-blocks-v71 .template-block-buttons{grid-template-columns:repeat(2,minmax(0,1fr));}
   body.proposal-visual-edit-on .proposal-paper{box-shadow:0 0 0 3px rgba(225,18,28,.06),0 22px 55px rgba(17,44,37,.14);}
-  body.proposal-visual-edit-on .proposal-page-dynamic{min-height:160px;}
+  body.proposal-visual-edit-on .proposal-page-dynamic{min-height:160px;max-width:100%;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;}
+  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar{width:8px;}
+  body.proposal-visual-edit-on .proposal-page-dynamic::-webkit-scrollbar-thumb{background:#c9d8d1;border-radius:999px;}
   body.proposal-visual-edit-on .proposal-page-dynamic::selection{background:rgba(225,18,28,.14);}
   .proposal-service-description > :first-child,.proposal-deliverables-block > :first-child{margin-top:0;}
   .proposal-service-description > :last-child,.proposal-deliverables-block > :last-child{margin-bottom:0;}
@@ -11507,10 +11510,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const wrap = document.querySelector('.proposal-paper-wrap');
       if(!wrap) return;
       getProposalTemplates();
+      const sourceBlocks = (Array.isArray(blocks) ? blocks : [blocks]).filter(block => String(block || '').trim());
       const pages = [];
       let current = [];
+      let pageIndex = 0;
       const measure = document.createElement('div');
-      measure.className = 'proposal-paper proposal-measure';
       measure.innerHTML = `
         <div class="proposal-paper-content">
           ${window.__proposalTemplates.header}
@@ -11521,22 +11525,38 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         ${window.__proposalTemplates.bar}`;
       document.body.appendChild(measure);
       const target = measure.querySelector('.proposal-page-dynamic');
-      const footer = measure.querySelector('.proposal-paper-footer');
       const content = measure.querySelector('.proposal-paper-content');
       const reserveBeforeFooter = 18;
-      const maxHeight = (() => {
-        const footerTop = footer ? footer.offsetTop : 1015;
-        const targetTop = target ? target.offsetTop : 0;
-        const available = footerTop - targetTop - reserveBeforeFooter;
-        return Math.max(520, available);
-      })();
-      blocks.forEach(block => {
+
+      const configureMeasure = index => {
+        measure.className = `${proposalPaperClass(index)} proposal-measure`;
+        measure.setAttribute('style', proposalPaperStyle(index));
+        const paperRect = measure.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const contentStyle = getComputedStyle(content);
+        const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
+        let safeBottom = paperRect.bottom - paddingBottom;
+        const footer = measure.querySelector('.proposal-paper-footer');
+        const bar = measure.querySelector('.proposal-footer-bar');
+        if(footer && getComputedStyle(footer).display !== 'none'){
+          safeBottom = Math.min(safeBottom, footer.getBoundingClientRect().top - reserveBeforeFooter);
+        }
+        if(bar && getComputedStyle(bar).display !== 'none'){
+          safeBottom = Math.min(safeBottom, bar.getBoundingClientRect().top - reserveBeforeFooter);
+        }
+        return Math.max(320, Math.floor(safeBottom - targetRect.top - 4));
+      };
+
+      let maxHeight = configureMeasure(pageIndex);
+      sourceBlocks.forEach(block => {
         current.push(block);
         target.innerHTML = current.join('');
         if(target.scrollHeight > maxHeight + 2 && current.length > 1){
-          current.pop();
+          const overflowBlock = current.pop();
           pages.push(current.join(''));
-          current = [block];
+          current = [overflowBlock];
+          pageIndex = pages.length;
+          maxHeight = configureMeasure(pageIndex);
           target.innerHTML = current.join('');
         }
       });
@@ -11578,7 +11598,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         descricao: ctx.descricaoServico || '',
         entregaveis: ctx.escopo || '',
         itens: ctx.escopo || '',
-        itens_bloco: ctx.escopo ? `Itens / entregáveis incluídos:\n${ctx.escopo}` : '',
+        itens_bloco: ctx.escopo || '',
         pagamento: paymentPlainText(ctx.objeto, ctx.valorTotal, ctx.valorExtenso),
         prazo: ctx.prazo,
         prazo_dias: String(prazoDiasValue()),
@@ -11634,6 +11654,79 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
 
     let proposalVisualEditEnabled = false;
 
+    function proposalVisualHtmlBlocks(html){
+      const template = document.createElement('template');
+      template.innerHTML = String(html || '');
+      const blocks = [];
+      Array.from(template.content.childNodes).forEach(node => {
+        if(node.nodeType === Node.TEXT_NODE){
+          const clean = String(node.textContent || '').trim();
+          if(clean) blocks.push(`<p>${esc(clean)}</p>`);
+          return;
+        }
+        if(node.nodeType !== Node.ELEMENT_NODE) return;
+        const el = node;
+        const pageBreak = String(el.style?.pageBreakBefore || el.style?.breakBefore || '').toLowerCase();
+        if(pageBreak === 'always' || pageBreak === 'page') return;
+        if(el.matches('.proposal-service-description,.proposal-deliverables-block') && el.children.length){
+          Array.from(el.children).forEach(child => blocks.push(child.outerHTML));
+          return;
+        }
+        if((el.tagName === 'UL' || el.tagName === 'OL') && el.children.length > 1){
+          const tag = el.tagName.toLowerCase();
+          const classAttr = el.className ? ` class="${esc(String(el.className))}"` : '';
+          Array.from(el.children).forEach(child => blocks.push(`<${tag}${classAttr}>${child.outerHTML}</${tag}>`));
+          return;
+        }
+        blocks.push(el.outerHTML);
+      });
+      return blocks.length ? blocks : [String(html || '')];
+    }
+
+    function proposalVisualEditableSafeHeight(area){
+      const paper = area?.closest?.('.proposal-paper');
+      const content = area?.closest?.('.proposal-paper-content');
+      if(!paper || !content) return 0;
+      const paperRect = paper.getBoundingClientRect();
+      const areaRect = area.getBoundingClientRect();
+      const contentStyle = getComputedStyle(content);
+      const paddingBottom = parseFloat(contentStyle.paddingBottom || '0') || 0;
+      let safeBottom = paperRect.bottom - paddingBottom;
+      const reserve = 18;
+      const footer = paper.querySelector('.proposal-paper-footer');
+      const bar = paper.querySelector('.proposal-footer-bar');
+      if(footer && getComputedStyle(footer).display !== 'none'){
+        safeBottom = Math.min(safeBottom, footer.getBoundingClientRect().top - reserve);
+      }
+      if(bar && getComputedStyle(bar).display !== 'none'){
+        safeBottom = Math.min(safeBottom, bar.getBoundingClientRect().top - reserve);
+      }
+      return Math.max(72, Math.floor(safeBottom - areaRect.top - 4));
+    }
+
+    function refreshProposalVisualEditBounds(){
+      document.querySelectorAll('.proposal-page-dynamic').forEach(area => {
+        if(!proposalVisualEditEnabled){
+          area.style.removeProperty('max-height');
+          area.style.removeProperty('min-height');
+          area.style.removeProperty('overflow-y');
+          area.style.removeProperty('overflow-x');
+          area.style.removeProperty('scrollbar-gutter');
+          area.removeAttribute('data-cmfin-edit-max-height');
+          return;
+        }
+        const maxHeight = proposalVisualEditableSafeHeight(area);
+        if(maxHeight > 0){
+          area.style.maxHeight = `${maxHeight}px`;
+          area.style.minHeight = `${Math.min(160, maxHeight)}px`;
+          area.style.overflowY = 'auto';
+          area.style.overflowX = 'hidden';
+          area.style.scrollbarGutter = 'stable';
+          area.setAttribute('data-cmfin-edit-max-height', String(maxHeight));
+        }
+      });
+    }
+
     function normalizeVisualProposalText(text){
       return String(text || '')
         .replace(/\u00a0/g, ' ')
@@ -11671,6 +11764,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         status.classList.toggle('is-editing', !!proposalVisualEditEnabled);
         status.classList.toggle('is-saved', !proposalVisualEditEnabled && hasManual);
       }
+      requestAnimationFrame(refreshProposalVisualEditBounds);
     }
 
     function toggleProposalVisualEdit(force){
@@ -11686,6 +11780,15 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
 
+
+    window.addEventListener('resize', () => {
+      if(proposalVisualEditEnabled) requestAnimationFrame(refreshProposalVisualEditBounds);
+    });
+    document.addEventListener('input', event => {
+      if(proposalVisualEditEnabled && event.target?.closest?.('.proposal-page-dynamic[contenteditable="true"]')){
+        requestAnimationFrame(refreshProposalVisualEditBounds);
+      }
+    });
 
     function captureProposalVisualEditText(){
       const areas = Array.from(document.querySelectorAll('.proposal-page-dynamic'));
@@ -12064,7 +12167,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const proposalVisualOverride = String(document.getElementById('propVisualHtml')?.value || '').trim();
       if(proposalVisualOverride){
         const liveVisualHtml = syncProposalVisualHtml(proposalVisualOverride, ctx);
-        renderProposalPages([liveVisualHtml]);
+        renderProposalPages(proposalVisualHtmlBlocks(liveVisualHtml));
         applyBrandCustomization();
         applyProposalVisualEditState();
         return proposalHtmlToText(liveVisualHtml);
@@ -12074,7 +12177,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if((tpl.mode || 'standard') === 'custom'){
         if(tpl.editorType === 'visual' && String(tpl.visualHtml || '').trim()){
           const liveVisualHtml = syncProposalVisualHtml(tpl.visualHtml, ctx);
-          renderProposalPages([liveVisualHtml]);
+          renderProposalPages(proposalVisualHtmlBlocks(liveVisualHtml));
           applyBrandCustomization();
           return proposalHtmlToText(liveVisualHtml);
         }
@@ -12099,7 +12202,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         proposalIntroHtml(intro, objeto),
         `<h4>1. DO SERVIÇO</h4>`,
         `<div class="proposal-service-description">${serviceBlocks.join('')}</div>`,
-        ...(itemBlocks.length ? [`<div class="proposal-deliverables-block"><p><strong>Itens / entregáveis incluídos:</strong></p>${itemBlocks.join('')}</div>`] : []),
+        ...(itemBlocks.length ? [`<div class="proposal-deliverables-block">${itemBlocks.join('')}</div>`] : []),
         `<h4>2. DO INVESTIMENTO E FORMA DE PAGAMENTO</h4>`,
         ...paymentHtmlBlocks(objeto, valorTotal, valorExtenso),
         `<h4>3. PRAZOS</h4>`,
@@ -12115,7 +12218,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const items = String(p.escopo || '').trim();
       const serviceText = [
         description,
-        items ? `Itens / entregáveis incluídos:\n${items}` : ''
+        items
       ].filter(Boolean).join('\n\n') || 'Descrição do serviço a definir.';
       return `${p.titulo}
 
