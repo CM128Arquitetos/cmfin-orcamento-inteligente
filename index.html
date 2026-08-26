@@ -10,7 +10,9 @@
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
   <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
   <!-- v55: configurações adicionais em card próprio + opção de fixar individualmente nas condições comerciais -->
+  <!-- v61: correção da edição pelo Histórico — navegação imediata, restauração híbrida de registros antigos/parciais e fallback seguro de valor histórico -->
   <!-- v57: edição de configurações adicionais + Personalização compacta no padrão CMFin -->
+  <!-- v60: limpeza técnica inicial — removidas injeções externas indevidas; estrutura funcional preservada -->
   <!-- v50: botões compactos e profissionais em Ações da Proposta -->
 <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
@@ -39,7 +41,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=0QNG8c9Q7m9KU2Yyc9MQfM86H-TjwrnpWWCkMChTj6ps1jO_I9U6Pvme2IqS2tu65h8SDiaDYj1wKEF9q4KF-1RMn3BB-mX2jm2eFV4Ppl05zFcAa1AYQs788vEY--iXfierSYJjdKijxFo_pBaDXHt1rE7wuKH_vDWNcpewRrIVGoPUKWyupnvIbl8IH-97JtaO_JrNovDnJujUKt_tlbdfyXP88TkdNGEOqTCmgFAx_-ZfSaRgDd3QGC-hEfQHjLNSTG_53Ee8ibH-M9kDhaUIVcwwvXYD878fdqvExr-wgp_oKJknbb_g7_8ptSqG594T7tkr_trs5cYWH1E039Hlwp8U01AEpuKqJ3ooRgl_ZgMaSqezfFA6nJ5Ebmbj" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://me.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9jaGF0Z3B0LmNvbS9iYWNrZW5kLWFwaS9lc3R1YXJ5L2NvbnRlbnQ_aWQ9ZmlsZV8wMDAwMDAwMDJkZmM4MjBlYThkMjRjZmQ1MjYyODU1MyZmbj1pbmRleF9jbWZpbl9vcmNhbWVudG9fdjMxX251bWVyb19wcm9wb3N0YV9yZXBvc2ljaW9uYWRvLmh0bWwmY2Q9YXR0YWNobWVudCZ0cz00OTU3MTYmcD1mcyZjaWQ9MSZzaWc9ZmI1N2UxMzZlOWJhNmRmNDM4ZmY1NGI2MjJjNzgxYmM1MjhiYjliZWUwNTkzMTYxYmZhZmI0YjhhNmI0NTM0NyZ2PTA"/><script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=o6ggfckOYbieuda9UdqR3TnAXeH0Yxuc0OPMr6HCTlZYR1g6S241swuZgIFPoyPrJ2YalBRgq095-yMZUvjnr997v2aaZI-bxGnz-gPT3DCT5a-AboUQcELQxYC9VR85pYIQts5f_nSxobUHtEKHwDk8g9XBZtK1OHQ-lA7vIAu-LL5UlLn-1fuHbnv7T6OnDRvm9FKfl45rbZt6f8aN_4gdCU5Vwrs3LxU6gE7le0PpysTCFy2GTwbzK_VmFLlpSa0mHewyy4dOr7--WVkkjQ" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=x1AHYWM-UTe3-r4GP3XjpuiWF8qxP2r2DUeohayi-KFcpUIIEhJzGUCaeutCuhMj64AADZyJ3q1QHJ1CqML2cl1oUVETrHCxChsxH91dT72FHQflQ2fQ0VD5QEtnBG2sHq5pSKR1gnMzY_cSkbby0xAiVh0FZu-_F4uuTP_NHKcDwJObEQ_vtqZvrpptB2J0-bn4l83jvhni3ddNXyTxLx94fONhDZOfkxpZum9glpV0_jME177MyTNtfEBLRQ9FAfZ4NjDWIN6fJYWQ4-hi28dc08m8XRzbubrW2uE0mkSrDMshFqw03gRFciwVT4yhU5H5wnGJFQvb47a2gaTOhhQcZrwBqOHrLdly7n_lYQjkQkT5NXVBLwBDF6KLqxsN" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -12208,7 +12210,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
     function applyBudgetState(state){
-      if(!state || !state.fields) return false;
+      if(!state || !state.fields || typeof state.fields !== 'object') return false;
       renderCustomExtrasChecks();
       Object.entries(state.fields).forEach(([id, value]) => setHistoryFieldValue(id, value));
       if(Array.isArray(state.complementaryServices)){
@@ -12216,13 +12218,13 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         renderComplementaryServices();
       }
       togglePaymentFields();
-      calculate();
-      buildProposal();
-      return true;
+      return Object.keys(state.fields).length > 0;
     }
 
     function applyLegacyHistoryBudget(h){
       if(!h) return;
+      // Sempre restaura primeiro o resumo histórico. Estados completos/parciais, quando existirem,
+      // são aplicados em seguida e sobrescrevem estes valores com os dados mais específicos.
       setHistoryFieldValue('data', h.data || todayISO());
       setHistoryFieldValue('cliente', h.cliente || '');
       setHistoryFieldValue('servico', h.servico || '');
@@ -12235,11 +12237,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       setHistoryFieldValue('statusComercial', h.statusComercial || 'Em análise');
       if(Number(h.valorComercialManual || 0) > 0){
         setHistoryFieldValue('valorComercialManual', Number(h.valorComercialManual));
+      }else if(Number(h.projetoPrincipal || 0) > 0){
+        setHistoryFieldValue('valorComercialManual', Number(h.projetoPrincipal));
       }else if(Number(h.valor || 0) > 0){
-        // Registros antigos não possuíam o estado completo. Mantém ao menos o valor comercial salvo.
         setHistoryFieldValue('valorComercialManual', Number(h.valor));
       }
-      calculate();
     }
 
     function legacyProposalStateFromHistory(h){
@@ -13339,8 +13341,10 @@ ${p.obs}` : ''}`;
       editingHistoryIndex = i;
       editingHistoryMode = mode;
 
-      const restoredFullState = !!(h.state && applyBudgetState(h.state));
-      if(!restoredFullState) applyLegacyHistoryBudget(h);
+      // V61: registros antigos podem ter apenas parte do state. O resumo salvo no histórico
+      // funciona como base e o state, quando existir, complementa/sobrescreve os campos disponíveis.
+      applyLegacyHistoryBudget(h);
+      const restoredState = !!(h.state && applyBudgetState(h.state));
 
       syncProposalNumber(h.numeroProposta || val('numeroPropostaAtual') || val('propNumero') || '');
       setHistoryFieldValue('statusComercial', h.statusComercial || 'Em análise');
@@ -13349,27 +13353,65 @@ ${p.obs}` : ''}`;
         applyProposalState(proposalStateFromHistory(h));
       }
 
+      // Recalcula somente depois que toda a restauração terminou.
+      calculate();
+
+      // Compatibilidade com históricos antigos/parciais: se os campos foram recuperados,
+      // mas a configuração disponível não consegue recompor o preço e produz zero,
+      // preserva o valor principal historicamente salvo para que a edição não seja aberta zerada.
+      const historicalTotal = Number(h.valor || 0);
+      const calculatedTotal = Number(lastCalc?.sugerido || 0);
+      if(historicalTotal > 0 && calculatedTotal <= 0.005){
+        const restoredComplementaryItems = Array.isArray(h.state?.complementaryServices)
+          ? h.state.complementaryServices.length
+          : 0;
+        const historicalPrincipal = Number(h.projetoPrincipal || h.valorComercialManual || 0)
+          || (restoredComplementaryItems > 0
+            ? Math.max(0, historicalTotal - Number(h.complementares || 0))
+            : historicalTotal);
+        if(historicalPrincipal > 0){
+          setHistoryFieldValue('valorComercialManual', historicalPrincipal);
+          calculate();
+        }
+      }
+
+      if(mode === 'proposal') buildProposal();
       updateHistorySaveButton();
       return h;
     }
 
     function editHistory(i){
-      const h = restoreHistoryEntryForEditing(i, 'budget');
-      if(!h) return;
+      if(!data.history[i]) return;
+      // Abre a área de destino primeiro. Assim, mesmo que um registro legado tenha algum
+      // campo incompatível, o usuário não fica aparentemente preso no Histórico.
       openTab('calc');
-      toast('Orçamento carregado para edição. Após ajustar, clique em Salvar alterações no histórico.');
+      try{
+        const h = restoreHistoryEntryForEditing(i, 'budget');
+        if(!h) return;
+        calculate();
+        toast('Orçamento carregado para edição. Após ajustar, clique em Salvar alterações no histórico.');
+      }catch(err){
+        console.error('Erro ao restaurar orçamento do histórico:', err);
+        toast('O orçamento foi aberto, mas parte dos dados antigos não pôde ser restaurada automaticamente.');
+      }
     }
 
     function editProposalFromHistory(i){
-      const h = restoreHistoryEntryForEditing(i, 'proposal');
-      if(!h) return;
+      if(!data.history[i]) return;
       openTab('proposal');
-      updateHistorySaveButton();
-      buildProposal();
-      const hasFullProposal = !!(h.proposalState?.fields || h.state?.fields);
-      toast(hasFullProposal
-        ? 'Proposta carregada com os dados salvos. Edite os campos e clique em Salvar alterações da proposta.'
-        : 'Proposta antiga carregada com os dados disponíveis. Alguns campos não existiam no histórico antigo e não podem ser recuperados automaticamente.');
+      try{
+        const h = restoreHistoryEntryForEditing(i, 'proposal');
+        if(!h) return;
+        updateHistorySaveButton();
+        buildProposal();
+        const hasFullProposal = !!(h.proposalState?.fields || h.state?.fields);
+        toast(hasFullProposal
+          ? 'Proposta carregada com os dados salvos. Edite os campos e clique em Salvar alterações da proposta.'
+          : 'Proposta antiga carregada com os dados disponíveis. Alguns campos não existiam no histórico antigo e não podem ser recuperados automaticamente.');
+      }catch(err){
+        console.error('Erro ao restaurar proposta do histórico:', err);
+        toast('A proposta foi aberta, mas parte dos dados antigos não pôde ser restaurada automaticamente.');
+      }
     }
     const HISTORY_MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     let historyYearPageStart = new Date().getFullYear() - 5;
@@ -13587,16 +13629,16 @@ ${p.obs}` : ''}`;
               <span class="history-badge ${historyBadgeClassByCommercial(commercial)}">${esc(commercial)}</span>
             </div>
             <div class="history-record-actions no-print">
-              <button class="history-row-action primary" onclick="editHistory(${i})" title="Editar orçamento">
+              <button type="button" class="history-row-action primary" onclick="editHistory(${i})" title="Editar orçamento">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Orçamento</span>
               </button>
-              <button class="history-row-action" onclick="editProposalFromHistory(${i})" title="Editar proposta comercial">
+              <button type="button" class="history-row-action" onclick="editProposalFromHistory(${i})" title="Editar proposta comercial">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h6"/></svg><span>Proposta</span>
               </button>
-              <button class="history-details-toggle" onclick="toggleHistoryDetails(${i})" aria-expanded="false" title="Exibir detalhes financeiros">
+              <button type="button" class="history-details-toggle" onclick="toggleHistoryDetails(${i})" aria-expanded="false" title="Exibir detalhes financeiros">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span>Detalhes</span>
               </button>
-              <button class="history-row-delete" onclick="deleteHistory(${i})" title="Excluir registro" aria-label="Excluir registro">
+              <button type="button" class="history-row-delete" onclick="deleteHistory(${i})" title="Excluir registro" aria-label="Excluir registro">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></svg>
               </button>
             </div>
