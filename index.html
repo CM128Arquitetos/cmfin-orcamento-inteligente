@@ -9,7 +9,9 @@
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
+  <!-- v64: limpeza técnica 03 — consolidação segura do CSS de Variáveis/Blocos Rápidos e mini barra de edição da Proposta -->
   <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
+  <!-- v65: limpeza técnica 04 — remoção de JavaScript legado/órfão sem alterar regras de negócio -->
   <!-- v55: configurações adicionais em card próprio + opção de fixar individualmente nas condições comerciais -->
   <!-- v62: correção do cálculo quando existem adicionais financeiros não fixados nas condições -->
   <!-- v61: correção da edição pelo Histórico — navegação imediata, restauração híbrida de registros antigos/parciais e fallback seguro de valor histórico -->
@@ -43,7 +45,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=LREGIp97IuD3CYjve0aC2cwwYcUHYTpK_BoWlWJKnALFI_JxZ0b5Q2EItbOgbaszBqpbxhUtsPwhl1BV62jSohB-UVUAgvqDkB1Gl1d7mou70uSCZz825cxGFCP7iBrL2jJz6XbabIl3v5oxd6aAFdtNupHN95mzy1tcZDR85WR1fqpYiopYbSUrV4KWBTD9q_0t_vNp40uqAZgAu4vp0C0sjl8t-F5EZozl7Czxyflrk0OR_2ydvDw2vmbvo83oRIG9C_i2n4mtm_EFBYiW_ttD4WOWFvrJu106-_NFNQeCNH2N7eaFn7-52PnbnMp8cTq1qf_X-qBOiwZDsvEyd589LJe5RSQR5eqMIbwRNA4" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=DYtA7DtCTL2rLzeEkgGf7BjLEKUcD6R6ips1q9zwRK75FzODR29JpCPgIpFl9A91bY-P1xgzykU7XujKPAsbdQUqwCkeqC6JwiHFS2rFKeV9bVfnIeqsicWIOdnPIak0Z5_pHZxZy7HXdGFavBfE4LBmj_ZiHsSZm_MDyVnW41NVHJpJItFvaU6xM34b9RQ0TpjthL2bPvTcn2_NgQNQojPDUVJb233O3mvK8Jp6NCBOspgvO8ubGgkOdSHPpGOWYZMPYUcCfPccx-EItcHQ6TrC0q7JJlXOMIyNxiTdAUaK1vCqtQunn8hNWMOFBHz8Qf2_7-jrlljhj_vSIu7V99pFGsnZzT89U4Im-z0xbYFaMG8rZ53PGFiT2mUaoKTh" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -1601,7 +1603,6 @@
     }
 
 
-
     .viability-card {
       position:relative;
       margin:0;
@@ -2515,8 +2516,6 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 
 
-
-
 .cmfin-eye-icon {
   width: 20px;
   height: 20px;
@@ -2921,7 +2920,6 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 
 
-
 /* ===== Ajuste premium login: suporte em botão e recuperação abaixo do CTA ===== */
 .cmfin-login-options {
   align-items: center !important;
@@ -2998,7 +2996,6 @@ body.cmfin-authenticated .cmfin-login-screen {
 .cmfin-login-btn {
   margin-top: 0 !important;
 }
-
 
 
 /* ===== CMFin Orçamento - Cabeçalho de usuário + Perfil ===== */
@@ -3978,7 +3975,6 @@ body .proposal-template-simple {
 }
 
 
-
 body .proposal-template-simple .template-token-grid button.secondary {
   grid-template-columns: 22px minmax(0,1fr) !important;
   min-height: 52px !important;
@@ -4016,442 +4012,164 @@ body #proposalVisualToolbar.cmfin-mini-toolbar {
 </style>
 
 
-
-
-
-<style>
-/* Mini barra compacta estilo Word */
+<style id="cmfin-v64-proposal-ui-consolidated">
+/* V64 — Limpeza Técnica 03
+   Consolidação segura dos estilos de Variáveis / Blocos Rápidos e da mini barra
+   de edição da Proposta. Mantida a ordem/especificidade da cascata funcional. */
 #cmfinWordSelectionToolbar.cmfin-word-toolbar{
-  position: fixed;
-  left: -9999px;
-  top: -9999px;
-  z-index: 2147483647;
-  display: none;
-  width: auto;
-  max-width: min(920px, calc(100vw - 20px));
-  padding: 0;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: linear-gradient(135deg, rgba(22,33,29,.98) 0%, rgba(10,17,15,.98) 100%);
-  box-shadow: 0 22px 60px rgba(0,0,0,.30);
-  backdrop-filter: blur(14px) saturate(1.06);
-  overflow: hidden;
-  font-family: Montserrat, Inter, Arial, sans-serif;
+  position:fixed;
+  left:-9999px;
+  top:-9999px;
+  z-index:2147483647;
+  display:none;
+  width:auto;
+  padding:0;
+  font-family:Montserrat, Inter, Arial, sans-serif;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar.is-visible{
-  display: block;
+  display:block;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 10px 12px;
-  padding: 12px 14px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:end;
+  gap:10px 12px;
 }
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
-  display: grid;
-  gap: 6px;
-  padding: 0 6px;
-  min-width: 0;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group--font{
-  min-width: 250px;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group-title{
-  color: rgba(255,255,255,.62);
-  font-size: .64rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__controls{
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-  width: 1px;
-  min-height: 58px;
-  margin: 0 2px;
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.14), rgba(255,255,255,.03));
-  align-self: stretch;
-}
+
 #cmfinWordSelectionToolbar select,
 #cmfinWordSelectionToolbar button,
 #cmfinWordSelectionToolbar label{
-  min-height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-  font-size: .78rem;
-  font-weight: 650;
-  font-family: inherit;
-  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  font-family:inherit;
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
 }
-#cmfinWordSelectionToolbar select:hover,
-#cmfinWordSelectionToolbar button:hover,
-#cmfinWordSelectionToolbar label:hover{
-  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.08));
-  border-color: rgba(255,255,255,.18);
-  transform: translateY(-1px);
-}
+
 #cmfinWordSelectionToolbar select{
-  padding: 0 12px;
-  appearance: auto;
+  appearance:auto;
 }
+
 #cmfinWordSelectionToolbar select option{
-  color: #10251f;
-  background: #fff;
+  color:#10251f;
+  background:#fff;
 }
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-  min-width: 170px;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
-  min-width: 110px;
-}
+
 #cmfinWordSelectionToolbar button{
-  min-width: 44px;
-  padding: 0 12px;
-  cursor: pointer;
+  cursor:pointer;
 }
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{
-  min-width: 80px;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  cursor: pointer;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip span{
-  font-size: .76rem;
-  font-weight: 700;
-  color: #fff;
-}
-#cmfinWordSelectionToolbar input[type="color"]{
-  width: 18px;
-  height: 18px;
-  border: 0;
-  background: transparent;
-  padding: 0;
-}
+
 @media (max-width: 900px){
   #cmfinWordSelectionToolbar.cmfin-word-toolbar{
-    max-width: calc(100vw - 18px);
+    max-width:calc(100vw - 18px);
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-    padding: 10px 12px;
-    gap: 8px 10px;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
-    padding: 0 4px;
+    padding:10px 12px;
+    gap:8px 10px;
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-    display: none;
+    display:none;
   }
 }
+
 @media (max-width: 640px){
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group{
-    width: 100%;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__group--font{
-    min-width: 100%;
-  }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-    min-width: 100%;
-    flex: 1 1 100%;
+    min-width:100%;
+    flex:1 1 100%;
   }
   #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
-    min-width: 110px;
-    flex: 1 1 110px;
+    min-width:110px;
+    flex:1 1 110px;
   }
   #cmfinWordSelectionToolbar select,
   #cmfinWordSelectionToolbar button,
   #cmfinWordSelectionToolbar label{
-    min-height: 36px;
-    font-size: .76rem;
+    min-height:36px;
+    font-size:.76rem;
   }
 }
-</style>
 
-
-
-<style>
-/* Cards minimizáveis — Variáveis e Blocos rápidos */
-body .proposal-template-simple .proposal-mini-card {
-  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+body .proposal-template-simple .proposal-mini-card{
+  transition:box-shadow .18s ease, transform .18s ease, border-color .18s ease;
 }
 
-body .proposal-template-simple .proposal-mini-card-head {
-  display: grid !important;
-  grid-template-columns: minmax(0,1fr) 42px !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-
-
-
-
-
-
-
-body .proposal-template-simple .proposal-mini-toggle {
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  min-height: 42px !important;
-  border-radius: 999px !important;
-  border: 1px solid #d8e8e0 !important;
-  background: linear-gradient(180deg,#ffffff 0%,#eef6f2 100%) !important;
-  color: #0d3f34 !important;
-  box-shadow: 0 10px 22px rgba(17,44,37,.08) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  font-size: 1rem !important;
-  font-weight: 900 !important;
-  cursor: pointer !important;
-  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
-}
-
-body .proposal-template-simple .proposal-mini-toggle:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 14px 26px rgba(17,44,37,.12) !important;
-  background: linear-gradient(180deg,#ffffff 0%,#e7f2ed 100%) !important;
-}
-
-
-
-body .proposal-template-simple .proposal-mini-card.is-collapsed {
-  padding-bottom: 16px !important;
-}
-
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  border-bottom: 0 !important;
-}
-
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle {
-  background: linear-gradient(135deg,#0f5b49 0%,#11372f 100%) !important;
-  color: #ffffff !important;
-}
-
-/* Botões com texto mais leve e sem quebra exagerada */
 body .proposal-template-simple .template-token-grid button.secondary,
-body .proposal-template-simple .template-block-buttons button.secondary {
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
+body .proposal-template-simple .template-block-buttons button.secondary{
+  font-weight:600 !important;
+  letter-spacing:0 !important;
 }
 
-body .proposal-template-simple .template-token-grid button.secondary {
-  font-size: .80rem !important;
+body .proposal-template-simple .template-token-grid button.secondary{
+  font-size:.80rem !important;
 }
 
-body .proposal-template-simple .template-block-buttons button.secondary {
-  font-size: .80rem !important;
-}
-</style>
-
-
-<style>
-/* Padronização dos toggles de Variáveis e Blocos Rápidos */
-body .proposal-template-simple .proposal-mini-card-head {
-  grid-template-columns: minmax(0,1fr) 50px !important;
-  gap: 10px !important;
+body .proposal-template-simple .template-block-buttons button.secondary{
+  font-size:.80rem !important;
 }
 
-body .proposal-template-simple .proposal-mini-toggle {
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  min-height: 44px !important;
-  border-radius: 999px !important;
-  border: 1px solid #d8e2dd !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
-  color: #5d6f67 !important;
-  box-shadow:
-    0 8px 18px rgba(16,37,31,.08),
-    inset 0 1px 0 rgba(255,255,255,.95) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  font-size: 1rem !important;
-  font-weight: 800 !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease !important;
+body .proposal-template-simple .proposal-mini-toggle:hover{
+  border-color:#cad8d1 !important;
 }
 
-body .proposal-template-simple .proposal-mini-toggle:hover {
-  transform: translateY(-1px) !important;
-  border-color: #cad8d1 !important;
-  box-shadow:
-    0 12px 22px rgba(16,37,31,.11),
-    inset 0 1px 0 rgba(255,255,255,.98) !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f3f8f5 100%) !important;
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle{
+  border-color:#d8e2dd !important;
 }
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle {
-  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
-  color: #5d6f67 !important;
-  border-color: #d8e2dd !important;
+body .proposal-template-simple .proposal-mini-toggle{
+  background:linear-gradient(180deg, #0f5b49 0%, #0b4b3c 100%) !important;
+  color:#ffffff !important;
+  font-weight:800 !important;
 }
 
-
-
-
-</style>
-
-
-<style>
-/* ===== Botões de expandir/minimizar iguais aos demais cards do sistema ===== */
-body .proposal-template-simple .proposal-mini-card-head {
-  grid-template-columns: minmax(0,1fr) 50px !important;
-  gap: 12px !important;
-}
-
-
-
-/* Estado EXPANDIDO = botão verde, seta para cima */
-body .proposal-template-simple .proposal-mini-toggle {
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  min-height: 42px !important;
-  border-radius: 999px !important;
-  border: 1px solid #0b5a47 !important;
-  background: linear-gradient(180deg, #0f5b49 0%, #0b4b3c 100%) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 10px 22px rgba(15,91,73,.22),
-    inset 0 1px 0 rgba(255,255,255,.08) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  font-size: 1rem !important;
-  font-weight: 800 !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-  transition:
-    transform .16s ease,
-    box-shadow .16s ease,
-    border-color .16s ease,
-    background .16s ease,
-    color .16s ease !important;
-}
-
-body .proposal-template-simple .proposal-mini-toggle:hover {
-  transform: translateY(-1px) !important;
-  box-shadow:
-    0 14px 28px rgba(15,91,73,.28),
+body .proposal-template-simple .proposal-mini-toggle:hover{
+  box-shadow:0 14px 28px rgba(15,91,73,.28),
     inset 0 1px 0 rgba(255,255,255,.10) !important;
-  background: linear-gradient(180deg, #116652 0%, #0d5242 100%) !important;
+  background:linear-gradient(180deg, #116652 0%, #0d5242 100%) !important;
 }
 
-/* Estado MINIMIZADO = botão branco, seta para baixo */
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle {
-  border: 1px solid #d8e2dd !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
-  color: #5d6f67 !important;
-  box-shadow:
-    0 8px 18px rgba(16,37,31,.08),
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle{
+  border:1px solid #d8e2dd !important;
+  background:linear-gradient(180deg, #ffffff 0%, #f7faf8 100%) !important;
+  color:#5d6f67 !important;
+  box-shadow:0 8px 18px rgba(16,37,31,.08),
     inset 0 1px 0 rgba(255,255,255,.95) !important;
 }
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle:hover {
-  border-color: #cad8d1 !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f3f8f5 100%) !important;
-  box-shadow:
-    0 12px 22px rgba(16,37,31,.11),
+body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle:hover{
+  border-color:#cad8d1 !important;
+  background:linear-gradient(180deg, #ffffff 0%, #f3f8f5 100%) !important;
+  box-shadow:0 12px 22px rgba(16,37,31,.11),
     inset 0 1px 0 rgba(255,255,255,.98) !important;
 }
 
-body .proposal-template-simple .proposal-mini-card-head {
-  border-bottom: 1px solid #e5eee8 !important;
-  padding-bottom: 14px !important;
-  margin-bottom: 18px !important;
-}
-
-
-
-/* mantém o colapso bem limpo, como os outros cards */
-
-</style>
-
-
-<style>
-/* ===== Toggle idêntico visualmente aos outros cards do sistema ===== */
-body .proposal-template-simple .proposal-mini-card-head {
-  grid-template-columns: minmax(0,1fr) 48px !important;
-  gap: 12px !important;
-}
-
-body .proposal-template-simple .proposal-mini-toggle {
-  position: relative !important;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  min-height: 40px !important;
-  border-radius: 999px !important;
-  padding: 0 !important;
-  font-size: 0 !important; /* esconde qualquer texto interno */
-  line-height: 1 !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease !important;
-}
-
-/* minimizado = igual aos cards Pranchas/Condições/etc */
 body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-toggle,
-body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"] {
-  border: 1px solid #d7e0db !important;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfb 100%) !important;
-  box-shadow: 0 8px 18px rgba(16,37,31,.08), inset 0 1px 0 rgba(255,255,255,.98) !important;
-  color: #687972 !important;
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]{
+  border:1px solid #d7e0db !important;
+  background:linear-gradient(180deg, #ffffff 0%, #fbfcfb 100%) !important;
+  box-shadow:0 8px 18px rgba(16,37,31,.08), inset 0 1px 0 rgba(255,255,255,.98) !important;
+  color:#687972 !important;
 }
 
-/* expandido = igual ao Ações da Proposta */
 body .proposal-template-simple .proposal-mini-card:not(.is-collapsed) .proposal-mini-toggle,
-body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"] {
-  border: 1px solid #0e5a47 !important;
-  background: linear-gradient(180deg, #0f5b49 0%, #0b4c3c 100%) !important;
-  box-shadow: 0 10px 22px rgba(15,91,73,.24), inset 0 1px 0 rgba(255,255,255,.08) !important;
-  color: #ffffff !important;
+body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]{
+  border:1px solid #0e5a47 !important;
+  background:linear-gradient(180deg, #0f5b49 0%, #0b4c3c 100%) !important;
+  box-shadow:0 10px 22px rgba(15,91,73,.24), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  color:#ffffff !important;
 }
 
-body .proposal-template-simple .proposal-mini-toggle::before {
-  content: "⌄";
-  font-size: 1rem !important;
-  font-weight: 800 !important;
-  line-height: 1 !important;
-  transform: translateY(-1px);
-  color: currentColor !important;
+body .proposal-template-simple .proposal-mini-toggle::before{
+  font-size:1rem !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  transform:translateY(-1px);
+  color:currentColor !important;
 }
 
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::before,
-body .proposal-template-simple .proposal-mini-card:not(.is-collapsed) .proposal-mini-toggle::before {
-  content: "⌃";
+body .proposal-template-simple .proposal-mini-card:not(.is-collapsed) .proposal-mini-toggle::before{
+  content:"⌃";
 }
 
-
-
-
-</style>
-
-
-<style>
-/* ===== Variáveis / Blocos Rápidos com o mesmo botão circular dos demais cards ===== */
 body .proposal-template-simple .proposal-mini-card-head{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) 42px !important;
@@ -4461,40 +4179,31 @@ body .proposal-template-simple .proposal-mini-card-head{
   padding-bottom:14px !important;
   margin-bottom:18px !important;
 }
+
 body .proposal-template-simple .proposal-mini-card-head > div{
   min-width:0 !important;
 }
+
 body .proposal-template-simple .proposal-mini-card-head strong{
   display:block !important;
 }
+
 body .proposal-template-simple .proposal-mini-card-head span{
   display:block !important;
   margin-top:4px !important;
 }
 
 body .proposal-template-simple .proposal-mini-toggle{
-  position:relative !important;
-  width:36px !important;
-  height:36px !important;
-  min-width:36px !important;
-  min-height:36px !important;
-  border-radius:999px !important;
-  padding:0 !important;
-  font-size:0 !important;
-  line-height:1 !important;
   cursor:pointer !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
   transition:transform .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease !important;
 }
 
-/* Estado minimizado: igual aos cards fechados */
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]{
   background:linear-gradient(180deg,#ffffff 0%,#f7faf8 100%) !important;
   border:1px solid #d8e0dc !important;
   box-shadow:0 8px 18px rgba(17,44,37,.08), inset 0 1px 0 rgba(255,255,255,.98) !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]::before{
   content:"";
   width:14px !important;
@@ -4506,12 +4215,11 @@ body .proposal-template-simple .proposal-mini-toggle[aria-expanded="false"]::bef
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%23697972' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
-/* Estado expandido: igual aos cards abertos */
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]{
   background:linear-gradient(180deg,#0f5b49 0%,#0b4c3c 100%) !important;
   border:1px solid #0e5a47 !important;
-  box-shadow:0 10px 22px rgba(17,44,37,.18), inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::before{
   content:"";
   width:14px !important;
@@ -4523,24 +4231,20 @@ body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::befo
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 12l5-5 5 5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
-
-
 body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-content{
   display:none !important;
 }
+
 body .proposal-template-simple .proposal-mini-card.is-collapsed{
   padding-bottom:18px !important;
 }
+
 body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head{
   border-bottom:0 !important;
   padding-bottom:0 !important;
   margin-bottom:0 !important;
 }
-</style>
 
-
-<style>
-/* AJUSTE FINAL — botão de Variáveis/Blocos idêntico ao de Pranchas/Condições/etc */
 body .proposal-template-simple .proposal-mini-toggle{
   width:36px !important;
   height:36px !important;
@@ -4559,10 +4263,12 @@ body .proposal-template-simple .proposal-mini-toggle{
   font-size:0 !important;
   line-height:1 !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle::before{
   content:none !important;
   display:none !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle::after{
   content:"" !important;
   width:14px !important;
@@ -4575,23 +4281,22 @@ body .proposal-template-simple .proposal-mini-toggle::after{
   transform:none !important;
   transition:transform .22s ease !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]{
   background-color:var(--brand) !important;
   border-color:var(--brand) !important;
   box-shadow:0 10px 22px rgba(17,44,37,.18) !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   transform:rotate(180deg) !important;
 }
+
 body .proposal-template-simple .proposal-mini-toggle:hover{
   transform:translateY(-1px) !important;
 }
-</style>
 
-
-<style>
-/* ===== Mini barra compacta estilo Word ===== */
 #cmfinWordSelectionToolbar.cmfin-word-toolbar{
   max-width:min(820px, calc(100vw - 20px)) !important;
   border-radius:14px !important;
@@ -4601,19 +4306,18 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   backdrop-filter:blur(10px) saturate(1.04) !important;
   overflow:hidden !important;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
   padding:8px 10px !important;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__row{
   display:flex !important;
   align-items:center !important;
   flex-wrap:wrap !important;
   gap:8px !important;
 }
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group,
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__group-title{
-  display:none !important;
-}
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
   width:1px !important;
   height:30px !important;
@@ -4623,6 +4327,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   align-self:center !important;
   background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.16), rgba(255,255,255,.02)) !important;
 }
+
 #cmfinWordSelectionToolbar select,
 #cmfinWordSelectionToolbar button,
 #cmfinWordSelectionToolbar label{
@@ -4636,17 +4341,21 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   font-size:.78rem !important;
   font-weight:650 !important;
 }
+
 #cmfinWordSelectionToolbar select{
   padding:0 10px !important;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
   min-width:158px !important;
   width:158px !important;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
   min-width:62px !important;
   width:62px !important;
 }
+
 #cmfinWordSelectionToolbar button{
   min-width:42px !important;
   width:42px !important;
@@ -4655,29 +4364,13 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   align-items:center !important;
   justify-content:center !important;
 }
+
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{
   min-width:74px !important;
   width:auto !important;
   padding:0 10px !important;
 }
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-chip{
-  display:inline-flex !important;
-  align-items:center !important;
-  gap:8px !important;
-  padding:0 9px !important;
-  width:auto !important;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-letter{
-  font-size:1.05rem !important;
-  font-weight:700 !important;
-  line-height:1 !important;
-  color:#fff !important;
-}
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-label{
-  font-size:.78rem !important;
-  font-weight:700 !important;
-  color:#fff !important;
-}
+
 #cmfinWordSelectionToolbar input[type="color"]{
   width:14px !important;
   height:24px !important;
@@ -4685,6 +4378,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   padding:0 !important;
   background:transparent !important;
 }
+
 #cmfinWordSelectionToolbar select:hover,
 #cmfinWordSelectionToolbar button:hover,
 #cmfinWordSelectionToolbar label:hover{
@@ -4692,6 +4386,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   border-color:rgba(255,255,255,.18) !important;
   transform:translateY(-1px) !important;
 }
+
 @media (max-width: 700px){
   #cmfinWordSelectionToolbar.cmfin-word-toolbar{
     max-width:calc(100vw - 12px) !important;
@@ -4710,204 +4405,28 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
     min-width:140px !important;
   }
 }
-</style>
 
-
-<style>
-/* ===== Mini barra premium redesenhada ===== */
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium{
-  max-width:min(860px, calc(100vw - 20px)) !important;
-  border-radius:22px !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  background:
-    radial-gradient(circle at top left, rgba(19,83,63,.18), transparent 32%),
-    linear-gradient(135deg, rgba(17,27,24,.98) 0%, rgba(8,14,12,.99) 100%) !important;
-  box-shadow:
-    0 28px 70px rgba(0,0,0,.30),
-    inset 0 1px 0 rgba(255,255,255,.05) !important;
-  backdrop-filter: blur(12px) saturate(1.05) !important;
-  overflow: hidden !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__surface{
-  padding: 12px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__layout{
-  display:flex !important;
-  flex-wrap:wrap !important;
-  align-items:stretch !important;
-  gap:10px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel{
-  display:grid !important;
-  gap:7px !important;
-  padding:10px 11px !important;
-  border-radius:16px !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.03) !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel--font{
-  min-width:255px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__label{
-  display:block !important;
-  font-size:.62rem !important;
-  line-height:1 !important;
-  font-weight:700 !important;
-  letter-spacing:.08em !important;
-  text-transform:uppercase !important;
-  color:rgba(255,255,255,.58) !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__inline{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:wrap !important;
-  gap:8px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium select,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium button,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium label{
-  min-height:38px !important;
-  height:38px !important;
-  border-radius:12px !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.035)) !important;
-  color:#fff !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04) !important;
-  font-size:.78rem !important;
-  font-weight:650 !important;
-  transition:transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium select:hover,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium button:hover,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium label:hover{
-  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07)) !important;
-  border-color:rgba(255,255,255,.16) !important;
-  box-shadow:0 8px 20px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.06) !important;
-  transform:translateY(-1px) !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium select{
-  padding:0 11px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium select option{
-  color:#10251f !important;
-  background:#fff !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__font-family{
-  min-width:175px !important;
-  width:175px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__font-size{
-  min-width:72px !important;
-  width:72px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium button{
-  min-width:40px !important;
-  width:40px !important;
-  padding:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__wide{
-  min-width:86px !important;
-  width:auto !important;
-  padding:0 12px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__color-chip{
-  display:inline-flex !important;
-  align-items:center !important;
-  gap:8px !important;
-  padding:0 10px !important;
-  width:auto !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__color-letter{
-  font-size:1rem !important;
-  font-weight:700 !important;
-  color:#fff !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__color-label{
-  font-size:.75rem !important;
-  font-weight:700 !important;
-  color:#fff !important;
-  text-transform:uppercase !important;
-  letter-spacing:.04em !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium input[type="color"]{
-  width:16px !important;
-  height:26px !important;
-  border:0 !important;
-  padding:0 !important;
-  background:transparent !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel:nth-child(2) button,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel:nth-child(3) button{
-  font-size:.92rem !important;
-}
-@media (max-width: 860px){
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium{
-    max-width:calc(100vw - 16px) !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__surface{
-    padding:10px !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__layout{
-    gap:8px !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel{
-    padding:9px 10px !important;
-  }
-}
-@media (max-width: 640px){
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel{
-    width:100% !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__panel--font{
-    min-width:100% !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--premium .cmfin-word-toolbar__font-family{
-    flex:1 1 100% !important;
-    width:auto !important;
-    min-width:140px !important;
-  }
-}
-</style>
-
-
-<style>
-/* ===== Mini barra compacta premium (versão final) ===== */
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
-  max-width:min(780px, calc(100vw - 16px)) !important;
   border-radius:18px !important;
   border:1px solid rgba(255,255,255,.10) !important;
-  background:
-    radial-gradient(circle at top left, rgba(19,83,63,.14), transparent 28%),
+  background:radial-gradient(circle at top left, rgba(19,83,63,.14), transparent 28%),
     linear-gradient(135deg, rgba(15,23,21,.98) 0%, rgba(8,14,13,.99) 100%) !important;
   box-shadow:0 18px 48px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05) !important;
-  overflow:hidden !important;
 }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
-  padding:10px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__layout{
-  display:block !important;
-}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row{
   display:flex !important;
   align-items:center !important;
   flex-wrap:wrap !important;
   gap:8px !important;
 }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{
-  margin-top:8px !important;
-}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{
   width:1px !important;
-  height:28px !important;
   display:inline-block !important;
   background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.16), rgba(255,255,255,.02)) !important;
-  margin:0 2px !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select,
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button,
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra label{
@@ -4920,6 +4439,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;
   transition:all .14s ease !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select:hover,
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button:hover,
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra label:hover{
@@ -4927,26 +4447,19 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   border-color:rgba(255,255,255,.16) !important;
   transform:translateY(-1px) !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select{
   padding:0 10px !important;
   font-size:.82rem !important;
   font-weight:650 !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select option{
   color:#10251f !important;
   background:#fff !important;
 }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{
-  width:160px !important;
-  min-width:160px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{
-  width:64px !important;
-  min-width:64px !important;
-}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{
-  width:42px !important;
-  min-width:42px !important;
   padding:0 !important;
   display:inline-flex !important;
   align-items:center !important;
@@ -4954,6 +4467,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   font-size:.84rem !important;
   font-weight:700 !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button svg{
   width:16px !important;
   height:16px !important;
@@ -4962,34 +4476,25 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   fill:none !important;
   stroke-linecap:round !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
   width:auto !important;
-  min-width:76px !important;
-  padding:0 12px !important;
   font-weight:650 !important;
 }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-chip{
-  display:inline-flex !important;
-  align-items:center !important;
-  gap:8px !important;
-  width:auto !important;
-  padding:0 10px !important;
-}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-text{
-  font-size:.76rem !important;
-  font-weight:700 !important;
-  letter-spacing:.02em !important;
-  color:#ffffff !important;
-}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{
-  width:4px !important;
-  height:20px !important;
-  border-radius:999px !important;
   background:var(--chip-color, #111111) !important;
   box-shadow:0 0 0 1px rgba(255,255,255,.08) !important;
 }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--text{ --chip-color:#111111; }
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--mark{ --chip-color:#f4e28a; }
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--text{
+  --chip-color:#111111;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--mark{
+  --chip-color:#f4e28a;
+}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra input[type="color"]{
   width:0 !important;
   height:0 !important;
@@ -4997,6 +4502,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   position:absolute !important;
   pointer-events:none !important;
 }
+
 @media (max-width:700px){
   #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
     max-width:calc(100vw - 10px) !important;
@@ -5015,72 +4521,199 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
     min-width:142px !important;
   }
 }
-</style>
 
-
-<style>
-/* Campo de tamanho digitável + botões A-/A+ */
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{
-  width:64px !important;
-  min-width:64px !important;
-  padding:0 8px !important;
-  text-align:center !important;
-  outline:none !important;
-}
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra input.cmfin-word-toolbar__font-size::-webkit-calendar-picker-indicator{
   opacity:.85 !important;
   filter:invert(1) !important;
 }
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{
-  width:38px !important;
-  min-width:38px !important;
-  font-size:.78rem !important;
   font-weight:800 !important;
 }
-</style>
 
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
+  padding:10px 12px !important;
+  border-radius:18px !important;
+}
 
-<style>
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{max-width:none!important;width:auto!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{padding:10px 12px!important;border-radius:18px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row--single{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:8px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{margin-top:0!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{height:30px!important;margin:0 1px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{width:140px!important;min-width:140px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{position:relative!important;display:flex!important;align-items:center!important;width:78px!important;min-width:78px!important;height:38px!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:11px!important;background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04))!important;overflow:visible!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{width:46px!important;min-width:46px!important;height:100%!important;border:0!important;background:transparent!important;color:#fff!important;padding:0 8px!important;text-align:center!important;box-shadow:none!important;outline:none!important;font-size:.82rem!important;font-weight:700!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-toggle{width:28px!important;min-width:28px!important;height:100%!important;border:0!important;border-left:1px solid rgba(255,255,255,.1)!important;border-radius:0 11px 11px 0!important;background:transparent!important;color:#fff!important;font-size:.9rem!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{position:absolute!important;top:44px!important;left:0!important;z-index:50!important;width:82px!important;max-height:260px!important;overflow:auto!important;padding:6px!important;display:grid!important;grid-template-columns:1fr!important;gap:4px!important;background:#23292a!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:12px!important;box-shadow:0 16px 40px rgba(0,0,0,.42)!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu[hidden]{display:none!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu button{width:100%!important;min-width:100%!important;height:30px!important;border-radius:8px!important;justify-content:flex-start!important;padding:0 10px!important;font-size:.82rem!important;font-weight:600!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{width:36px!important;min-width:36px!important;font-size:.78rem!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{width:38px!important;min-width:38px!important;height:38px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{min-width:72px!important;padding:0 10px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-chip{height:38px!important;min-width:78px!important;padding:0 10px!important;gap:8px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-label{font-size:.8rem!important;font-weight:700!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{width:10px!important;height:26px!important;border-radius:3px!important}
-</style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row--single{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:8px !important;
+}
 
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{
+  margin-top:0 !important;
+}
 
-<style>
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{overflow:visible!important;max-width:none!important;width:auto!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{overflow:visible!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{overflow:visible!important;z-index:3!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{top:42px!important;left:0!important;z-index:99999!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-input{position:absolute!important;opacity:0!important;pointer-events:none!important;width:0!important;height:0!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:0 10px!important;min-width:54px!important;width:auto!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger--wide{min-width:92px!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-text{display:inline-flex!important;align-items:center!important;color:#fff!important;font-size:.8rem!important;font-weight:700!important;letter-spacing:.01em!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{width:10px!important;height:24px!important;border-radius:3px!important;flex:0 0 auto!important}
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{min-width:74px!important}
-</style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{
+  height:30px !important;
+  margin:0 1px !important;
+}
 
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{
+  width:140px !important;
+  min-width:140px !important;
+}
 
-<style>
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  width:78px !important;
+  min-width:78px !important;
+  height:38px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:11px !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)) !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{
+  width:46px !important;
+  min-width:46px !important;
+  height:100% !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  padding:0 8px !important;
+  text-align:center !important;
+  box-shadow:none !important;
+  outline:none !important;
+  font-size:.82rem !important;
+  font-weight:700 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-toggle{
+  width:28px !important;
+  min-width:28px !important;
+  height:100% !important;
+  border:0 !important;
+  border-left:1px solid rgba(255,255,255,.1) !important;
+  border-radius:0 11px 11px 0 !important;
+  background:transparent !important;
+  color:#fff !important;
+  font-size:.9rem !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{
+  position:absolute !important;
+  width:82px !important;
+  max-height:260px !important;
+  overflow:auto !important;
+  padding:6px !important;
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:4px !important;
+  background:#23292a !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:12px !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.42) !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu[hidden]{
+  display:none !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu button{
+  width:100% !important;
+  min-width:100% !important;
+  height:30px !important;
+  border-radius:8px !important;
+  justify-content:flex-start !important;
+  padding:0 10px !important;
+  font-size:.82rem !important;
+  font-weight:600 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{
+  width:36px !important;
+  min-width:36px !important;
+  font-size:.78rem !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{
+  width:38px !important;
+  min-width:38px !important;
+  height:38px !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
+  padding:0 10px !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-label{
+  font-size:.8rem !important;
+  font-weight:700 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
+  overflow:visible !important;
+  max-width:none !important;
+  width:auto !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
+  overflow:visible !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{
+  overflow:visible !important;
+  z-index:3 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{
+  top:42px !important;
+  left:0 !important;
+  z-index:99999 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-input{
+  position:absolute !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  width:0 !important;
+  height:0 !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:0 10px !important;
+  min-width:54px !important;
+  width:auto !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger--wide{
+  min-width:92px !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-text{
+  display:inline-flex !important;
+  align-items:center !important;
+  color:#fff !important;
+  font-size:.8rem !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{
+  width:10px !important;
+  height:24px !important;
+  border-radius:3px !important;
+  flex:0 0 auto !important;
+}
+
+#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
+  min-width:74px !important;
+}
+
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="undoVisual"],
 #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="redoVisual"]{
-  font-size:1.05rem!important;
-  font-weight:800!important;
+  font-size:1.05rem !important;
+  font-weight:800 !important;
 }
 </style>
 
@@ -5832,7 +5465,6 @@ main{
   }
 
 </style>
-
 
 
 <style id="cmfin-v50-proposal-actions-compact">
@@ -7517,10 +7149,8 @@ main{
             cmfinUpdateUserHero();
             renderVehicleDatalist();
             renderVehicles();
-            renderComplementaryTypes();
             renderComplementaryServices();
             renderHistory();
-            renderSmartSuggestions();
             renderBrandCustomizationFields();
             applyBrandCustomization();
             const qpLoad=document.getElementById('qtdProfissionais');
@@ -7560,10 +7190,8 @@ main{
             cmfinUpdateUserHero();
             renderVehicleDatalist();
             renderVehicles();
-            renderComplementaryTypes();
             renderComplementaryServices();
             renderHistory();
-            renderSmartSuggestions();
             renderBrandCustomizationFields();
             applyBrandCustomization();
             calculate();
@@ -9469,7 +9097,7 @@ main{
       normalizeVehicles();
       cmfinPersistData({ cloud: false });
       document.getElementById('data').valueAsDate = new Date();
-      renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryTypes(); renderComplementaryServices(); renderHistory(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
+      renderConfig(); renderProfile(); cmfinUpdateUserHero(); renderVehicleDatalist(); renderVehicles(); renderComplementaryServices(); renderHistory(); setDefaultBudgetCheckboxes(); renderBrandCustomizationFields(); applyBrandCustomization(); cmfinUpdateUserHero(); const qpLoad=document.getElementById('qtdProfissionais'); if(qpLoad && data.professionalCount) qpLoad.value=data.professionalCount; const critLoad=document.getElementById('criterioDivisaoProfissionais'); if(critLoad && data.professionalCriterion) critLoad.value=data.professionalCriterion; calculate(); syncProfessionalShareRows();
       // Cada abertura do site inicia um orçamento novo, mantendo configurações,
       // perfil, personalização e histórico já salvos.
       resetBudget();
@@ -9540,11 +9168,6 @@ main{
       return profile.nomeExibicao || profile.nome || profile.empresa || meta.cliente || meta.email || localStorage.getItem('cmfinUser') || 'Usuário CMFin';
     }
 
-    function cmfinUserMetaLine(){
-      const profile = data?.profile || {};
-      const meta = typeof cmfinGetActiveLicenseMeta === 'function' ? cmfinGetActiveLicenseMeta() : {};
-      return profile.cargo || profile.email || meta.email || meta.cliente || 'Acesso vinculado à sua licença ativa';
-    }
 
     function cmfinUpdateUserHero(){
       const meta = typeof cmfinGetActiveLicenseMeta === 'function' ? cmfinGetActiveLicenseMeta() : {};
@@ -9916,9 +9539,6 @@ main{
       return { selected, nonTaxTotal, taxRate, taxTotal, total:nonTaxTotal + taxTotal };
     }
 
-    function customSelectedExtrasTotal(){
-      return customSelectedExtras().reduce((sum, item) => sum + (item.tipo === 'fixo' ? Number(item.valor || 0) : 0), 0);
-    }
 
     function renderConfig(){
       if(data.config.salarioMensal && !data.config.custoHoraTecnica){
@@ -9979,27 +9599,7 @@ main{
       cmfinSalvarDadosNuvem(true);
     }
 
-    function populateServices(){
-      const list = document.getElementById('servicosList');
-      if(list) list.innerHTML = data.services.map(x=>`<option value="${x.nome}"></option>`).join('');
-    }
-
-    function renderServices(){
-      const table = document.getElementById('servicesTable');
-      if(!table) return;
-      table.innerHTML = `<thead><tr><th>Código</th><th>Serviço</th><th>Unid.</th><th>Valor ref.</th><th>Horas base</th><th>Horas/unid.</th><th>Observação</th><th class="no-print">Ação</th></tr></thead><tbody>` +
-        data.services.map((s,i)=>`<tr><td>${s.codigo}</td><td>${s.nome}</td><td>${s.unidade}</td><td>${money(s.valorRef)}</td><td>${s.horasBase}</td><td>${s.horasUnid}</td><td>${s.obs||''}</td><td class="no-print"><button class="danger" onclick="removeService(${i})">Excluir</button></td></tr>`).join('') + `</tbody>`;
-    }
-
-    function addService(){
-      const s = {codigo:val('svcCodigo'), nome:val('svcNome'), unidade:val('svcUnidade')||'unid.', valorRef:num('svcValor'), horasBase:num('svcBase'), horasUnid:num('svcHoraUnid'), obs:''};
-      if(!s.codigo || !s.nome) return toast('Informe pelo menos código e serviço.');
-      data.services.push(s); ['svcCodigo','svcNome','svcUnidade','svcValor','svcBase','svcHoraUnid'].forEach(id=>document.getElementById(id).value='');
-      renderServices(); populateServices(); saveAll();
-    }
-    function removeService(i){ if(confirm('Excluir este serviço?')){ data.services.splice(i,1); renderServices(); populateServices(); saveAll(); calculate(); } }
-
-
+    // v65: rotinas antigas do cadastro de serviços removidas; data.services é preservado para compatibilidade de backups.
     function vehicleLabel(v){ return `${v.marca || ''} ${v.modelo || ''} ${v.ano || ''}`.replace(/\s+/g,' ').trim(); }
     function normVehicleText(s){ return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim(); }
     function uniqueVehicleValues(selector, source){
@@ -10186,17 +9786,10 @@ main{
       // Valor por visita = combustível ida+volta + manutenção/desgaste + alimentação da visita.
       return combustivel + manut + alimentacao;
     }
-    function applySuggestedDisplacement(){
-      // Mantido apenas por compatibilidade com versões anteriores.
-      calculate();
-    }
 
     function complementaryServicesTotal(){
       return (Array.isArray(data.complementaryServices) ? data.complementaryServices : [])
         .reduce((sum, item) => sum + (Number(item.valor) || 0), 0);
-    }
-    function renderComplementaryTypes(){
-      // V54: o tipo de serviço terceirizado é sempre digitado manualmente.
     }
     function addComplementaryService(){
       const tipo = (document.getElementById('compTipo')?.value || '').trim().toUpperCase();
@@ -10215,7 +9808,6 @@ main{
       document.getElementById('compTipo').value = '';
       document.getElementById('compFornecedor').value = '';
       document.getElementById('compValor').value = '0';
-      renderComplementaryTypes();
       renderComplementaryServices();
       calculate();
       cmfinPersistData();
@@ -10715,10 +10307,6 @@ main{
       if(typeof updateInternalViability === 'function') updateInternalViability();
     }
 
-    function updateProfessionalCriterion(){
-      data.professionalCriterion = 'Divisão manual por percentual';
-      cmfinPersistData();
-    }
 
     function distributeProfessionalsEqually(){
       syncProfessionalShareRows(true);
@@ -10807,9 +10395,6 @@ main{
     function prop(id, fallback=''){
       const el = document.getElementById(id);
       return (el && String(el.value || '').trim()) ? el.value.trim() : fallback;
-    }
-    function listToHTML(text){
-      return String(text || '').split('\n').map(x=>x.trim()).filter(Boolean).map(x=>`<li>${esc(x.replace(/^[-•]\s*/,''))}</li>`).join('');
     }
 
     function numeroPorExtensoBR(n){
@@ -11206,7 +10791,6 @@ main{
     }
 
 
-
     function parseBRLCurrency(value){
       if(typeof value === 'number') return isFinite(value) ? value : 0;
       const s = String(value || '').trim();
@@ -11277,42 +10861,7 @@ main{
       const manual = parseBRLCurrency(document.getElementById('propValorTotalManual')?.value || '');
       return manual > 0 ? manual : ((lastCalc && isFinite(lastCalc.sugerido)) ? lastCalc.sugerido : 0);
     }
-    function smartListKey(kind){
-      return kind === 'cliente' ? 'cliente' : kind === 'endereco' ? 'endereco' : 'servico';
-    }
-    function smartList(kind){
-      const key = smartListKey(kind);
-      data.smartHistory = data.smartHistory || { cliente: [], servico: [], endereco: [] };
-      data.smartHistory[key] = Array.isArray(data.smartHistory[key]) ? data.smartHistory[key] : [];
-      const fromHistory = Array.isArray(data.history) ? data.history.map(h => h[key]).filter(Boolean) : [];
-      const defaults = [];
-      const seen = new Set();
-      return [...defaults, ...data.smartHistory[key], ...fromHistory]
-        .map(v => String(v || '').trim())
-        .filter(Boolean)
-        .filter(v => { const k = v.toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true; })
-        .slice(0, 80);
-    }
-    function saveSmartSuggestion(kind, value){
-      const key = smartListKey(kind);
-      const clean = String(value || '').trim();
-      if(!clean) return;
-      data.smartHistory = data.smartHistory || { cliente: [], servico: [], endereco: [] };
-      data.smartHistory[key] = Array.isArray(data.smartHistory[key]) ? data.smartHistory[key] : [];
-      const exists = data.smartHistory[key].some(v => String(v).trim().toLowerCase() === clean.toLowerCase());
-      if(!exists) data.smartHistory[key].unshift(clean);
-      data.smartHistory[key] = data.smartHistory[key].slice(0, 80);
-      cmfinPersistData();
-      renderSmartSuggestions();
-    }
-    function renderSmartSuggestions(){
-      const map = { clienteHistoryOptions: 'cliente', servicoHistoryOptions: 'servico', enderecoHistoryOptions: 'endereco' };
-      Object.entries(map).forEach(([id, kind]) => {
-        const dl = document.getElementById(id);
-        if(!dl) return;
-        dl.innerHTML = smartList(kind).map(item => `<option value="${esc(item)}"></option>`).join('');
-      });
-    }
+    // v65: sugestões automáticas de cliente/serviço/endereço removidas definitivamente; campos permanecem manuais.
     function togglePaymentFields(){
       const mode = document.getElementById('propFormaPagamento')?.value || 'padrao';
       const entry = document.getElementById('paymentEntryFields');
@@ -11760,14 +11309,6 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
       applyBrandCustomization();
       convertStoredPdfLetterheadIfNeeded();
     }
-    function updateBrandFromInputs(){ updateLetterheadFromInputs(); }
-    function setLetterheadMode(mode){
-      const lh = currentLetterhead();
-      lh.mode = mode === 'custom' ? 'custom' : 'none';
-      cmfinPersistData();
-      applyBrandCustomization();
-      buildProposal();
-    }
     function parseCmInput(id, fallback){
       const raw = String(document.getElementById(id)?.value || '').replace(',', '.');
       const value = parseFloat(raw);
@@ -11915,8 +11456,6 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
         event.target.value = '';
       }
     }
-    function handleBrandLogoUpload(event){ handleLetterheadUpload(event); }
-    function saveBrandCustomization(){ saveLetterheadCustomization(); }
 
     function updateProposalFontFromInputs(){
       const brand = ensureBrandData();
@@ -11972,15 +11511,6 @@ O valor total do investimento é de {{valor}} ({{valor_extenso}}), considerando 
       if(badge) badge.textContent = mode === 'custom' ? 'Modelo personalizado ativo' : 'Padrão CM128 ativo';
       const statusChip = document.getElementById('proposalTemplateStatusChip');
       if(statusChip) statusChip.textContent = mode === 'custom' ? 'Modo personalizado' : 'Modo padrão';
-    }
-    function setProposalTemplateMode(mode){
-      const modeEl = document.getElementById('proposalTemplateMode');
-      if(modeEl) modeEl.value = mode === 'custom' ? 'custom' : 'standard';
-      updateProposalTemplateFromInputs();
-      if(mode === 'custom'){
-        const textEl = document.getElementById('proposalTemplateText');
-        if(textEl) textEl.focus();
-      }
     }
     function loadProposalTemplatePreset(preset){
       const presets = proposalTemplatePresets();
@@ -12131,7 +11661,6 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       updateLetterheadFromInputs();
       toast('Papel timbrado salvo neste navegador.');
     }
-    function resetBrandCustomization(){ resetLetterheadCustomization(); }
     function resetLetterheadCustomization(){
       const brand = ensureBrandData();
       brand.letterhead = defaultLetterheadData();
@@ -12612,7 +12141,6 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
 
-
     let proposalVisualEditEnabled = false;
 
     function normalizeVisualProposalText(text){
@@ -12629,228 +12157,9 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return normalizeVisualProposalText(div.innerText || div.textContent || '');
     }
 
-    function ensureProposalVisualEditing(){
-      if(!proposalVisualEditEnabled) toggleProposalVisualEdit(true);
-      const area = document.querySelector('.proposal-page-dynamic[contenteditable="true"]') || document.querySelector('.proposal-page-dynamic');
-      if(area) area.focus();
-      return area;
-    }
 
 
-
-    function proposalVisualToolbarHTML(){
-      return `
-        <div class="cmfin-mini-toolbar" id="proposalVisualToolbar" aria-label="Mini barra de formatação da proposta">
-          <div class="cmfin-mini-toolbar__group cmfin-mini-toolbar__group--font">
-            <select id="visualFontFamily" onchange="applyProposalVisualCommand('fontName', this.value)" title="Fonte">
-              <option value="Montserrat">Montserrat</option>
-              <option value="Inter">Inter</option>
-              <option value="Poppins">Poppins</option>
-              <option value="Arial">Arial</option>
-              <option value="Georgia">Georgia</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Courier New">Courier New</option>
-            </select>
-            <select id="visualFontSize" onchange="applyProposalVisualFontSize(this.value)" title="Tamanho da fonte">
-              <option value="">Tam</option>
-              <option value="1">10</option>
-              <option value="2">12</option>
-              <option value="3">14</option>
-              <option value="4">16</option>
-              <option value="5">18</option>
-              <option value="6">24</option>
-              <option value="7">32</option>
-            </select>
-          </div>
-          <div class="cmfin-mini-toolbar__group">
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('bold')" title="Negrito"><b>N</b></button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('italic')" title="Itálico"><i>I</i></button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('underline')" title="Sublinhado"><u>S</u></button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('strikeThrough')" title="Tachado"><s>abc</s></button>
-          </div>
-          <div class="cmfin-mini-toolbar__divider"></div>
-          <div class="cmfin-mini-toolbar__group">
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyLeft')" title="Alinhar à esquerda">☰</button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyCenter')" title="Centralizar">≡</button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyRight')" title="Alinhar à direita">☷</button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('justifyFull')" title="Justificar">▤</button>
-          </div>
-          <div class="cmfin-mini-toolbar__divider"></div>
-          <div class="cmfin-mini-toolbar__group">
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertUnorderedList')" title="Lista com marcadores">• Lista</button>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('insertOrderedList')" title="Lista numerada">1. Lista</button>
-          </div>
-          <div class="cmfin-mini-toolbar__divider"></div>
-          <div class="cmfin-mini-toolbar__group">
-            <label class="cmfin-mini-toolbar__color" title="Cor do texto"><span>A</span><input type="color" value="#111111" onchange="applyProposalVisualCommand('foreColor', this.value)"></label>
-            <label class="cmfin-mini-toolbar__color" title="Marca-texto"><span>Marca</span><input type="color" value="#fff3a3" onchange="applyProposalVisualCommand('hiliteColor', this.value)"></label>
-            <button type="button" onmousedown="event.preventDefault()" onclick="applyProposalVisualCommand('removeFormat')" title="Limpar formatação">⌫</button>
-          </div>
-          <div class="cmfin-mini-toolbar__divider"></div>
-          <div class="cmfin-mini-toolbar__group cmfin-mini-toolbar__group--actions">
-            <button type="button" class="cmfin-mini-toolbar__save" onmousedown="event.preventDefault()" onclick="saveProposalVisualEditToTemplate()">Salvar</button>
-            <button type="button" class="cmfin-mini-toolbar__close" onmousedown="event.preventDefault()" onclick="toggleProposalVisualEdit(false)">Sair</button>
-          </div>
-        </div>`;
-    }
-
-    function ensureProposalFloatingToolbar(){
-      let toolbar = document.getElementById('proposalVisualToolbar');
-      if(proposalVisualEditEnabled){
-        if(!toolbar){
-          document.body.insertAdjacentHTML('beforeend', proposalVisualToolbarHTML());
-          toolbar = document.getElementById('proposalVisualToolbar');
-        }
-      } else if(toolbar){
-        toolbar.remove();
-      }
-      return toolbar;
-    }
-
-    function hideProposalVisualToolbar(){
-      const toolbar = document.getElementById('proposalVisualToolbar');
-      if(toolbar) toolbar.classList.remove('active');
-    }
-
-    let proposalVisualLastPointer = { x: 0, y: 0 };
-
-    function selectionInsideProposal(){
-      const sel = window.getSelection();
-      if(!sel || !sel.rangeCount || sel.isCollapsed) return null;
-
-      const selectedText = String(sel.toString() || '').trim();
-      if(!selectedText) return null;
-
-      const range = sel.getRangeAt(0);
-      let node = range.commonAncestorContainer;
-
-      if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-      if(!node || !node.closest) {
-        node = sel.anchorNode;
-        if(node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-      }
-      if(!node || !node.closest) return null;
-
-      const area = node.closest('.proposal-page-dynamic');
-      if(!area) return null;
-
-      return { sel, range, area };
-    }
-
-    function showProposalMiniToolbarAt(x, y){
-      const toolbar = ensureProposalFloatingToolbar();
-      if(!proposalVisualEditEnabled || !toolbar) return;
-
-      toolbar.classList.add('active');
-
-      // Aguarda o navegador calcular o tamanho real da barra.
-      requestAnimationFrame(() => {
-        const rect = toolbar.getBoundingClientRect();
-        const margin = 12;
-
-        let left = x - (rect.width / 2);
-        let top = y - rect.height - margin;
-
-        if(top < 72) top = y + margin;
-        left = Math.max(10, Math.min(left, window.innerWidth - rect.width - 10));
-        top = Math.max(70, Math.min(top, window.innerHeight - rect.height - 10));
-
-        toolbar.style.left = `${left}px`;
-        toolbar.style.top = `${top}px`;
-      });
-    }
-
-    function updateProposalVisualToolbarPosition(){
-      if(!proposalVisualEditEnabled){
-        hideProposalVisualToolbar();
-        return;
-      }
-
-      const ctx = selectionInsideProposal();
-      if(!ctx){
-        hideProposalVisualToolbar();
-        return;
-      }
-
-      const rects = Array.from(ctx.range.getClientRects()).filter(r => r.width || r.height);
-      const rect = rects.length ? rects[0] : ctx.area.getBoundingClientRect();
-
-      if(rect && (rect.width || rect.height)){
-        showProposalMiniToolbarAt(rect.left + (rect.width / 2), rect.top);
-      } else if(proposalVisualLastPointer.x && proposalVisualLastPointer.y){
-        showProposalMiniToolbarAt(proposalVisualLastPointer.x, proposalVisualLastPointer.y);
-      }
-    }
-
-    function proposalVisualSelectionHandler(event){
-      if(event && typeof event.clientX === 'number'){
-        proposalVisualLastPointer = { x: event.clientX, y: event.clientY };
-      }
-      if(!proposalVisualEditEnabled) return;
-
-      // O navegador pode demorar alguns ms para consolidar a seleção.
-      setTimeout(updateProposalVisualToolbarPosition, 0);
-      setTimeout(updateProposalVisualToolbarPosition, 80);
-      setTimeout(updateProposalVisualToolbarPosition, 180);
-    }
-
-    function proposalVisualDocumentClickHandler(event){
-      if(!proposalVisualEditEnabled) return;
-      const target = event.target;
-      if(target?.closest?.('#proposalVisualToolbar')) return;
-      if(target?.closest?.('.proposal-page-dynamic')){
-        proposalVisualSelectionHandler(event);
-        return;
-      }
-      hideProposalVisualToolbar();
-    }
-
-    let proposalVisualWatchTimer = null;
-
-    function bindProposalVisualSelectionEvents(){
-      document.removeEventListener('selectionchange', proposalVisualSelectionHandler);
-      document.removeEventListener('mouseup', proposalVisualSelectionHandler, true);
-      document.removeEventListener('keyup', proposalVisualSelectionHandler, true);
-      document.removeEventListener('pointerup', proposalVisualSelectionHandler, true);
-      document.removeEventListener('touchend', proposalVisualSelectionHandler, true);
-      document.removeEventListener('mousedown', proposalVisualDocumentClickHandler, true);
-      window.removeEventListener('scroll', proposalVisualSelectionHandler, true);
-      window.removeEventListener('resize', proposalVisualSelectionHandler);
-
-      if(proposalVisualWatchTimer){
-        clearInterval(proposalVisualWatchTimer);
-        proposalVisualWatchTimer = null;
-      }
-
-      if(!proposalVisualEditEnabled) return;
-
-      document.addEventListener('selectionchange', proposalVisualSelectionHandler);
-      document.addEventListener('mouseup', proposalVisualSelectionHandler, true);
-      document.addEventListener('keyup', proposalVisualSelectionHandler, true);
-      document.addEventListener('pointerup', proposalVisualSelectionHandler, true);
-      document.addEventListener('touchend', proposalVisualSelectionHandler, true);
-      document.addEventListener('mousedown', proposalVisualDocumentClickHandler, true);
-      window.addEventListener('scroll', proposalVisualSelectionHandler, true);
-      window.addEventListener('resize', proposalVisualSelectionHandler);
-
-      document.querySelectorAll('.proposal-page-dynamic').forEach(area => {
-        area.removeEventListener('mouseup', proposalVisualSelectionHandler);
-        area.removeEventListener('pointerup', proposalVisualSelectionHandler);
-        area.removeEventListener('keyup', proposalVisualSelectionHandler);
-        area.addEventListener('mouseup', proposalVisualSelectionHandler);
-        area.addEventListener('pointerup', proposalVisualSelectionHandler);
-        area.addEventListener('keyup', proposalVisualSelectionHandler);
-      });
-
-      proposalVisualWatchTimer = setInterval(() => {
-        if(!proposalVisualEditEnabled){
-          hideProposalVisualToolbar();
-          return;
-        }
-        const ctx = selectionInsideProposal();
-        if(ctx) updateProposalVisualToolbarPosition();
-      }, 250);
-    }
+    // v65: mini barra antiga proposalVisualToolbar removida; a barra ativa é cmfinWordSelectionToolbar.
 
     function applyProposalVisualEditState(){
       const areas = document.querySelectorAll('.proposal-page-dynamic');
@@ -12862,13 +12171,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       });
       const toggleBtn = document.getElementById('proposalVisualEditToggle');
       const saveBtn = document.getElementById('proposalVisualEditSave');
-      ensureProposalFloatingToolbar();
       if(toggleBtn) toggleBtn.textContent = proposalVisualEditEnabled ? 'Desativar edição visual' : 'Editar no papel timbrado';
       if(saveBtn) saveBtn.disabled = !proposalVisualEditEnabled;
-      bindProposalVisualSelectionEvents();
-      if(!proposalVisualEditEnabled){
-        hideProposalVisualToolbar();
-      }
     }
 
     function toggleProposalVisualEdit(force){
@@ -12883,26 +12187,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       }
     }
 
-    function applyProposalVisualCommand(command, value = null){
-      const area = ensureProposalVisualEditing();
-      if(!area) return;
-      try {
-        document.execCommand('styleWithCSS', false, true);
-      } catch(e) {}
-      try {
-        document.execCommand(command, false, value);
-        area.focus();
-        setTimeout(updateProposalVisualToolbarPosition, 10);
-      } catch(e) {
-        console.warn('Comando de edição não aplicado:', command, e);
-        toast('Não foi possível aplicar essa formatação no navegador.');
-      }
-    }
 
-    function applyProposalVisualFontSize(size){
-      if(!size) return;
-      applyProposalVisualCommand('fontSize', size);
-    }
 
     function captureProposalVisualEditText(){
       const areas = Array.from(document.querySelectorAll('.proposal-page-dynamic'));
@@ -13280,7 +12565,6 @@ ${p.obs}` : ''}`;
 
     function addToHistory(){
       calculate();
-      ['cliente','servico','endereco'].forEach(id => saveSmartSuggestion(id, val(id)));
       const numeroProposta = ensureProposalNumber(editingHistoryIndex === null);
       const statusComercial = val('statusComercial') || 'Em análise';
       const entry = {
@@ -13755,7 +13039,6 @@ ${p.obs}` : ''}`;
       if(vehiclePanel) vehiclePanel.classList.remove('active');
 
       renderComplementaryServices();
-      renderSmartSuggestions();
       calculate();
     }
 
@@ -13861,15 +13144,11 @@ ${p.obs}` : ''}`;
         normalizeVehicles();
         renderConfig();
         renderProfile();
-        renderServices();
-        populateServices();
         renderVehicleDatalist();
         renderVehicles();
-        renderComplementaryTypes();
         renderComplementaryServices();
         renderHistory();
         renderDeliverableChecklist();
-        renderSmartSuggestions();
         renderBrandCustomizationFields();
         applyBrandCustomization();
         cmfinUpdateUserHero();
@@ -13904,110 +13183,12 @@ ${p.obs}` : ''}`;
     cmfinValidateStoredSession();
     const pd = document.getElementById('propData'); if(pd && !pd.value) pd.value = val('data') || todayISO();
     renderDeliverableChecklist();
-    renderSmartSuggestions();
     togglePaymentFields();
     updateHistorySaveButton();
     buildProposal();
   </script>
 
-<script>
-(function(){
-  function byId(id){ return document.getElementById(id); }
-
-  function forceMiniToolbarPosition(x, y){
-    var toolbar = byId('proposalVisualToolbar');
-    if(!toolbar || !document.body.classList.contains('proposal-visual-edit-on')) return;
-
-    toolbar.classList.add('active');
-    toolbar.style.display = 'flex';
-
-    requestAnimationFrame(function(){
-      var r = toolbar.getBoundingClientRect();
-      var margin = 12;
-      var left = x - (r.width / 2);
-      var top = y - r.height - margin;
-
-      if(top < 72) top = y + margin;
-      left = Math.max(10, Math.min(left, window.innerWidth - r.width - 10));
-      top = Math.max(70, Math.min(top, window.innerHeight - r.height - 10));
-
-      toolbar.style.left = left + 'px';
-      toolbar.style.top = top + 'px';
-      toolbar.style.opacity = '1';
-      toolbar.style.visibility = 'visible';
-      toolbar.style.pointerEvents = 'auto';
-    });
-  }
-
-  function ensureMiniToolbarExists(){
-    var toolbar = byId('proposalVisualToolbar');
-    if(toolbar) return toolbar;
-
-    if(typeof proposalVisualToolbarHTML === 'function'){
-      document.body.insertAdjacentHTML('beforeend', proposalVisualToolbarHTML());
-      return byId('proposalVisualToolbar');
-    }
-    return null;
-  }
-
-  function getSelectionContext(){
-    var sel = window.getSelection && window.getSelection();
-    if(!sel || !sel.rangeCount || sel.isCollapsed || !String(sel.toString() || '').trim()) return null;
-
-    var range = sel.getRangeAt(0);
-    var node = range.commonAncestorContainer;
-    if(node && node.nodeType === 3) node = node.parentNode;
-
-    if(!node || !node.closest) return null;
-    var area = node.closest('.proposal-page-dynamic');
-    if(!area) return null;
-
-    var rects = Array.from(range.getClientRects()).filter(function(r){ return r.width || r.height; });
-    var rect = rects.length ? rects[0] : area.getBoundingClientRect();
-    return { rect: rect, area: area };
-  }
-
-  function showToolbarFromSelection(event){
-    if(!document.body.classList.contains('proposal-visual-edit-on')) return;
-
-    ensureMiniToolbarExists();
-
-    setTimeout(function(){
-      var ctx = getSelectionContext();
-      if(ctx && ctx.rect){
-        forceMiniToolbarPosition(ctx.rect.left + (ctx.rect.width / 2), ctx.rect.top);
-      } else if(event && typeof event.clientX === 'number') {
-        // fallback para garantir que apareça quando soltar o mouse após selecionar
-        var sel = window.getSelection && window.getSelection();
-        if(sel && String(sel.toString() || '').trim()){
-          forceMiniToolbarPosition(event.clientX, event.clientY);
-        }
-      }
-    }, 60);
-  }
-
-  document.addEventListener('mouseup', showToolbarFromSelection, true);
-  document.addEventListener('pointerup', showToolbarFromSelection, true);
-  document.addEventListener('keyup', showToolbarFromSelection, true);
-  document.addEventListener('selectionchange', function(){
-    setTimeout(function(){
-      var ctx = getSelectionContext();
-      if(ctx && ctx.rect){
-        ensureMiniToolbarExists();
-        forceMiniToolbarPosition(ctx.rect.left + (ctx.rect.width / 2), ctx.rect.top);
-      }
-    }, 80);
-  });
-
-  document.addEventListener('mousedown', function(ev){
-    var toolbar = byId('proposalVisualToolbar');
-    if(!toolbar) return;
-    if(ev.target && ev.target.closest && ev.target.closest('#proposalVisualToolbar')) return;
-    if(ev.target && ev.target.closest && ev.target.closest('.proposal-page-dynamic')) return;
-    toolbar.classList.remove('active');
-  }, true);
-})();
-</script>
+<!-- v65: patch legado da antiga proposalVisualToolbar removido -->
 
 
 <script>
@@ -14095,7 +13276,6 @@ ${p.obs}` : ''}`;
 
 
   let currentRange = null;
-  const FONT_SIZE_MAP = { '1':'10px', '2':'12px', '3':'14px', '4':'16px', '5':'18px', '6':'24px', '7':'32px' };
 
   function saveCurrentRange(){
     const sel = window.getSelection && window.getSelection();
@@ -14117,14 +13297,6 @@ ${p.obs}` : ''}`;
     }
   }
 
-  function unwrapTagWithin(root, tagName, styleProp, styleValue){
-    root.querySelectorAll(tagName).forEach(el => {
-      const span = document.createElement('span');
-      if(styleProp && styleValue) span.style[styleProp] = styleValue;
-      span.innerHTML = el.innerHTML;
-      el.replaceWith(span);
-    });
-  }
 
   function applyInlineStyle(styleMap){
     if(!isVisualEditOn()) return;
@@ -14517,37 +13689,7 @@ function toggleProposalMiniSection(btn){
 </script>
 
 
-<script>
-(function(){
-  function isProposalVisualEditing(){
-    return document.body.classList.contains('proposal-visual-edit-on') ||
-      !!document.querySelector('.proposal-page-dynamic[contenteditable="true"]');
-  }
-
-  document.addEventListener('beforeinput', function(ev){
-    if(!isProposalVisualEditing()) return;
-    if(!ev.target || !ev.target.closest || !ev.target.closest('.proposal-page-dynamic')) return;
-    if(typeof proposalPushUndoSnapshot === 'function') proposalPushUndoSnapshot();
-  }, true);
-
-  document.addEventListener('keydown', function(ev){
-    if(!isProposalVisualEditing()) return;
-    const key = String(ev.key || '').toLowerCase();
-    const isUndo = (ev.ctrlKey || ev.metaKey) && key === 'z' && !ev.shiftKey;
-    const isRedo = ((ev.ctrlKey || ev.metaKey) && key === 'y') || ((ev.ctrlKey || ev.metaKey) && ev.shiftKey && key === 'z');
-
-    if(isUndo && typeof proposalUndoVisual === 'function'){
-      ev.preventDefault();
-      proposalUndoVisual();
-    }
-
-    if(isRedo && typeof proposalRedoVisual === 'function'){
-      ev.preventDefault();
-      proposalRedoVisual();
-    }
-  }, true);
-})();
-</script>
+<!-- v65: bridge legado de undo/redo removido; não alcançava as funções locais da barra atual -->
 
 
 <script id="cmfin-interface-zoom-script">
