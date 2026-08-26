@@ -6860,6 +6860,40 @@ main{
     #customDatePicker.custom-date-picker { left:0 !important; right:auto !important; }
   }
 </style>
+
+<style id="cmfin-v56-shared-calendar">
+  /* V56 — o mesmo calendário personalizado atende Orçamento e Proposta. */
+  .date-input-wrap.date-picker-active {
+    z-index:3200 !important;
+  }
+  #proposal .proposal-accordion details:first-child {
+    overflow:visible !important;
+    position:relative;
+    z-index:40;
+  }
+  #proposal .proposal-accordion details:first-child > summary {
+    border-top-left-radius:24px;
+    border-top-right-radius:24px;
+  }
+  #proposal .proposal-accordion details:first-child .accordion-body {
+    border-bottom-left-radius:24px;
+    border-bottom-right-radius:24px;
+  }
+  #proposal .date-input-wrap {
+    width:100%;
+  }
+  #proposal .date-input-wrap #customDatePicker {
+    left:0 !important;
+    right:auto !important;
+    width:min(340px, calc(100vw - 48px));
+    z-index:3300 !important;
+  }
+  @media (max-width:700px){
+    #proposal .date-input-wrap #customDatePicker {
+      width:min(320px, calc(100vw - 36px));
+    }
+  }
+</style>
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -8763,7 +8797,25 @@ main{
                   <div class="form-grid">
                     <div><label>Título da proposta</label><input id="propTitulo" oninput="buildProposal()" value="DESCRIÇÃO DA PROPOSTA"></div>
                     <div><label>Nº da proposta</label><input id="propNumero" readonly placeholder="Gerado automaticamente"></div>
-                    <div><label>Data da proposta</label><input id="propData" type="date" oninput="buildProposal()"></div>
+                    <div>
+                      <label>Data da proposta</label>
+                      <div class="date-input-wrap" onclick="openDatePicker('propData')">
+                        <input id="propData" type="date" oninput="buildProposal()">
+                        <button type="button" class="date-trigger" onclick="event.stopPropagation(); openDatePicker('propData')" aria-label="Abrir calendário da proposta">
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="4" y="5.5" width="16" height="14.5" rx="3.2" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M8 3.7V7.1M16 3.7V7.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M4.5 9.2H19.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            <rect x="7.3" y="11.3" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".95"/>
+                            <rect x="10.9" y="11.3" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".75"/>
+                            <rect x="14.5" y="11.3" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".55"/>
+                            <rect x="7.3" y="14.9" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".75"/>
+                            <rect x="10.9" y="14.9" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".95"/>
+                            <rect x="14.5" y="14.9" width="2.2" height="2.2" rx=".55" fill="currentColor" opacity=".75"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     <div><label>Cliente</label><input id="propCliente" autocomplete="off" oninput="buildProposal()" placeholder="Nome do cliente"></div>
                     <div><label>Contato</label><input id="propContato" oninput="buildProposal()" placeholder="+55 88 9.0000-0000"></div>
                     <div><label>Tipo/objeto</label><input id="propObjeto" autocomplete="off" oninput="buildProposal()" placeholder="Ex.: Consultoria, instalação, atendimento ou serviço contratado"></div>
@@ -9076,12 +9128,19 @@ main{
     function closeDatePicker(){
       const panel = document.getElementById('customDatePicker');
       if(panel) panel.classList.remove('open');
+      document.querySelectorAll('.date-input-wrap.date-picker-active').forEach(wrap => wrap.classList.remove('date-picker-active'));
     }
     function openDatePicker(id){
       activeDateFieldId = id || 'data';
       const panel = document.getElementById('customDatePicker');
       const field = document.getElementById(activeDateFieldId);
       if(!panel || !field) return;
+      const wrap = field.closest('.date-input-wrap');
+      document.querySelectorAll('.date-input-wrap.date-picker-active').forEach(item => item.classList.remove('date-picker-active'));
+      if(wrap){
+        wrap.classList.add('date-picker-active');
+        if(panel.parentElement !== wrap) wrap.appendChild(panel);
+      }
       const selected = parseISODate(field.value) || new Date();
       datePickerView = new Date(selected.getFullYear(), selected.getMonth(), 1);
       renderDatePicker();
@@ -9131,20 +9190,26 @@ main{
       datePickerView = new Date(datePickerView.getFullYear(), datePickerView.getMonth()+step, 1);
       renderDatePicker();
     }
+    function notifyDatePickerChange(){
+      if(activeDateFieldId === 'data'){
+        if(typeof syncBudgetFieldToProposal === 'function') syncBudgetFieldToProposal('data');
+        if(typeof calculate === 'function') calculate();
+      }else if(activeDateFieldId === 'propData'){
+        if(typeof buildProposal === 'function') buildProposal();
+      }
+    }
     function selectDatePickerDate(iso){
       const field = document.getElementById(activeDateFieldId || 'data');
       if(!field) return;
       field.value = iso;
-      if(activeDateFieldId === 'data' && typeof syncBudgetFieldToProposal === 'function') syncBudgetFieldToProposal('data');
-      if(typeof calculate === 'function') calculate();
+      notifyDatePickerChange();
       closeDatePicker();
     }
     function clearDatePicker(){
       const field = document.getElementById(activeDateFieldId || 'data');
       if(!field) return;
       field.value = '';
-      if(activeDateFieldId === 'data' && typeof syncBudgetFieldToProposal === 'function') syncBudgetFieldToProposal('data');
-      if(typeof calculate === 'function') calculate();
+      notifyDatePickerChange();
       closeDatePicker();
     }
     function setDatePickerToday(){
