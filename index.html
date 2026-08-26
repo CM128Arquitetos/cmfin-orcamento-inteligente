@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMFin - Gestão de Orçamento Inteligente</title>
+  <!-- v63: limpeza técnica 02 — remoção de regras CSS exatamente duplicadas, sem alteração visual ou funcional -->
   <!-- v46: impressão/PDF A4 corrigida (ignora zoom da interface e preserva proporção do timbrado) + integração do Simulador de Negociação com Condições Comerciais -->
   <!-- v47: percentual comercial compacto + edição completa da proposta pelo histórico -->
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
@@ -42,7 +43,7 @@
   <meta name="twitter:image" content="https://orcamento.cmfin.com.br/android-chrome-512x512.png">
 
 
-<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=ET0S8caTNNU-GHdnYiN7DLhz66gabXEGL5wrVnmukriLRw9Jlhw5PxnBIskZt357B82a2-P1BHGqYVMJqsrK77w5mNojClgj4iz8Jf1wQa7D0crwunqGMdWdLhn5zUnzINOL4zmmWt0qmi0KHDePolBkRg7pQ7v8HyFUdoGMJxwrsrsYYEwqk7BcjWdXYwJf6WzOtEo-aGmfqyFPH26p8lalQMdV0VNo2bneqfCbD-d6A7Ql2re5sOJOjyNNIRzyinkEK-s7WDl5ZP0Osspp4OR-kprjTj9lg9OQ8tNFLLO_WeUByEqHEG-vPlu9RKEmLo6uH0h3us6bU1TpjFmcT2phuBYvEbMUMA1LhBGQwaqIJfpJim6zWnD6_zVQTDzT" charset="UTF-8"></script><style>
+<script type="text/javascript" src="https://me.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=LREGIp97IuD3CYjve0aC2cwwYcUHYTpK_BoWlWJKnALFI_JxZ0b5Q2EItbOgbaszBqpbxhUtsPwhl1BV62jSohB-UVUAgvqDkB1Gl1d7mou70uSCZz825cxGFCP7iBrL2jJz6XbabIl3v5oxd6aAFdtNupHN95mzy1tcZDR85WR1fqpYiopYbSUrV4KWBTD9q_0t_vNp40uqAZgAu4vp0C0sjl8t-F5EZozl7Czxyflrk0OR_2ydvDw2vmbvo83oRIG9C_i2n4mtm_EFBYiW_ttD4WOWFvrJu106-_NFNQeCNH2N7eaFn7-52PnbnMp8cTq1qf_X-qBOiwZDsvEyd589LJe5RSQR5eqMIbwRNA4" charset="UTF-8"></script><style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
     :root {
       --bg: #f4f6f3;
@@ -1029,11 +1030,11 @@
     @media (max-width: 720px){ .template-hero span { max-width:none; } .template-card-head { flex-direction:column; align-items:flex-start; } .proposal-template-help code { display:inline-flex; } }
     .proposal-accordion { display:flex; flex-direction:column; gap:12px; }
     .proposal-accordion details { border:1px solid var(--line); border-radius:18px; background:#fff; overflow:hidden; box-shadow:0 10px 24px rgba(17,44,37,.05); transition:.22s ease; }
-    .proposal-accordion details:hover { border-color:#c7d4ce; box-shadow:0 14px 28px rgba(17,44,37,.07); }
-    .proposal-accordion details[open] { border-color:#b7c8c1; box-shadow:0 16px 32px rgba(17,44,37,.08); }
+    
+    
     .proposal-accordion summary { list-style:none; display:flex; justify-content:space-between; align-items:center; gap:14px; padding:16px 18px; min-height:76px; cursor:pointer; font-weight:700; color:#112c25; background:linear-gradient(180deg,#f8fbfa 0%,#f4f8f6 100%); transition:.2s ease; }
-    .proposal-accordion summary:hover { background:linear-gradient(180deg,#fbfdfc 0%,#f6faf8 100%); }
-    .proposal-accordion summary::-webkit-details-marker { display:none; }
+    
+    
     .proposal-accordion summary::after { content:""; width:36px; height:36px; border-radius:999px; flex:0 0 auto; border:1px solid #d8e2dd; background-color:#fff; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23112c25' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:center; background-size:14px 14px; box-shadow:0 8px 18px rgba(17,44,37,.10); transition:transform .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease; }
     .proposal-accordion details[open] summary::after { transform:rotate(180deg); background-color:var(--brand); border-color:var(--brand); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); box-shadow:0 10px 22px rgba(17,44,37,.18); }
     .proposal-accordion .accordion-body { padding:16px 18px; border-top:1px solid var(--line); }
@@ -1193,12 +1194,10 @@
       border-top:1px dashed #d3ddd7;
     }
     @media (max-width: 640px) {
-      .letterhead-settings-grid { grid-template-columns:1fr; }
+      
       .letterhead-actions,
       .letterhead-upload-actions { justify-content:stretch; }
-      .letterhead-actions button,
-      .letterhead-upload-actions button,
-      .letterhead-upload-actions .file-btn { width:100%; justify-content:center; text-align:center; }
+      
     }
     .letterhead-pdf-bg {
       position:absolute;
@@ -2516,14 +2515,8 @@ body.cmfin-authenticated .cmfin-login-screen {
 }
 
 
-.cmfin-password-toggle {
-  color: #60756f;
-  background: transparent;
-}
-.cmfin-password-toggle:hover {
-  color: #0c3b34;
-  background: rgba(12, 59, 52, 0.06);
-}
+
+
 .cmfin-eye-icon {
   width: 20px;
   height: 20px;
@@ -3984,11 +3977,7 @@ body .proposal-template-simple {
   padding-top: 18px !important;
 }
 
-body .proposal-template-simple .template-token-grid button.secondary,
-body .proposal-template-simple .template-block-buttons button.secondary {
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
-}
+
 
 body .proposal-template-simple .template-token-grid button.secondary {
   grid-template-columns: 22px minmax(0,1fr) !important;
@@ -4205,18 +4194,11 @@ body .proposal-template-simple .proposal-mini-card-head {
   gap: 12px !important;
 }
 
-body .proposal-template-simple .proposal-mini-card-head > div {
-  min-width: 0 !important;
-}
 
-body .proposal-template-simple .proposal-mini-card-head strong {
-  display: block !important;
-}
 
-body .proposal-template-simple .proposal-mini-card-head span {
-  display: block !important;
-  margin-top: 4px !important;
-}
+
+
+
 
 body .proposal-template-simple .proposal-mini-toggle {
   width: 42px !important;
@@ -4244,9 +4226,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover {
   background: linear-gradient(180deg,#ffffff 0%,#e7f2ed 100%) !important;
 }
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-content {
-  display: none !important;
-}
+
 
 body .proposal-template-simple .proposal-mini-card.is-collapsed {
   padding-bottom: 16px !important;
@@ -4325,17 +4305,9 @@ body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-t
   border-color: #d8e2dd !important;
 }
 
-body .proposal-template-simple .proposal-mini-card-head {
-  border-bottom: 1px solid #e5eee8 !important;
-  padding-bottom: 14px !important;
-  margin-bottom: 18px !important;
-}
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head {
-  border-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
+
+
 </style>
 
 
@@ -4346,9 +4318,7 @@ body .proposal-template-simple .proposal-mini-card-head {
   gap: 12px !important;
 }
 
-body .proposal-template-simple .proposal-mini-card-head > div {
-  min-width: 0 !important;
-}
+
 
 /* Estado EXPANDIDO = botão verde, seta para cima */
 body .proposal-template-simple .proposal-mini-toggle {
@@ -4411,16 +4381,10 @@ body .proposal-template-simple .proposal-mini-card-head {
   margin-bottom: 18px !important;
 }
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head {
-  border-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
+
 
 /* mantém o colapso bem limpo, como os outros cards */
-body .proposal-template-simple .proposal-mini-card.is-collapsed {
-  padding-bottom: 18px !important;
-}
+
 </style>
 
 
@@ -4480,15 +4444,9 @@ body .proposal-template-simple .proposal-mini-card:not(.is-collapsed) .proposal-
   content: "⌃";
 }
 
-body .proposal-template-simple .proposal-mini-toggle:hover {
-  transform: translateY(-1px) !important;
-}
 
-body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-card-head {
-  border-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
+
+
 </style>
 
 
@@ -4565,9 +4523,7 @@ body .proposal-template-simple .proposal-mini-toggle[aria-expanded="true"]::befo
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 12l5-5 5 5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
-body .proposal-template-simple .proposal-mini-toggle:hover{
-  transform:translateY(-1px) !important;
-}
+
 
 body .proposal-template-simple .proposal-mini-card.is-collapsed .proposal-mini-content{
   display:none !important;
