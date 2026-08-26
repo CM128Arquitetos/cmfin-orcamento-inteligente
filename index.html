@@ -10,6 +10,7 @@
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
   <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
   <!-- v55: configurações adicionais em card próprio + opção de fixar individualmente nas condições comerciais -->
+  <!-- v57: edição de configurações adicionais + Personalização compacta no padrão CMFin -->
   <!-- v50: botões compactos e profissionais em Ações da Proposta -->
 <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
@@ -6894,6 +6895,117 @@ main{
     }
   }
 </style>
+
+<style id="cmfin-v57-edit-and-compact-personalization">
+  /* V57 — edição de adicionais e personalização compacta no padrão do CMFin principal. */
+  .financial-additional-submit-wrap{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .financial-additional-submit-wrap .financial-additional-add,
+  .financial-additional-submit-wrap .financial-additional-cancel{
+    min-height:50px;
+    margin:0;
+  }
+  .financial-additional-edit{
+    background:#eef4f1 !important;
+    color:var(--brand) !important;
+    border:1px solid #d9e4df !important;
+  }
+  .financial-additional-edit:hover{ background:#e5efea !important; filter:none !important; }
+
+  #config .cmfin-interface-personalization--compact{
+    max-width:510px;
+    margin-top:16px;
+    border-radius:20px;
+    box-shadow:0 10px 26px rgba(16,37,31,.055);
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-personalization-head{
+    display:block;
+    padding:17px 17px 8px;
+    border-bottom:0;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-personalization-head h3{
+    font-size:1.08rem;
+    font-weight:900;
+    letter-spacing:-.025em;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-personalization-head p{
+    max-width:none;
+    margin-top:5px;
+    font-size:.76rem;
+    line-height:1.45;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-personalization-body{
+    padding:6px 17px 17px;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-label{
+    margin-bottom:7px;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-label label{
+    font-size:.68rem;
+    letter-spacing:.06em;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-control{
+    grid-template-columns:40px minmax(130px,1fr) 108px 40px;
+    gap:8px;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-step{
+    width:40px;
+    min-height:40px;
+    border-radius:12px;
+    font-size:1.15rem;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-value{
+    min-height:40px;
+    border-radius:12px;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-value input{
+    min-height:38px;
+    width:68px;
+    padding:7px 3px 7px 10px;
+    font-size:.86rem;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-value span{
+    padding-right:9px;
+    font-size:.72rem;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-hint{
+    margin-top:9px;
+    padding:9px 10px;
+    border-radius:11px;
+    font-size:.68rem;
+    line-height:1.42;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-actions{
+    margin-top:10px;
+    gap:8px;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-actions button{
+    min-height:38px;
+    padding:9px 13px;
+    border-radius:11px;
+    font-size:.74rem;
+  }
+  #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-saved{
+    font-size:.69rem;
+  }
+  @media (max-width:720px){
+    #config .cmfin-interface-personalization--compact{ max-width:none; }
+    #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-control{
+      grid-template-columns:40px minmax(0,1fr) 40px;
+    }
+    #config .cmfin-interface-personalization--compact .cmfin-interface-zoom-value{
+      grid-column:1/-1;
+      justify-content:center;
+    }
+    .financial-additional-submit-wrap{ align-items:stretch; }
+    .financial-additional-submit-wrap > button{ flex:1 1 180px; }
+  }
+</style>
+
 </head>
 <body>
   <div id="cmfinForgotModal" class="cmfin-forgot-modal" aria-hidden="true">
@@ -8522,18 +8634,16 @@ main{
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
         </div>
 
-        <div class="cmfin-interface-personalization no-print" id="cmfinInterfacePersonalization">
+        <div class="cmfin-interface-personalization no-print cmfin-interface-personalization--compact" id="cmfinInterfacePersonalization">
           <div class="cmfin-interface-personalization-head">
             <div>
-              <h3>Personalização da Interface</h3>
-              <p>Ajuste o zoom do sistema para aproveitar melhor notebooks, monitores maiores e diferentes resoluções, com comportamento semelhante ao zoom do navegador.</p>
+              <h3>Personalização</h3>
+              <p>Ajuste o zoom da interface de forma mais ampla, com um comportamento semelhante ao zoom do navegador.</p>
             </div>
-            <span class="cmfin-interface-device-badge">◉ Preferência deste dispositivo</span>
           </div>
           <div class="cmfin-interface-personalization-body">
             <div class="cmfin-interface-zoom-label">
               <label for="cmfinInterfaceZoomRange">Zoom da interface</label>
-              <span>Faixa de 50% a 150%</span>
             </div>
             <div class="cmfin-interface-zoom-control" id="cmfinInterfaceZoomControl">
               <button type="button" class="cmfin-interface-zoom-step" onclick="cmfinChangeInterfaceZoom(-5)" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
@@ -8544,10 +8654,9 @@ main{
               </div>
               <button type="button" class="cmfin-interface-zoom-step" onclick="cmfinChangeInterfaceZoom(5)" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
             </div>
-            <div class="cmfin-interface-zoom-hint">Você pode usar os botões −/+, digitar o percentual, arrastar a barra ou usar a roda do mouse sobre o controle. O ajuste é aplicado imediatamente para visualização e só é gravado neste navegador ao clicar em <strong>Salvar zoom</strong>.</div>
+            <div class="cmfin-interface-zoom-hint">Faixa de 50% a 150%. Você pode clicar em −/+, digitar o percentual, arrastar a barra ou usar a rolagem do mouse sobre o controle.</div>
             <div class="cmfin-interface-zoom-actions">
               <button type="button" class="success" onclick="cmfinSaveInterfaceZoom()">Salvar zoom</button>
-              <button type="button" class="secondary" onclick="cmfinResetInterfaceZoom()">Restaurar 100%</button>
               <span id="cmfinInterfaceZoomSaved" class="cmfin-interface-zoom-saved">Zoom salvo neste dispositivo.</span>
             </div>
           </div>
@@ -8573,7 +8682,10 @@ main{
             <option value="imposto">Imposto / taxa sobre o preço final</option>
           </select></div>
           <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"><span class="field-help" id="extraValueHelp">Informe o valor em reais.</span></div>
-          <button class="success financial-additional-add" type="button" onclick="addCustomExtra()">Adicionar configuração</button>
+          <div class="financial-additional-submit-wrap">
+            <button id="financialAdditionalSubmitBtn" class="success financial-additional-add" type="button" onclick="addCustomExtra()">Adicionar configuração</button>
+            <button id="financialAdditionalCancelBtn" class="secondary financial-additional-cancel" type="button" onclick="cancelCustomExtraEdit()" style="display:none;">Cancelar edição</button>
+          </div>
         </div>
         <div class="divider"></div>
         <div class="financial-additional-list-head">
@@ -9632,6 +9744,54 @@ main{
       });
     }
 
+    let editingCustomExtraIndex = null;
+
+    function resetCustomExtraEditorFields(){
+      const title = document.getElementById('extraTitulo');
+      const desc = document.getElementById('extraDescricao');
+      const type = document.getElementById('extraTipo');
+      const value = document.getElementById('extraValor');
+      if(title) title.value = '';
+      if(desc) desc.value = '';
+      if(type) type.value = 'fixo';
+      if(value) value.value = '0';
+      updateCustomExtraValueHelp();
+    }
+
+    function syncCustomExtraEditorMode(){
+      const submit = document.getElementById('financialAdditionalSubmitBtn');
+      const cancel = document.getElementById('financialAdditionalCancelBtn');
+      const editing = Number.isInteger(editingCustomExtraIndex) && editingCustomExtraIndex >= 0;
+      if(submit) submit.textContent = editing ? 'Salvar alterações' : 'Adicionar configuração';
+      if(cancel) cancel.style.display = editing ? '' : 'none';
+    }
+
+    function startEditCustomExtra(index){
+      ensureCustomExtras();
+      if(index < 0 || index >= data.customExtras.length) return;
+      const item = data.customExtras[index];
+      editingCustomExtraIndex = index;
+      const title = document.getElementById('extraTitulo');
+      const desc = document.getElementById('extraDescricao');
+      const type = document.getElementById('extraTipo');
+      const value = document.getElementById('extraValor');
+      if(title) title.value = item.titulo || '';
+      if(desc) desc.value = item.descricao || '';
+      if(type) type.value = normalizeCustomExtraType(item.tipo || 'fixo');
+      if(value) value.value = Number(item.valor || 0);
+      updateCustomExtraValueHelp();
+      syncCustomExtraEditorMode();
+      const editor = document.querySelector('.financial-additional-editor');
+      if(editor) editor.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(() => title?.focus(), 280);
+    }
+
+    function cancelCustomExtraEdit(){
+      editingCustomExtraIndex = null;
+      resetCustomExtraEditorFields();
+      syncCustomExtraEditorMode();
+    }
+
     function renderCustomExtrasConfig(){
       ensureCustomExtras();
       const list = document.getElementById('customExtrasList');
@@ -9651,6 +9811,7 @@ main{
             <div class="money-mini">${esc(customExtraDisplayValue(item))}</div>
             <div class="financial-additional-actions">
               <button type="button" class="financial-additional-pin ${item.fixadoCondicoes ? 'is-pinned' : ''}" onclick="toggleCustomExtraPin(${index})">${item.fixadoCondicoes ? 'Fixado nas condições' : 'Fixar nas condições'}</button>
+              <button type="button" class="secondary financial-additional-edit" onclick="startEditCustomExtra(${index})">Editar</button>
               <button type="button" class="danger mini-btn" onclick="removeCustomExtra(${index})">Excluir</button>
             </div>
           </div>
@@ -9689,27 +9850,38 @@ main{
       const valor = num('extraValor');
       if(!titulo) return toast('Informe o nome da configuração.');
       if(!(valor >= 0)) return toast('Informe um valor válido.');
-      data.customExtras.push({
-        id: 'extra_' + Date.now(),
-        titulo,
-        descricao,
-        tipo,
-        valor,
-        padraoAtivo:false,
-        fixadoCondicoes:false
-      });
-      ['extraTitulo','extraDescricao','extraValor'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.value = id === 'extraValor' ? '0' : '';
-      });
-      const typeEl = document.getElementById('extraTipo'); if(typeEl) typeEl.value = 'fixo';
-      updateCustomExtraValueHelp();
+
+      const editing = Number.isInteger(editingCustomExtraIndex) && editingCustomExtraIndex >= 0 && editingCustomExtraIndex < data.customExtras.length;
+      if(editing){
+        const current = data.customExtras[editingCustomExtraIndex];
+        data.customExtras[editingCustomExtraIndex] = {
+          ...current,
+          titulo,
+          descricao,
+          tipo,
+          valor
+        };
+      }else{
+        data.customExtras.push({
+          id: 'extra_' + Date.now(),
+          titulo,
+          descricao,
+          tipo,
+          valor,
+          padraoAtivo:false,
+          fixadoCondicoes:false
+        });
+      }
+
+      editingCustomExtraIndex = null;
+      resetCustomExtraEditorFields();
+      syncCustomExtraEditorMode();
       renderCustomExtrasConfig();
       renderCustomExtrasChecks();
       calculate();
       cmfinPersistData();
       cmfinSalvarDadosNuvem(false);
-      toast('Configuração adicional criada.', { title:'Configuração atualizada', type:'success', icon:'✓' });
+      toast(editing ? 'Configuração adicional atualizada.' : 'Configuração adicional criada.', { title:'Configuração atualizada', type:'success', icon:'✓' });
     }
 
     function removeCustomExtra(index){
@@ -9718,6 +9890,13 @@ main{
       const item = data.customExtras[index];
       if(!confirm(`Excluir "${item.titulo}"?`)) return;
       data.customExtras.splice(index, 1);
+      if(editingCustomExtraIndex === index){
+        editingCustomExtraIndex = null;
+        resetCustomExtraEditorFields();
+      }else if(Number.isInteger(editingCustomExtraIndex) && editingCustomExtraIndex > index){
+        editingCustomExtraIndex -= 1;
+      }
+      syncCustomExtraEditorMode();
       renderCustomExtrasConfig();
       renderCustomExtrasChecks();
       calculate();
