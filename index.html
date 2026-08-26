@@ -9,6 +9,7 @@
   <!-- v48: interface profissional nas ações da proposta + histórico responsivo em cards, sem rolagem horizontal -->
   <!-- v49: ações do Histórico reposicionadas para a esquerda + proteção contra cortes em notebooks -->
   <!-- v54: produto generalizado para prestadores de serviços + adicionais financeiros por usuário + campos sem sugestões automáticas + calendário corrigido -->
+  <!-- v55: configurações adicionais em card próprio + opção de fixar individualmente nas condições comerciais -->
   <!-- v50: botões compactos e profissionais em Ações da Proposta -->
 <!-- v45: tooltips profissionais na sidebar recolhida + ordem da aba Configurações refinada -->
   <!-- Versão v39: Análise Interna de Viabilidade com cenários, composição financeira, custos e distribuição profissional dinâmica -->
@@ -6784,26 +6785,78 @@ main{
     overscroll-behavior:contain;
     box-shadow:0 24px 60px rgba(17,44,37,.24) !important;
   }
+  /* V55 — configurações adicionais em card próprio e itens fixáveis no orçamento. */
+  #config .financial-additional-card { margin-top:18px; }
+  #config .financial-additional-card > .card-body { padding:18px; }
+  .financial-additional-intro { margin:0 0 16px; max-width:980px; }
   .financial-additional-editor {
-    grid-template-columns:minmax(160px,1fr) minmax(210px,1.25fr) minmax(190px,.85fr) minmax(125px,.55fr) minmax(175px,.72fr) auto !important;
+    display:grid !important;
+    grid-template-columns:minmax(180px,1fr) minmax(220px,1.25fr) minmax(190px,.85fr) minmax(130px,.55fr) auto !important;
+    gap:12px !important;
     align-items:end !important;
   }
-  .financial-additional-editor .extra-default-check { min-height:50px; margin:0; align-self:end; }
-  .financial-additional-item .extra-type-badge {
-    display:inline-flex; width:max-content; margin-top:6px; padding:4px 8px; border-radius:999px;
-    background:#edf4f0; border:1px solid #dbe7e1; color:#365047; font-size:.68rem; font-weight:800;
+  .financial-additional-editor > div { min-width:0; }
+  .financial-additional-editor .financial-additional-add { min-height:50px; align-self:end; }
+  .financial-additional-list-head {
+    display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    margin:2px 0 12px;
   }
+  .financial-additional-list-head strong { color:var(--brand); font-size:.95rem; }
+  .financial-additional-list-head span { color:var(--muted); font-size:.78rem; line-height:1.4; }
+  .financial-additional-list {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px !important;
+    margin-top:0 !important;
+  }
+  .financial-additional-item {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:12px !important;
+    align-items:center !important;
+    padding:14px 15px !important;
+    border:1px solid var(--line) !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    box-shadow:none !important;
+  }
+  .financial-additional-item > .financial-additional-info { min-width:0; }
+  .financial-additional-item strong { font-size:.88rem !important; }
+  .financial-additional-item .financial-additional-description {
+    display:block; color:var(--muted); font-size:.74rem; line-height:1.35; margin-top:3px;
+  }
+  .financial-additional-item .extra-type-badge {
+    display:inline-flex; width:max-content; max-width:100%; margin-top:7px; padding:4px 8px; border-radius:999px;
+    background:#edf4f0; border:1px solid #dbe7e1; color:#365047; font-size:.67rem; font-weight:800;
+  }
+  .financial-additional-side { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+  .financial-additional-side .money-mini { margin:0; font-size:.92rem; }
+  .financial-additional-actions { display:flex; gap:7px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+  .financial-additional-actions button { min-height:36px; padding:8px 10px; border-radius:10px; font-size:.72rem; box-shadow:none; }
+  .financial-additional-pin.is-pinned { background:#eaf7ee; color:#16703b; border:1px solid #cfe9d8; }
+  .financial-additional-pin:not(.is-pinned) { background:#eef4f1; color:var(--brand); border:1px solid #d9e4df; }
   .custom-extras-empty {
-    grid-column:1/-1; display:flex; flex-direction:column; gap:3px; padding:12px 14px;
+    grid-column:1/-1; display:flex; flex-direction:column; gap:3px; padding:14px 15px;
     border:1px dashed #d5e1db; border-radius:14px; background:#fafcfb; color:#53665d;
   }
   .custom-extras-empty strong { color:#243b33; font-size:.8rem; }
   .custom-extras-empty span { font-size:.74rem; line-height:1.35; }
+  #calc #customExtrasChecks { margin-top:8px !important; }
+  #calc #customExtrasChecks:empty { display:none !important; margin:0 !important; }
+  #calc #customExtrasChecks .checkline { min-height:42px; padding:8px 10px; }
+  #calc #customExtrasChecks .check-content { display:block; }
+  #calc #customExtrasChecks .check-content > span:first-child { font-size:.76rem; }
   @media (max-width:1200px){
     .financial-additional-editor { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
   }
+  @media (max-width:900px){
+    .financial-additional-list { grid-template-columns:1fr; }
+  }
   @media (max-width:700px){
     .financial-additional-editor { grid-template-columns:1fr !important; }
+    .financial-additional-item { grid-template-columns:1fr !important; }
+    .financial-additional-side { align-items:flex-start; }
+    .financial-additional-actions { justify-content:flex-start; }
     #customDatePicker.custom-date-picker { left:0 !important; right:auto !important; }
   }
 </style>
@@ -8435,28 +8488,6 @@ main{
           <span id="configPending" class="pending-note" style="display:none;">Alterações pendentes de salvamento</span>
         </div>
 
-        <div class="custom-extra-panel no-print financial-additional-panel">
-          <div class="custom-extra-head">
-            <div>
-              <h3>Configurações Financeiras Adicionais</h3>
-              <p>Cadastre cobranças, custos, taxas e reservas usadas no seu negócio. Somente os itens criados por esta conta aparecerão em Condições comerciais e adicionais.</p>
-            </div>
-          </div>
-          <div class="custom-extra-editor financial-additional-editor">
-            <div><label>Nome do adicional</label><input id="extraTitulo" placeholder="Ex.: Taxa de deslocamento"></div>
-            <div><label>Descrição</label><input id="extraDescricao" placeholder="Explique quando este item deve ser utilizado"></div>
-            <div><label>Tipo de cálculo</label><select id="extraTipo" onchange="updateCustomExtraValueHelp()">
-              <option value="fixo">Valor fixo</option>
-              <option value="percentual_servico">Percentual sobre o serviço</option>
-              <option value="imposto">Imposto / taxa sobre o preço final</option>
-            </select></div>
-            <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"><span class="field-help" id="extraValueHelp">Informe o valor em reais.</span></div>
-            <label class="checkline extra-default-check"><input id="extraPadraoAtivo" type="checkbox"> <span class="check-content"><span>Ativo por padrão</span><span class="check-help">Marcar automaticamente em novos orçamentos.</span></span></label>
-            <button class="success" type="button" onclick="addCustomExtra()">Adicionar</button>
-          </div>
-          <div class="custom-extra-list" id="customExtrasList"></div>
-        </div>
-
         <div class="cmfin-interface-personalization no-print" id="cmfinInterfacePersonalization">
           <div class="cmfin-interface-personalization-head">
             <div>
@@ -8495,6 +8526,27 @@ main{
         <p class="hint"><strong>Margem alvo:</strong> margem ideal para o projeto ser saudável, pagar seu trabalho, cobrir custos e deixar lucro real.</p>
         <p class="hint"><strong>Contingência padrão:</strong> reserva aplicada sobre os custos para cobrir retrabalho, reuniões extras, ajustes, imprevistos e variações de escopo.</p>
         <p class="hint">Os campos desta tela são editados manualmente. Após alterar qualquer valor, clique em <strong>Salvar configurações</strong> para aplicar os novos parâmetros no orçamento.</p>
+      </div></div>
+
+      <div class="card financial-additional-card no-print"><h2>Configurações Financeiras Adicionais</h2><div class="card-body">
+        <p class="hint financial-additional-intro">Cadastre aqui parâmetros, cobranças, custos, taxas e reservas próprios do seu negócio. Eles ficam salvos somente nesta conta. Um item só aparecerá em <strong>Condições comerciais e adicionais</strong> quando você escolher <strong>Fixar nas condições</strong>.</p>
+        <div class="custom-extra-editor financial-additional-editor">
+          <div><label>Nome da configuração</label><input id="extraTitulo" placeholder="Ex.: RRT/ART, taxa de entrega, horas por visita"></div>
+          <div><label>Descrição</label><input id="extraDescricao" placeholder="Explique a finalidade desta configuração"></div>
+          <div><label>Tipo de cálculo</label><select id="extraTipo" onchange="updateCustomExtraValueHelp()">
+            <option value="fixo">Valor fixo</option>
+            <option value="percentual_servico">Percentual sobre o serviço</option>
+            <option value="imposto">Imposto / taxa sobre o preço final</option>
+          </select></div>
+          <div><label>Valor</label><input id="extraValor" type="number" step="0.01" value="0"><span class="field-help" id="extraValueHelp">Informe o valor em reais.</span></div>
+          <button class="success financial-additional-add" type="button" onclick="addCustomExtra()">Adicionar configuração</button>
+        </div>
+        <div class="divider"></div>
+        <div class="financial-additional-list-head">
+          <strong>Configurações criadas nesta conta</strong>
+          <span>Use o botão ao lado de cada item para mostrar ou remover a opção da aba Orçamento.</span>
+        </div>
+        <div class="custom-extra-list financial-additional-list" id="customExtrasList"></div>
       </div></div>
     </section>
 
@@ -9477,6 +9529,7 @@ main{
         tipo: normalizeCustomExtraType(item.tipo || item.type || 'fixo'),
         valor: Number(item.valor ?? item.value ?? 0) || 0,
         padraoAtivo: !!(item.padraoAtivo ?? item.defaultActive ?? false),
+        fixadoCondicoes: !!(item.fixadoCondicoes ?? item.pinnedCommercial ?? false),
         legacyKey: item.legacyKey || ''
       })).filter(item => item.titulo);
     }
@@ -9488,22 +9541,20 @@ main{
       const currentState = new Map(
         Array.from(box.querySelectorAll('input[type="checkbox"]')).map(el => [el.id, !!el.checked])
       );
-      if(!data.customExtras.length){
-        box.innerHTML = '<div class="custom-extras-empty"><strong>Nenhum adicional configurado.</strong><span>Crie itens em Configurações → Configurações Financeiras Adicionais.</span></div>';
-        box.style.display = 'grid';
+      const pinnedItems = data.customExtras.filter(item => !!item.fixadoCondicoes);
+      if(!pinnedItems.length){
+        box.innerHTML = '';
+        box.style.display = 'none';
         return;
       }
       box.style.display = 'grid';
-      box.innerHTML = data.customExtras.map(item => {
+      box.innerHTML = pinnedItems.map(item => {
         const id = 'customExtra_' + item.id;
-        const isChecked = currentState.has(id) ? currentState.get(id) : !!item.padraoAtivo;
+        const isChecked = currentState.has(id) ? currentState.get(id) : false;
         return `
         <label class="checkline">
           <input id="${esc(id)}" type="checkbox" ${isChecked ? 'checked' : ''} onchange="calculate()">
-          <span class="check-content">
-            <span>Incluir ${esc(item.titulo)}</span>
-            <span class="check-help">${esc(customExtraTypeLabel(item.tipo))}: ${esc(customExtraDisplayValue(item))}${item.descricao ? ` · ${esc(item.descricao)}` : ''}</span>
-          </span>
+          <span class="check-content"><span>Incluir ${esc(item.titulo)}</span></span>
         </label>`;
       }).join('');
     }
@@ -9512,7 +9563,7 @@ main{
       ensureCustomExtras();
       data.customExtras.forEach(item => {
         const el = document.getElementById('customExtra_' + item.id);
-        if(el) el.checked = !!item.padraoAtivo;
+        if(el) el.checked = false;
       });
     }
 
@@ -9521,16 +9572,41 @@ main{
       const list = document.getElementById('customExtrasList');
       if(!list) return;
       if(!data.customExtras.length){
-        list.innerHTML = '<div class="hint">Nenhuma configuração financeira adicional cadastrada. O sistema ficará neutro até você criar os itens usados no seu negócio.</div>';
+        list.innerHTML = '<div class="custom-extras-empty"><strong>Nenhuma configuração adicional cadastrada.</strong><span>Crie apenas os parâmetros específicos do seu negócio. O sistema padrão permanece neutro.</span></div>';
         return;
       }
       list.innerHTML = data.customExtras.map((item, index) => `
         <div class="custom-extra-item financial-additional-item">
-          <div><strong>${esc(item.titulo)}</strong><span>${esc(item.descricao || 'Sem descrição.')}</span><span class="extra-type-badge">${esc(customExtraTypeLabel(item.tipo))}${item.padraoAtivo ? ' · ativo por padrão' : ''}</span></div>
-          <div class="money-mini">${esc(customExtraDisplayValue(item))}</div>
-          <button type="button" class="danger mini-btn" onclick="removeCustomExtra(${index})">Excluir</button>
+          <div class="financial-additional-info">
+            <strong>${esc(item.titulo)}</strong>
+            <span class="financial-additional-description">${esc(item.descricao || 'Sem descrição.')}</span>
+            <span class="extra-type-badge">${esc(customExtraTypeLabel(item.tipo))}</span>
+          </div>
+          <div class="financial-additional-side">
+            <div class="money-mini">${esc(customExtraDisplayValue(item))}</div>
+            <div class="financial-additional-actions">
+              <button type="button" class="financial-additional-pin ${item.fixadoCondicoes ? 'is-pinned' : ''}" onclick="toggleCustomExtraPin(${index})">${item.fixadoCondicoes ? 'Fixado nas condições' : 'Fixar nas condições'}</button>
+              <button type="button" class="danger mini-btn" onclick="removeCustomExtra(${index})">Excluir</button>
+            </div>
+          </div>
         </div>
       `).join('');
+    }
+
+    function toggleCustomExtraPin(index){
+      ensureCustomExtras();
+      if(index < 0 || index >= data.customExtras.length) return;
+      const item = data.customExtras[index];
+      item.fixadoCondicoes = !item.fixadoCondicoes;
+      item.padraoAtivo = false;
+      renderCustomExtrasConfig();
+      renderCustomExtrasChecks();
+      calculate();
+      cmfinPersistData();
+      cmfinSalvarDadosNuvem(false);
+      toast(item.fixadoCondicoes ? 'Opção fixada em Condições comerciais e adicionais.' : 'Opção removida de Condições comerciais e adicionais.', {
+        title:'Configuração atualizada', type:'success', icon:'✓'
+      });
     }
 
     function updateCustomExtraValueHelp(){
@@ -9546,8 +9622,7 @@ main{
       const descricao = val('extraDescricao');
       const tipo = normalizeCustomExtraType(document.getElementById('extraTipo')?.value || 'fixo');
       const valor = num('extraValor');
-      const padraoAtivo = checked('extraPadraoAtivo');
-      if(!titulo) return toast('Informe o nome do adicional.');
+      if(!titulo) return toast('Informe o nome da configuração.');
       if(!(valor >= 0)) return toast('Informe um valor válido.');
       data.customExtras.push({
         id: 'extra_' + Date.now(),
@@ -9555,21 +9630,21 @@ main{
         descricao,
         tipo,
         valor,
-        padraoAtivo
+        padraoAtivo:false,
+        fixadoCondicoes:false
       });
       ['extraTitulo','extraDescricao','extraValor'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = id === 'extraValor' ? '0' : '';
       });
       const typeEl = document.getElementById('extraTipo'); if(typeEl) typeEl.value = 'fixo';
-      const defaultEl = document.getElementById('extraPadraoAtivo'); if(defaultEl) defaultEl.checked = false;
       updateCustomExtraValueHelp();
       renderCustomExtrasConfig();
       renderCustomExtrasChecks();
       calculate();
       cmfinPersistData();
       cmfinSalvarDadosNuvem(false);
-      toast('Configuração financeira adicional criada.', { title:'Configuração atualizada', type:'success', icon:'✓' });
+      toast('Configuração adicional criada.', { title:'Configuração atualizada', type:'success', icon:'✓' });
     }
 
     function removeCustomExtra(index){
