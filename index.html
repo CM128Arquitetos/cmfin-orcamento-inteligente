@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v79: botões do Editor da Proposta responsivos + restauração da aba ativa após F5/recarregamento -->
+  <!-- v78: aba Proposta inicia somente com Dados Principais e Ações da Proposta expandidos -->
   <!-- v77: paginação bidirecional com quebra de parágrafos + undo/redo multipágina + autosave visual + toolbar consolidada -->
   <!-- v76: prévia A4 acompanha a rolagem + paginação visual em tempo real durante a edição direta -->
   <!-- v75: edição auto-salva ao sair da folha + impressão limpa + margem inferior do timbrado mais aproveitada -->
@@ -5880,8 +5882,8 @@ main{
   .proposal-editor-status{flex:0 0 auto;display:inline-flex;align-items:center;min-height:30px;padding:6px 10px;border:1px solid #dce6e1;border-radius:999px;background:#f5f8f6;color:#61716a;font-size:.70rem;font-weight:850;white-space:nowrap;}
   .proposal-editor-status.is-editing{background:#fff1f0;border-color:#efcfcc;color:#b42318;}
   .proposal-editor-status.is-saved{background:#eaf7ee;border-color:#ccebd5;color:#16703b;}
-  .proposal-direct-editor-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
-  .proposal-direct-editor-actions button{min-height:43px;padding:10px 12px;border-radius:12px;box-shadow:none;font-size:.79rem;}
+  .proposal-direct-editor-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch;}
+  .proposal-direct-editor-actions button{width:100%;min-width:0;min-height:48px;height:auto;padding:10px 11px;border-radius:12px;box-shadow:none;font-size:.77rem;line-height:1.25;white-space:normal;overflow-wrap:anywhere;word-break:normal;text-align:center;}
   .proposal-direct-editor-actions button:disabled{opacity:.48;cursor:not-allowed;transform:none;}
   .proposal-direct-editor-help{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
   .proposal-direct-editor-help span{padding:9px 10px;border:1px solid #e2eae6;border-radius:11px;background:#fff;color:#63736c;font-size:.72rem;line-height:1.4;}
@@ -7838,7 +7840,7 @@ main{
                 </div>
               </details>
 
-              <details open>
+              <details>
                 <summary><span class="summary-title">Escopo / Descrição do Serviço</span><span class="section-hint">Texto livre para prestadores de serviços em geral.</span></summary>
                 <div class="accordion-body proposal-free-scope">
                   <label>Descrição do serviço</label>
@@ -7872,7 +7874,7 @@ main{
                 </div>
               </details>
 
-              <details open>
+              <details>
                 <summary><span class="summary-title">Editor da Proposta</span><span class="section-hint">Edite diretamente na folha, com formatação semelhante ao Word.</span></summary>
                 <div class="accordion-body">
                   <div class="proposal-direct-editor">
@@ -8478,18 +8480,42 @@ main{
       }
     }
 
-    function openTab(id){
-      document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active'));
+    const CMFIN_ACTIVE_TAB_SESSION_KEY = 'cmfinActiveTabV79';
+    const CMFIN_VALID_TABS = new Set(['calc','complementary','architects','proposal','history','vehicles','config','profile']);
+
+    function cmfinRememberActiveTab(id){
+      if(!CMFIN_VALID_TABS.has(id)) return;
+      try { sessionStorage.setItem(CMFIN_ACTIVE_TAB_SESSION_KEY, id); } catch(e) {}
+    }
+
+    function cmfinStoredActiveTab(){
+      try {
+        const saved = sessionStorage.getItem(CMFIN_ACTIVE_TAB_SESSION_KEY) || '';
+        if(CMFIN_VALID_TABS.has(saved) && document.getElementById(saved)) return saved;
+      } catch(e) {}
+      return 'calc';
+    }
+
+    function restoreActiveTabAfterReload(){
+      openTab(cmfinStoredActiveTab(), { remember:false, scroll:false });
+    }
+
+    function openTab(id, options = {}){
       const target = document.getElementById(id);
-      if(target) target.classList.add('active');
+      if(!target || !CMFIN_VALID_TABS.has(id)) return;
+      document.querySelectorAll('.tab,.tab-btn').forEach(el=>el.classList.remove('active'));
+      target.classList.add('active');
       document.querySelectorAll(`[data-tab="${id}"]`).forEach(el=>el.classList.add('active'));
+      if(options.remember !== false) cmfinRememberActiveTab(id);
       if(id==='proposal'){ buildProposal(); renderDeliverableChecklist(); }
       if(id==='architects') renderArchitects();
       if(id==='complementary') renderComplementaryServices();
       if(id==='profile') renderProfile();
       if(typeof cmfinUpdatePageHeader === 'function') cmfinUpdatePageHeader(id);
       if(window.innerWidth <= 900 && typeof cmfinCloseMobileSidebar === 'function') cmfinCloseMobileSidebar();
-      try { window.scrollTo({ top:0, behavior:'smooth' }); } catch(e) { window.scrollTo(0,0); }
+      if(options.scroll !== false){
+        try { window.scrollTo({ top:0, behavior:'smooth' }); } catch(e) { window.scrollTo(0,0); }
+      }
     }
 
     
@@ -12969,6 +12995,7 @@ ${p.obs}` : ''}`;
     togglePaymentFields();
     updateHistorySaveButton();
     buildProposal();
+    restoreActiveTabAfterReload();
   </script>
 
 <!-- v65: patch legado da antiga proposalVisualToolbar removido -->
