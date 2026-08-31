@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v77: paginação bidirecional com quebra de parágrafos + undo/redo multipágina + autosave visual + toolbar consolidada -->
   <!-- v76: prévia A4 acompanha a rolagem + paginação visual em tempo real durante a edição direta -->
   <!-- v75: edição auto-salva ao sair da folha + impressão limpa + margem inferior do timbrado mais aproveitada -->
   <!-- v74: melhor aproveitamento da área útil até o rodapé + editor sem compressão de largura -->
@@ -1006,6 +1007,35 @@
     .proposal-accordion .accordion-body { padding:16px 18px; border-top:1px solid var(--line); }
     .proposal-accordion .section-hint { display:block; margin-top:4px; font-size:.78rem; line-height:1.4; color:var(--muted); font-weight:500; }
     .proposal-paper-wrap { background:#e8ece9; border:1px solid var(--line); border-radius:18px; padding:18px; overflow:auto; display:flex; flex-direction:column; gap:18px; align-items:center; align-self:start; overscroll-behavior:contain; }
+    .proposal-autosave-indicator {
+      position:absolute;
+      top:12px;
+      right:12px;
+      z-index:12;
+      display:none;
+      align-items:center;
+      gap:6px;
+      min-height:30px;
+      padding:6px 10px;
+      border:1px solid rgba(17,44,37,.12);
+      border-radius:999px;
+      background:rgba(255,255,255,.94);
+      color:#5f7068;
+      box-shadow:0 8px 18px rgba(17,44,37,.10);
+      backdrop-filter:blur(8px);
+      font-size:.68rem;
+      font-weight:800;
+      letter-spacing:.01em;
+      pointer-events:none;
+      user-select:none;
+    }
+    body.proposal-visual-edit-on .proposal-autosave-indicator { display:inline-flex; }
+    .proposal-autosave-indicator[data-state="saving"] { color:#8a6500; border-color:#ead9a5; background:rgba(255,249,229,.96); }
+    .proposal-autosave-indicator[data-state="saved"] { color:#16703b; border-color:#ccebd5; background:rgba(239,250,243,.96); }
+    .proposal-list-row.proposal-list-row-continuation::before { content:""; }
+    .proposal-list-row.proposal-list-row-continuation { padding-left:18px; }
+    .proposal-list-continuation { list-style:none; }
+    .proposal-list-continuation > li { list-style:none; }
     /* v76: em telas com editor e folha lado a lado, a prévia permanece visível enquanto os cards da esquerda são percorridos. */
     @media (min-width:1161px) {
       /* O card principal precisa deixar o sticky usar a rolagem da janela, não um ancestral com overflow oculto. */
@@ -3631,6 +3661,7 @@ body .proposal-template-simple .template-simple-card-head strong {
 /* V64 — Limpeza Técnica 03
    Consolidação segura dos estilos de Variáveis / Blocos Rápidos e da mini barra
    de edição da Proposta. Mantida a ordem/especificidade da cascata funcional. */
+/* v77 — barra contextual consolidada em uma única camada de CSS. */
 #cmfinWordSelectionToolbar.cmfin-word-toolbar{
   position:fixed;
   left:-9999px;
@@ -3638,69 +3669,202 @@ body .proposal-template-simple .template-simple-card-head strong {
   z-index:2147483647;
   display:none;
   width:auto;
+  max-width:none;
   padding:0;
+  overflow:visible;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  background:radial-gradient(circle at top left, rgba(19,83,63,.14), transparent 28%), linear-gradient(135deg, rgba(15,23,21,.98) 0%, rgba(8,14,13,.99) 100%);
+  box-shadow:0 18px 48px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(10px) saturate(1.04);
   font-family:Montserrat, Inter, Arial, sans-serif;
 }
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar.is-visible{
-  display:block;
-}
-
+#cmfinWordSelectionToolbar.cmfin-word-toolbar.is-visible{display:block;}
 #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
   display:flex;
-  flex-wrap:wrap;
-  align-items:end;
-  gap:10px 12px;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  overflow:visible;
+  border-radius:18px;
 }
-
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__row--single{flex-wrap:nowrap;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{margin-top:0;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
+  width:1px;
+  height:30px;
+  min-height:30px;
+  margin:0 1px;
+  display:inline-block;
+  align-self:center;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.16), rgba(255,255,255,.02));
+}
 #cmfinWordSelectionToolbar select,
 #cmfinWordSelectionToolbar button,
 #cmfinWordSelectionToolbar label{
+  height:38px;
+  min-height:38px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:11px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035));
+  color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
   font-family:inherit;
   transition:transform .12s ease, background .12s ease, border-color .12s ease;
 }
-
+#cmfinWordSelectionToolbar select:hover,
+#cmfinWordSelectionToolbar button:hover,
+#cmfinWordSelectionToolbar label:hover{
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+  border-color:rgba(255,255,255,.16);
+  transform:translateY(-1px);
+}
 #cmfinWordSelectionToolbar select{
   appearance:auto;
+  padding:0 10px;
+  font-size:.82rem;
+  font-weight:650;
 }
-
-#cmfinWordSelectionToolbar select option{
-  color:#10251f;
-  background:#fff;
-}
-
+#cmfinWordSelectionToolbar select option{color:#10251f;background:#fff;}
 #cmfinWordSelectionToolbar button{
+  width:38px;
+  min-width:38px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
+  font-size:.84rem;
+  font-weight:700;
 }
-
-@media (max-width: 900px){
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar{
-    max-width:calc(100vw - 18px);
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-    padding:10px 12px;
-    gap:8px 10px;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-    display:none;
-  }
+#cmfinWordSelectionToolbar button svg{
+  width:16px;
+  height:16px;
+  stroke:#fff;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
 }
-
-@media (max-width: 640px){
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-    min-width:100%;
-    flex:1 1 100%;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
-    min-width:110px;
-    flex:1 1 110px;
-  }
-  #cmfinWordSelectionToolbar select,
-  #cmfinWordSelectionToolbar button,
-  #cmfinWordSelectionToolbar label{
-    min-height:36px;
-    font-size:.76rem;
-  }
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{width:140px;min-width:140px;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__size-combo{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  width:78px;
+  min-width:78px;
+  height:38px;
+  overflow:visible;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
+  width:46px;
+  min-width:46px;
+  height:100%;
+  min-height:0;
+  padding:0 8px;
+  border:0;
+  border-radius:11px 0 0 11px;
+  background:transparent;
+  color:#fff;
+  box-shadow:none;
+  outline:none;
+  text-align:center;
+  font-size:.82rem;
+  font-weight:700;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size::-webkit-calendar-picker-indicator{opacity:.85;filter:invert(1);}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__size-toggle{
+  width:28px;
+  min-width:28px;
+  height:100%;
+  min-height:0;
+  border:0;
+  border-left:1px solid rgba(255,255,255,.1);
+  border-radius:0 11px 11px 0;
+  background:transparent;
+  color:#fff;
+  font-size:.9rem;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__size-menu{
+  position:absolute;
+  top:42px;
+  left:0;
+  z-index:99999;
+  width:82px;
+  max-height:260px;
+  overflow:auto;
+  padding:6px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:4px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;
+  background:#23292a;
+  box-shadow:0 16px 40px rgba(0,0,0,.42);
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__size-menu[hidden]{display:none;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__size-menu button{
+  width:100%;
+  min-width:100%;
+  height:30px;
+  min-height:30px;
+  padding:0 10px;
+  justify-content:flex-start;
+  border-radius:8px;
+  font-size:.82rem;
+  font-weight:600;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__mini{width:36px;min-width:36px;font-size:.78rem;font-weight:800;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__mini[data-action="undoVisual"],
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__mini[data-action="redoVisual"]{font-size:1.05rem;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{width:auto;min-width:74px;padding:0 10px;font-weight:650;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-input{
+  position:absolute;
+  width:0;
+  height:0;
+  opacity:0;
+  pointer-events:none;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-trigger{
+  width:auto;
+  min-width:54px;
+  gap:8px;
+  padding:0 10px;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-trigger--wide{min-width:92px;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__color-text{
+  display:inline-flex;
+  align-items:center;
+  color:#fff;
+  font-size:.8rem;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__chip-swatch{
+  width:10px;
+  height:24px;
+  flex:0 0 auto;
+  border-radius:3px;
+  background:var(--chip-color, #111111);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08);
+}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__chip-swatch--text{--chip-color:#111111;}
+#cmfinWordSelectionToolbar .cmfin-word-toolbar__chip-swatch--mark{--chip-color:#f4e28a;}
+@media (max-width:700px){
+  #cmfinWordSelectionToolbar.cmfin-word-toolbar{max-width:calc(100vw - 10px);}
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{padding:8px;}
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__row--single{flex-wrap:wrap;gap:6px;}
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{display:none;}
+  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{width:142px;min-width:142px;}
 }
 
 body .proposal-template-simple .proposal-mini-card{
@@ -3912,424 +4076,7 @@ body .proposal-template-simple .proposal-mini-toggle:hover{
   transform:translateY(-1px) !important;
 }
 
-#cmfinWordSelectionToolbar.cmfin-word-toolbar{
-  max-width:min(820px, calc(100vw - 20px)) !important;
-  border-radius:14px !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  background:linear-gradient(135deg, rgba(21,28,26,.98) 0%, rgba(8,15,13,.98) 100%) !important;
-  box-shadow:0 18px 44px rgba(0,0,0,.28) !important;
-  backdrop-filter:blur(10px) saturate(1.04) !important;
-  overflow:hidden !important;
-}
 
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-  padding:8px 10px !important;
-}
-
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__row{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:wrap !important;
-  gap:8px !important;
-}
-
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-  width:1px !important;
-  height:30px !important;
-  min-height:30px !important;
-  display:inline-block !important;
-  margin:0 2px !important;
-  align-self:center !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.16), rgba(255,255,255,.02)) !important;
-}
-
-#cmfinWordSelectionToolbar select,
-#cmfinWordSelectionToolbar button,
-#cmfinWordSelectionToolbar label{
-  min-height:36px !important;
-  height:36px !important;
-  border-radius:10px !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05)) !important;
-  color:#fff !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04) !important;
-  font-size:.78rem !important;
-  font-weight:650 !important;
-}
-
-#cmfinWordSelectionToolbar select{
-  padding:0 10px !important;
-}
-
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-  min-width:158px !important;
-  width:158px !important;
-}
-
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__font-size{
-  min-width:62px !important;
-  width:62px !important;
-}
-
-#cmfinWordSelectionToolbar button{
-  min-width:42px !important;
-  width:42px !important;
-  padding:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-}
-
-#cmfinWordSelectionToolbar .cmfin-word-toolbar__wide{
-  min-width:74px !important;
-  width:auto !important;
-  padding:0 10px !important;
-}
-
-#cmfinWordSelectionToolbar input[type="color"]{
-  width:14px !important;
-  height:24px !important;
-  border:0 !important;
-  padding:0 !important;
-  background:transparent !important;
-}
-
-#cmfinWordSelectionToolbar select:hover,
-#cmfinWordSelectionToolbar button:hover,
-#cmfinWordSelectionToolbar label:hover{
-  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.08)) !important;
-  border-color:rgba(255,255,255,.18) !important;
-  transform:translateY(-1px) !important;
-}
-
-@media (max-width: 700px){
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar{
-    max-width:calc(100vw - 12px) !important;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__surface{
-    padding:8px !important;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__row{
-    gap:6px !important;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__divider{
-    display:none !important;
-  }
-  #cmfinWordSelectionToolbar .cmfin-word-toolbar__font-family{
-    width:140px !important;
-    min-width:140px !important;
-  }
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
-  border-radius:18px !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  background:radial-gradient(circle at top left, rgba(19,83,63,.14), transparent 28%),
-    linear-gradient(135deg, rgba(15,23,21,.98) 0%, rgba(8,14,13,.99) 100%) !important;
-  box-shadow:0 18px 48px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:wrap !important;
-  gap:8px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{
-  width:1px !important;
-  display:inline-block !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.16), rgba(255,255,255,.02)) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra label{
-  min-height:38px !important;
-  height:38px !important;
-  border-radius:11px !important;
-  border:1px solid rgba(255,255,255,.11) !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035)) !important;
-  color:#fff !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;
-  transition:all .14s ease !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select:hover,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button:hover,
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra label:hover{
-  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)) !important;
-  border-color:rgba(255,255,255,.16) !important;
-  transform:translateY(-1px) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select{
-  padding:0 10px !important;
-  font-size:.82rem !important;
-  font-weight:650 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra select option{
-  color:#10251f !important;
-  background:#fff !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{
-  padding:0 !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  font-size:.84rem !important;
-  font-weight:700 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button svg{
-  width:16px !important;
-  height:16px !important;
-  stroke:#ffffff !important;
-  stroke-width:2 !important;
-  fill:none !important;
-  stroke-linecap:round !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
-  width:auto !important;
-  font-weight:650 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{
-  background:var(--chip-color, #111111) !important;
-  box-shadow:0 0 0 1px rgba(255,255,255,.08) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--text{
-  --chip-color:#111111;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch--mark{
-  --chip-color:#f4e28a;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra input[type="color"]{
-  width:0 !important;
-  height:0 !important;
-  opacity:0 !important;
-  position:absolute !important;
-  pointer-events:none !important;
-}
-
-@media (max-width:700px){
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
-    max-width:calc(100vw - 10px) !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
-    padding:8px !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row{
-    gap:6px !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{
-    display:none !important;
-  }
-  #cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{
-    width:142px !important;
-    min-width:142px !important;
-  }
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra input.cmfin-word-toolbar__font-size::-webkit-calendar-picker-indicator{
-  opacity:.85 !important;
-  filter:invert(1) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{
-  font-weight:800 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
-  padding:10px 12px !important;
-  border-radius:18px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row--single{
-  display:flex !important;
-  flex-wrap:nowrap !important;
-  align-items:center !important;
-  gap:8px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__row + .cmfin-word-toolbar__row{
-  margin-top:0 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__divider{
-  height:30px !important;
-  margin:0 1px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-family{
-  width:140px !important;
-  min-width:140px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{
-  position:relative !important;
-  display:flex !important;
-  align-items:center !important;
-  width:78px !important;
-  min-width:78px !important;
-  height:38px !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  border-radius:11px !important;
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__font-size{
-  width:46px !important;
-  min-width:46px !important;
-  height:100% !important;
-  border:0 !important;
-  background:transparent !important;
-  color:#fff !important;
-  padding:0 8px !important;
-  text-align:center !important;
-  box-shadow:none !important;
-  outline:none !important;
-  font-size:.82rem !important;
-  font-weight:700 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-toggle{
-  width:28px !important;
-  min-width:28px !important;
-  height:100% !important;
-  border:0 !important;
-  border-left:1px solid rgba(255,255,255,.1) !important;
-  border-radius:0 11px 11px 0 !important;
-  background:transparent !important;
-  color:#fff !important;
-  font-size:.9rem !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{
-  position:absolute !important;
-  width:82px !important;
-  max-height:260px !important;
-  overflow:auto !important;
-  padding:6px !important;
-  display:grid !important;
-  grid-template-columns:1fr !important;
-  gap:4px !important;
-  background:#23292a !important;
-  border:1px solid rgba(255,255,255,.14) !important;
-  border-radius:12px !important;
-  box-shadow:0 16px 40px rgba(0,0,0,.42) !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu[hidden]{
-  display:none !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu button{
-  width:100% !important;
-  min-width:100% !important;
-  height:30px !important;
-  border-radius:8px !important;
-  justify-content:flex-start !important;
-  padding:0 10px !important;
-  font-size:.82rem !important;
-  font-weight:600 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini{
-  width:36px !important;
-  min-width:36px !important;
-  font-size:.78rem !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra button{
-  width:38px !important;
-  min-width:38px !important;
-  height:38px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
-  padding:0 10px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-label{
-  font-size:.8rem !important;
-  font-weight:700 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra{
-  overflow:visible !important;
-  max-width:none !important;
-  width:auto !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__surface{
-  overflow:visible !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-combo{
-  overflow:visible !important;
-  z-index:3 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__size-menu{
-  top:42px !important;
-  left:0 !important;
-  z-index:99999 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-input{
-  position:absolute !important;
-  opacity:0 !important;
-  pointer-events:none !important;
-  width:0 !important;
-  height:0 !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:8px !important;
-  padding:0 10px !important;
-  min-width:54px !important;
-  width:auto !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-trigger--wide{
-  min-width:92px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__color-text{
-  display:inline-flex !important;
-  align-items:center !important;
-  color:#fff !important;
-  font-size:.8rem !important;
-  font-weight:700 !important;
-  letter-spacing:.01em !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__chip-swatch{
-  width:10px !important;
-  height:24px !important;
-  border-radius:3px !important;
-  flex:0 0 auto !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__wide{
-  min-width:74px !important;
-}
-
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="undoVisual"],
-#cmfinWordSelectionToolbar.cmfin-word-toolbar--ultra .cmfin-word-toolbar__mini[data-action="redoVisual"]{
-  font-size:1.05rem !important;
-  font-weight:800 !important;
-}
 </style>
 
 
@@ -11542,11 +11289,95 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       return paddingBottom;
     }
 
+    function proposalPaginationTextBoundary(root, offset){
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let remaining = Math.max(0, Number(offset || 0));
+      let node;
+      while((node = walker.nextNode())){
+        const length = String(node.nodeValue || '').length;
+        if(remaining <= length) return { node, offset: Math.max(0, Math.min(remaining, length)) };
+        remaining -= length;
+      }
+      return null;
+    }
+
+    function proposalSplitBlockAtTextOffset(blockHtml, offset){
+      const holder = document.createElement('div');
+      holder.innerHTML = String(blockHtml || '').trim();
+      if(holder.childElementCount !== 1 || holder.childNodes.length !== 1) return null;
+      const source = holder.firstElementChild;
+      if(!source) return null;
+      const tag = source.tagName;
+      const blocked = source.matches('.proposal-title-doc,.proposal-client-line,.proposal-number-between,.proposal-meta-line,.proposal-payment-note') || /^H[1-6]$/.test(tag);
+      if(blocked || !['P','DIV','UL','OL'].includes(tag)) return null;
+      const textValue = String(source.textContent || '');
+      if(textValue.length < 2 || offset <= 0 || offset >= textValue.length) return null;
+      const boundary = proposalPaginationTextBoundary(source, offset);
+      if(!boundary) return null;
+
+      const leftRange = document.createRange();
+      leftRange.selectNodeContents(source);
+      leftRange.setEnd(boundary.node, boundary.offset);
+      const rightRange = document.createRange();
+      rightRange.selectNodeContents(source);
+      rightRange.setStart(boundary.node, boundary.offset);
+
+      const left = source.cloneNode(false);
+      const right = source.cloneNode(false);
+      left.appendChild(leftRange.cloneContents());
+      right.appendChild(rightRange.cloneContents());
+      if(!String(left.textContent || '').trim() || !String(right.textContent || '').trim()) return null;
+
+      if(right.classList.contains('proposal-list-row')) right.classList.add('proposal-list-row-continuation');
+      if(tag === 'UL' || tag === 'OL') right.classList.add('proposal-list-continuation');
+      return { head:left.outerHTML, tail:right.outerHTML };
+    }
+
+    function proposalSplitBlockToFit(blockHtml, prefixHtml, maxHeight, target){
+      const holder = document.createElement('div');
+      holder.innerHTML = String(blockHtml || '').trim();
+      const source = holder.firstElementChild;
+      if(!source || holder.childElementCount !== 1 || holder.childNodes.length !== 1) return null;
+      const textValue = String(source.textContent || '');
+      if(textValue.length < 2) return null;
+
+      let boundaries = [];
+      const re = /\s+/g;
+      let match;
+      while((match = re.exec(textValue))){
+        const pos = match.index + match[0].length;
+        if(pos > 0 && pos < textValue.length) boundaries.push(pos);
+      }
+      if(!boundaries.length){
+        boundaries = Array.from({length:textValue.length - 1}, (_, i) => i + 1);
+      }
+      if(!boundaries.length) return null;
+
+      let low = 0;
+      let high = boundaries.length - 1;
+      let best = null;
+      while(low <= high){
+        const mid = Math.floor((low + high) / 2);
+        const split = proposalSplitBlockAtTextOffset(blockHtml, boundaries[mid]);
+        if(!split){ high = mid - 1; continue; }
+        target.innerHTML = `${prefixHtml || ''}${split.head}`;
+        if(target.scrollHeight <= maxHeight + 2){
+          best = split;
+          low = mid + 1;
+        }else{
+          high = mid - 1;
+        }
+      }
+      return best;
+    }
+
     function renderProposalPages(blocks){
       const wrap = document.querySelector('.proposal-paper-wrap');
       if(!wrap) return;
       getProposalTemplates();
-      const sourceBlocks = (Array.isArray(blocks) ? blocks : [blocks]).filter(block => String(block || '').trim());
+      const queue = (Array.isArray(blocks) ? blocks : [blocks])
+        .filter(block => String(block || '').trim())
+        .map(block => String(block));
       const pages = [];
       let current = [];
       let pageIndex = 0;
@@ -11573,33 +11404,49 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         const footer = measure.querySelector('.proposal-paper-footer');
         const bar = measure.querySelector('.proposal-footer-bar');
         const bottomLimits = [];
-        if(footer && getComputedStyle(footer).display !== 'none'){
-          bottomLimits.push(footer.getBoundingClientRect().top - reserveBeforeFooter);
-        }
-        if(bar && getComputedStyle(bar).display !== 'none'){
-          bottomLimits.push(bar.getBoundingClientRect().top - reserveBeforeFooter);
-        }
-        // Quando há rodapé/barra visível, a posição real deles define a área útil.
-        // O padding inferior permanece como fallback apenas para timbrados sem rodapé nativo.
-        const safeBottom = bottomLimits.length
-          ? Math.min(...bottomLimits)
-          : (paperRect.bottom - paddingBottom);
+        if(footer && getComputedStyle(footer).display !== 'none') bottomLimits.push(footer.getBoundingClientRect().top - reserveBeforeFooter);
+        if(bar && getComputedStyle(bar).display !== 'none') bottomLimits.push(bar.getBoundingClientRect().top - reserveBeforeFooter);
+        const safeBottom = bottomLimits.length ? Math.min(...bottomLimits) : (paperRect.bottom - paddingBottom);
         return Math.max(320, Math.floor(safeBottom - targetRect.top - 2));
       };
 
       let maxHeight = configureMeasure(pageIndex);
-      sourceBlocks.forEach(block => {
-        current.push(block);
-        target.innerHTML = current.join('');
-        if(target.scrollHeight > maxHeight + 2 && current.length > 1){
-          const overflowBlock = current.pop();
+      let guard = 0;
+      while(queue.length && guard < 10000){
+        guard += 1;
+        const block = queue.shift();
+        const candidate = [...current, block];
+        target.innerHTML = candidate.join('');
+        if(target.scrollHeight <= maxHeight + 2){
+          current = candidate;
+          continue;
+        }
+
+        const prefixHtml = current.join('');
+        const split = proposalSplitBlockToFit(block, prefixHtml, maxHeight, target);
+        if(split){
+          current.push(split.head);
           pages.push(current.join(''));
-          current = [overflowBlock];
+          current = [];
           pageIndex = pages.length;
           maxHeight = configureMeasure(pageIndex);
-          target.innerHTML = current.join('');
+          queue.unshift(split.tail);
+          continue;
         }
-      });
+
+        if(current.length){
+          pages.push(current.join(''));
+          current = [];
+          pageIndex = pages.length;
+          maxHeight = configureMeasure(pageIndex);
+          queue.unshift(block);
+          continue;
+        }
+
+        pages.push(block);
+        pageIndex = pages.length;
+        maxHeight = configureMeasure(pageIndex);
+      }
       if(current.length) pages.push(current.join(''));
       measure.remove();
       wrap.innerHTML = pages.map((page, index) => proposalPageHTML(page, index)).join('');
@@ -11783,6 +11630,73 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
 
     // v65: mini barra antiga proposalVisualToolbar removida; a barra ativa é cmfinWordSelectionToolbar.
 
+    let proposalVisualAutosaveTimer = 0;
+
+    function currentProposalVisualEditableArea(preferred){
+      if(preferred?.isConnected && preferred.matches?.('.proposal-page-dynamic')) return preferred;
+      const active = document.activeElement?.closest?.('.proposal-page-dynamic');
+      if(active) return active;
+      const sel = window.getSelection && window.getSelection();
+      let node = sel?.rangeCount ? sel.anchorNode : null;
+      if(node?.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      const selectedArea = node?.closest?.('.proposal-page-dynamic');
+      return selectedArea || document.querySelector('.proposal-page-dynamic[contenteditable="true"]') || document.querySelector('.proposal-page-dynamic');
+    }
+
+    function ensureProposalVisualAutosaveIndicator(area){
+      const currentArea = currentProposalVisualEditableArea(area);
+      const paper = currentArea?.closest?.('.proposal-paper') || document.querySelector('.proposal-paper');
+      if(!paper) return null;
+      let indicator = document.getElementById('proposalVisualAutosaveIndicator');
+      if(indicator && indicator.closest('.proposal-paper') !== paper){
+        indicator.remove();
+        indicator = null;
+      }
+      if(!indicator){
+        indicator = document.createElement('div');
+        indicator.id = 'proposalVisualAutosaveIndicator';
+        indicator.className = 'proposal-autosave-indicator no-print';
+        indicator.setAttribute('aria-live', 'polite');
+        paper.appendChild(indicator);
+      }
+      return indicator;
+    }
+
+    function setProposalVisualAutosaveState(state = 'saved', area){
+      if(!proposalVisualEditEnabled) return;
+      const indicator = ensureProposalVisualAutosaveIndicator(area);
+      if(!indicator) return;
+      indicator.dataset.state = state;
+      indicator.textContent = state === 'saving' ? 'Salvando…' : '✓ Alterações salvas';
+    }
+
+    function removeProposalVisualAutosaveIndicator(){
+      document.getElementById('proposalVisualAutosaveIndicator')?.remove();
+    }
+
+    function persistProposalVisualDraft(area){
+      if(!proposalVisualEditEnabled) return false;
+      const rawEditedHtml = captureProposalVisualEditHtml();
+      const editedText = captureProposalVisualEditText();
+      if(!rawEditedHtml && !editedText) return false;
+      const saveCtx = currentProposalVisualSaveContext();
+      const editedHtml = tokenizeProposalVisualHtmlForStorage(rawEditedHtml, saveCtx);
+      const field = document.getElementById('propVisualHtml');
+      if(field) field.value = editedHtml || esc(editedText).replace(/\n/g, '<br>');
+      cmfinPersistData();
+      setProposalVisualAutosaveState('saved', area);
+      return true;
+    }
+
+    function scheduleProposalVisualDraftAutosave(area, delay = 650){
+      clearTimeout(proposalVisualAutosaveTimer);
+      setProposalVisualAutosaveState('saving', area);
+      proposalVisualAutosaveTimer = setTimeout(() => {
+        proposalVisualAutosaveTimer = 0;
+        persistProposalVisualDraft(area);
+      }, Math.max(80, Number(delay || 650)));
+    }
+
     function applyProposalVisualEditState(){
       const areas = document.querySelectorAll('.proposal-page-dynamic');
       document.body.classList.toggle('proposal-visual-edit-on', !!proposalVisualEditEnabled);
@@ -11802,6 +11716,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         status.classList.toggle('is-editing', !!proposalVisualEditEnabled);
         status.classList.toggle('is-saved', !proposalVisualEditEnabled && hasManual);
       }
+      if(proposalVisualEditEnabled && areas.length) ensureProposalVisualAutosaveIndicator(areas[0]);
+      else removeProposalVisualAutosaveIndicator();
       requestAnimationFrame(refreshProposalVisualEditBounds);
     }
 
@@ -11826,6 +11742,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       proposalVisualEditEnabled = true;
       applyProposalVisualEditState();
       area.setAttribute('contenteditable', 'true');
+      setProposalVisualAutosaveState('saved', area);
     }
 
     document.addEventListener('pointerdown', activateProposalVisualEditFromPaper, true);
@@ -11934,7 +11851,10 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         const liveHtml = captureProposalVisualEditHtml();
         renderProposalPages(proposalVisualHtmlBlocks(liveHtml));
         const restoredArea = restoreProposalVisualCaret(caret);
-        if(restoredArea) requestAnimationFrame(() => keepProposalVisualCaretVisible(restoredArea));
+        if(restoredArea){
+          setProposalVisualAutosaveState(proposalVisualAutosaveTimer ? 'saving' : 'saved', restoredArea);
+          requestAnimationFrame(() => keepProposalVisualCaretVisible(restoredArea));
+        }
       }finally{
         proposalVisualLivePaginationLocked = false;
       }
@@ -11953,9 +11873,11 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if(proposalVisualEditEnabled) scheduleProposalVisualLiveRepagination(true);
     });
     document.addEventListener('input', event => {
-      if(proposalVisualEditEnabled && event.target?.closest?.('.proposal-page-dynamic[contenteditable="true"]')){
+      const area = event.target?.closest?.('.proposal-page-dynamic[contenteditable="true"]');
+      if(proposalVisualEditEnabled && area){
         const isDeletion = String(event.inputType || '').startsWith('delete');
         scheduleProposalVisualLiveRepagination(isDeletion);
+        scheduleProposalVisualDraftAutosave(area);
       }
     });
 
@@ -12236,6 +12158,8 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     function commitProposalVisualEdit(options = {}){
       const silent = !!options.silent;
       const rebuild = options.rebuild !== false;
+      clearTimeout(proposalVisualAutosaveTimer);
+      proposalVisualAutosaveTimer = 0;
       const editedText = captureProposalVisualEditText();
       const rawEditedHtml = captureProposalVisualEditHtml();
       if(!editedText && !rawEditedHtml){
@@ -13053,34 +12977,47 @@ ${p.obs}` : ''}`;
 <script>
 (function(){
   const TOOLBAR_ID = 'cmfinWordSelectionToolbar';
+  let currentRange = null;
   const proposalVisualHistory = {
     undo: [],
     redo: [],
     max: 60,
-    last: ''
+    last: '',
+    restoring: false
   };
 
   document.addEventListener('cmfin:proposal-reset', function(){
     proposalVisualHistory.undo = [];
     proposalVisualHistory.redo = [];
     proposalVisualHistory.last = '';
+    proposalVisualHistory.restoring = false;
     currentRange = null;
     const bar = document.getElementById(TOOLBAR_ID);
     if(bar) bar.remove();
   });
 
   function proposalVisualSnapshot(){
-    return Array.from(document.querySelectorAll('.proposal-page-dynamic')).map(area => area.innerHTML || '');
+    return {
+      pages: Array.from(document.querySelectorAll('.proposal-page-dynamic')).map(area => area.innerHTML || ''),
+      caret: typeof captureProposalVisualCaret === 'function' ? captureProposalVisualCaret() : null
+    };
+  }
+
+  function proposalVisualSnapshotPages(snapshot){
+    if(Array.isArray(snapshot)) return snapshot;
+    return Array.isArray(snapshot?.pages) ? snapshot.pages : [];
   }
 
   function proposalVisualSnapshotKey(snapshot){
-    return JSON.stringify(snapshot || proposalVisualSnapshot());
+    return JSON.stringify(proposalVisualSnapshotPages(snapshot || proposalVisualSnapshot()));
   }
 
   function proposalPushUndoSnapshot(){
+    if(proposalVisualHistory.restoring) return;
     const snap = proposalVisualSnapshot();
     const key = proposalVisualSnapshotKey(snap);
-    if(key === proposalVisualHistory.last) return;
+    const topUndo = proposalVisualHistory.undo[proposalVisualHistory.undo.length - 1];
+    if(topUndo && key === proposalVisualSnapshotKey(topUndo)) return;
     proposalVisualHistory.undo.push(snap);
     if(proposalVisualHistory.undo.length > proposalVisualHistory.max) proposalVisualHistory.undo.shift();
     proposalVisualHistory.redo = [];
@@ -13088,53 +13025,81 @@ ${p.obs}` : ''}`;
   }
 
   function proposalRestoreSnapshot(snapshot){
-    if(!Array.isArray(snapshot)) return;
-    const areas = Array.from(document.querySelectorAll('.proposal-page-dynamic'));
-    areas.forEach((area, index) => {
-      area.innerHTML = snapshot[index] || '';
-    });
-    proposalVisualHistory.last = proposalVisualSnapshotKey(snapshot);
-
-    try {
-      if(typeof proposalTemplateData === 'function'){
-        const tpl = proposalTemplateData();
-        tpl.mode = 'custom';
-        tpl.editorType = 'visual';
-        tpl.visualHtml = areas.map(area => String(area.innerHTML || '').trim()).filter(Boolean).join('<div style="page-break-before:always;height:1px;"></div>');
-        tpl.text = areas.map(area => area.innerText || '').filter(Boolean).join('\n\n');
+    const pages = proposalVisualSnapshotPages(snapshot);
+    if(!pages.length) return;
+    const wrap = document.querySelector('.proposal-paper-wrap');
+    if(!wrap) return;
+    proposalVisualHistory.restoring = true;
+    try{
+      wrap.innerHTML = pages.map((html, index) => proposalPageHTML(html, index)).join('');
+      if(typeof applyBrandCustomization === 'function') applyBrandCustomization();
+      if(typeof applyProposalVisualEditState === 'function') applyProposalVisualEditState();
+      const rawHtml = pages.map(html => String(html || '').trim()).filter(Boolean).join('<div style="page-break-before:always;height:1px;"></div>');
+      const field = document.getElementById('propVisualHtml');
+      if(field && typeof tokenizeProposalVisualHtmlForStorage === 'function' && typeof currentProposalVisualSaveContext === 'function'){
+        field.value = tokenizeProposalVisualHtmlForStorage(rawHtml, currentProposalVisualSaveContext());
       }
       if(typeof cmfinPersistData === 'function') cmfinPersistData();
-    } catch(e) {
-      console.warn('Não foi possível sincronizar o histórico visual:', e);
+      proposalVisualHistory.last = proposalVisualSnapshotKey(snapshot);
+      currentRange = null;
+      hideToolbar();
+      requestAnimationFrame(() => {
+        const restored = typeof restoreProposalVisualCaret === 'function' ? restoreProposalVisualCaret(snapshot?.caret || null) : null;
+        if(restored && typeof setProposalVisualAutosaveState === 'function') setProposalVisualAutosaveState('saved', restored);
+      });
+    }finally{
+      proposalVisualHistory.restoring = false;
     }
   }
 
   function proposalUndoVisual(){
-    if(!proposalVisualHistory.undo.length) {
+    if(!proposalVisualHistory.undo.length){
       if(typeof toast === 'function') toast('Não há alteração para desfazer.');
       return;
     }
     const current = proposalVisualSnapshot();
     const previous = proposalVisualHistory.undo.pop();
     proposalVisualHistory.redo.push(current);
+    if(proposalVisualHistory.redo.length > proposalVisualHistory.max) proposalVisualHistory.redo.shift();
     proposalRestoreSnapshot(previous);
-    if(typeof toast === 'function') toast('Alteração desfeita.');
   }
 
   function proposalRedoVisual(){
-    if(!proposalVisualHistory.redo.length) {
+    if(!proposalVisualHistory.redo.length){
       if(typeof toast === 'function') toast('Não há alteração para refazer.');
       return;
     }
     const current = proposalVisualSnapshot();
     const next = proposalVisualHistory.redo.pop();
     proposalVisualHistory.undo.push(current);
+    if(proposalVisualHistory.undo.length > proposalVisualHistory.max) proposalVisualHistory.undo.shift();
     proposalRestoreSnapshot(next);
-    if(typeof toast === 'function') toast('Alteração refeita.');
   }
 
+  document.addEventListener('beforeinput', function(ev){
+    if(proposalVisualHistory.restoring || !isVisualEditOn()) return;
+    if(!ev.target?.closest?.('.proposal-page-dynamic[contenteditable="true"]')) return;
+    const inputType = String(ev.inputType || '');
+    if(inputType === 'historyUndo' || inputType === 'historyRedo') return;
+    proposalPushUndoSnapshot();
+  }, true);
 
-  let currentRange = null;
+  document.addEventListener('keydown', function(ev){
+    if(!isVisualEditOn() || !(ev.ctrlKey || ev.metaKey) || ev.altKey) return;
+    const key = String(ev.key || '').toLowerCase();
+    const inEditor = ev.target?.closest?.('.proposal-page-dynamic[contenteditable="true"]') || selectionContext();
+    if(!inEditor) return;
+    if(key === 'z'){
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(ev.shiftKey) proposalRedoVisual();
+      else proposalUndoVisual();
+    }else if(key === 'y'){
+      ev.preventDefault();
+      ev.stopPropagation();
+      proposalRedoVisual();
+    }
+  }, true);
 
   function saveCurrentRange(){
     const sel = window.getSelection && window.getSelection();
@@ -13181,6 +13146,8 @@ ${p.obs}` : ''}`;
       sel.removeAllRanges();
       sel.addRange(newRange);
       currentRange = newRange.cloneRange();
+      if(typeof scheduleProposalVisualLiveRepagination === 'function') scheduleProposalVisualLiveRepagination(true);
+      if(typeof scheduleProposalVisualDraftAutosave === 'function') scheduleProposalVisualDraftAutosave(area);
     } catch(e){
       console.warn('Falha ao aplicar estilo inline', e);
     }
@@ -13256,6 +13223,8 @@ ${p.obs}` : ''}`;
     try {
       document.execCommand(command, false, value || null);
       saveCurrentRange();
+      if(typeof scheduleProposalVisualLiveRepagination === 'function') scheduleProposalVisualLiveRepagination(true);
+      if(typeof scheduleProposalVisualDraftAutosave === 'function') scheduleProposalVisualDraftAutosave(area);
     } catch(e) {
       console.warn('Falha ao aplicar comando na mini barra:', command, e);
     }
