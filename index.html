@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v80: pagamento em 3 etapas com percentuais editáveis, valores automáticos e histórico preservado -->
   <!-- v79: botões do Editor da Proposta responsivos + restauração da aba ativa após F5/recarregamento -->
   <!-- v78: aba Proposta inicia somente com Dados Principais e Ações da Proposta expandidos -->
   <!-- v77: paginação bidirecional com quebra de parágrafos + undo/redo multipágina + autosave visual + toolbar consolidada -->
@@ -376,6 +377,19 @@
     /* Ajuste visual: mantém os campos da proposta alinhados mesmo quando os rótulos têm tamanhos diferentes */
     .proposal-editor .form-grid > div { display: flex; flex-direction: column; }
     .proposal-editor .form-grid > div > label { min-height: 1.15rem; display: flex; align-items: flex-end; }
+
+    /* v80 - condições comerciais: percentuais por etapa */
+    .payment-stages-panel{margin-top:14px;padding:15px;border:1px solid var(--line);border-radius:14px;background:#f8faf8;}
+    .payment-stages-grid,.payment-stages-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .payment-stages-grid label{font-size:.68rem;line-height:1.45;min-height:32px;}
+    .payment-stages-values{margin-top:12px;}
+    .payment-stages-values>div{padding:12px;border:1px solid var(--line);background:#fff;border-radius:12px;}
+    .payment-stages-values small{display:block;font-size:.69rem;color:var(--muted);font-weight:700;}
+    .payment-stages-values strong{display:block;font-size:1rem;margin-top:5px;}
+    .payment-stages-status{margin-top:12px;font-weight:800;font-size:.82rem;color:var(--success);}
+    .payment-stages-status.invalid{color:var(--danger);}
+    @media(max-width:650px){.payment-stages-grid,.payment-stages-values{grid-template-columns:1fr;}.payment-stages-grid label{min-height:auto;}}
+
     .proposal-editor #paymentEntryFields > div > label { min-height: 1.15rem; }
 
     .config-actions { margin-top:16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -7935,7 +7949,21 @@ main{
                     <div><small>Valor final considerado</small><strong id="propCommercialFinal">R$ 0,00</strong></div>
                   </div>
                   <span class="field-help" style="margin:-6px 0 14px;">Resumo sincronizado com o orçamento. Descontos aplicados pelo Simulador de Negociação passam a ser considerados automaticamente no texto e nas parcelas da proposta.</span>
-                  <div><label>Forma de pagamento</label><select id="propFormaPagamento" onchange="togglePaymentFields(); buildProposal()"><option value="padrao" selected>Padrão: à vista, 50% + 50% ou cartão</option><option value="avista">À vista</option><option value="entrada_parcelas">Entrada + parcelas mensais</option><option value="manual">Texto personalizado/manual</option></select></div>
+                  <div><label>Forma de pagamento</label><select id="propFormaPagamento" onchange="togglePaymentFields(); buildProposal()"><option value="padrao" selected>Padrão: à vista, 50% + 50% ou cartão</option><option value="tres_etapas">Pagamento em 3 Etapas (Percentuais Personalizados)</option><option value="avista">À vista</option><option value="entrada_parcelas">Entrada + parcelas mensais</option><option value="manual">Texto personalizado/manual</option></select></div>
+                   <div id="paymentThreeStages" class="payment-stages-panel" style="display:none;">
+                     <p class="hint" style="margin:0 0 12px;">Defina o percentual de cada etapa. Os valores são calculados sobre o valor final da proposta, inclusive após descontos.</p>
+                     <div class="payment-stages-grid">
+                       <div><label for="propEtapa1Pct">1ª Etapa · Aprovação (%)</label><input id="propEtapa1Pct" type="number" min="0" max="100" step="0.01" value="50" oninput="updateThreeStagePayment(); buildProposal()"></div>
+                       <div><label for="propEtapa2Pct">2ª Etapa · Primeira Proposta (%)</label><input id="propEtapa2Pct" type="number" min="0" max="100" step="0.01" value="25" oninput="updateThreeStagePayment(); buildProposal()"></div>
+                       <div><label for="propEtapa3Pct">3ª Etapa · Entrega Final (%)</label><input id="propEtapa3Pct" type="number" min="0" max="100" step="0.01" value="25" oninput="updateThreeStagePayment(); buildProposal()"></div>
+                     </div>
+                     <div class="payment-stages-values">
+                       <div><small>Na Aprovação</small><strong id="propEtapa1Valor">R$ 0,00</strong></div>
+                       <div><small>Na Primeira Proposta</small><strong id="propEtapa2Valor">R$ 0,00</strong></div>
+                       <div><small>Na Entrega Final</small><strong id="propEtapa3Valor">R$ 0,00</strong></div>
+                     </div>
+                     <div class="payment-stages-status" id="paymentThreeStagesStatus" role="status">Total: 100%</div>
+                   </div>
                   <div id="paymentEntryFields" class="form-grid" style="margin-top:12px; display:none;">
                     <div><label>Valor de entrada</label><input id="propEntradaValor" inputmode="decimal" oninput="liveCurrencyInput(event, this); buildProposal()" onblur="formatCurrencyInput(this); buildProposal()" onkeydown="currencyEnterFormat(event, this)" placeholder="Ex.: R$ 2.000,00"></div>
                     <div><label>Vencimento da entrada</label><input id="propEntradaVencimento" type="date" oninput="buildProposal()"></div>
@@ -10120,6 +10148,46 @@ main{
       const manual = document.getElementById('paymentManualField');
       if(entry) entry.style.display = mode === 'entrada_parcelas' ? 'grid' : 'none';
       if(manual) manual.style.display = mode === 'manual' ? 'block' : 'none';
+      const stages = document.getElementById('paymentThreeStages');
+      if(stages) stages.style.display = mode === 'tres_etapas' ? 'block' : 'none';
+      updateThreeStagePayment();
+    }
+    // v80 - calcula por centavos, evitando divergência no somatório das parcelas.
+    function threeStagePaymentData(valorTotal){
+      const ids = ['propEtapa1Pct','propEtapa2Pct','propEtapa3Pct'];
+      const percentages = ids.map(id => {
+        const raw = String(document.getElementById(id)?.value ?? '').replace(',', '.');
+        return raw.trim() === '' ? NaN : Number(raw);
+      });
+      const valid = percentages.every(n => Number.isFinite(n) && n >= 0 && n <= 100)
+        && Math.abs(percentages.reduce((a,b)=>a+b,0)-100) < 0.000001;
+      const cents = Math.round(Math.max(0,Number(valorTotal)||0)*100);
+      const first = valid ? Math.round(cents*percentages[0]/100) : 0;
+      const second = valid ? Math.round(cents*percentages[1]/100) : 0;
+      const values = valid ? [first, second, cents-first-second].map(v=>v/100) : [0,0,0];
+      return {percentages,values,valid,total:percentages.reduce((a,b)=>a+b,0)};
+    }
+    function threeStagePercentText(n){
+      const str = Number(n).toLocaleString('pt-BR',{maximumFractionDigits:2});
+      const integer = Math.trunc(n);
+      const decimal = Math.round((n-integer)*100);
+      if(!decimal) return `${str}% (${numeroPorExtensoBR(integer)} por cento)`;
+      return `${str}% (${numeroPorExtensoBR(integer)} vírgula ${numeroPorExtensoBR(decimal)} por cento)`;
+    }
+    function updateThreeStagePayment(){
+      const root = document.getElementById('paymentThreeStages');
+      if(!root) return;
+      const result = threeStagePaymentData(proposalTotalValue());
+      result.values.forEach((v,i)=>{
+        const el = document.getElementById(`propEtapa${i+1}Valor`);
+        if(el) el.textContent = result.valid ? money(v) : '—';
+      });
+      const status = document.getElementById('paymentThreeStagesStatus');
+      if(status){
+        status.classList.toggle('invalid',!result.valid);
+        status.textContent = result.valid ? 'Total: 100% · Valores conferidos' :
+          `Total: ${Number.isFinite(result.total) ? result.total.toLocaleString('pt-BR',{maximumFractionDigits:2})+'%' : 'inválido'} · Ajuste os percentuais para somar exatamente 100%.`;
+      }
     }
     function proposalIntroHtml(intro, objeto){
       let html = esc(intro);
@@ -10927,7 +10995,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     const PROPOSAL_HISTORY_FIELD_IDS = [
       'propTitulo','propNumero','propData','propCliente','propContato','propObjeto',
       'propValorTotalManual','propEntradaValor','propEntradaVencimento','propParcelasQtd',
-      'propParcelaValor','propFormaPagamento','propPagamentoManual','propEndereco',
+      'propParcelaValor','propFormaPagamento','propPagamentoManual','propEtapa1Pct','propEtapa2Pct','propEtapa3Pct','propEndereco',
       'propIntro','propDescricaoServico','propEscopo','propPrazoDias','propObs','propVisualHtml'
     ];
 
@@ -11168,12 +11236,24 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
     }
 
     function paymentHtmlBlocks(objeto, valorTotal, valorExtenso){
+      updateThreeStagePayment();
       const mode = document.getElementById('propFormaPagamento')?.value || 'padrao';
       const metade = valorTotal / 2;
       const commercial = proposalCommercialAdjustment(valorTotal);
       const base = commercial.discount > 0.005
         ? `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, o valor de referência é de <strong>${money(commercial.referenceTotal)}</strong>. Aplicado o desconto comercial de <strong>${formatCommercialPercent(commercial.discountPct)} (${money(commercial.discount)})</strong>, o valor final da proposta é de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`
         : `<p>Para os serviços de elaboração do <strong>${esc(String(objeto).toUpperCase())}</strong>, o valor total da proposta é de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>.</p>`;
+      if(mode === 'tres_etapas'){
+        const stages = threeStagePaymentData(valorTotal);
+        updateThreeStagePayment();
+        if(!stages.valid) return [base, '<p><strong>Percentuais de pagamento inválidos:</strong> ajuste as três etapas para totalizar 100% antes de emitir esta proposta.</p>'];
+        return [base,
+          '<p><strong>O pagamento poderá ser realizado</strong> à vista, parcelado em 03 (três) etapas ou parcelado no cartão de crédito, conforme condições acordadas entre as partes.</p>',
+          '<p>No caso de pagamento parcelado em 03 (três) etapas, o valor será dividido da seguinte forma:</p>',
+          ...['na aprovação desta proposta','na entrega da primeira proposta','na entrega final do serviço'].map((label,i)=>`<div class="proposal-list-row proposal-payment-row">${threeStagePercentText(stages.percentages[i])} do valor total, correspondente a <strong>${money(stages.values[i])}</strong>, ${label}${i===2?'.':';'}</div>`),
+          '<p class="proposal-payment-note">Obs.: Em caso de parcelamento no cartão de crédito, poderão ser aplicadas taxas administrativas da operadora.</p>'
+        ];
+      }
       if(mode === 'avista'){
         return [base, `<p><strong>O pagamento será realizado à vista</strong>, no valor total de <strong>${money(valorTotal)} (${esc(valorExtenso)})</strong>, conforme condições acordadas entre as partes.</p>`];
       }
@@ -11210,6 +11290,13 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       const base = commercial.discount > 0.005
         ? `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, o valor de referência é de ${money(commercial.referenceTotal)}. Aplicado o desconto comercial de ${formatCommercialPercent(commercial.discountPct)} (${money(commercial.discount)}), o valor final da proposta é de ${money(valorTotal)} (${valorExtenso}).`
         : `Para os serviços de elaboração do ${String(objeto).toUpperCase()}, o valor total da proposta é de ${money(valorTotal)} (${valorExtenso}).`;
+      if(mode === 'tres_etapas'){
+        const stages = threeStagePaymentData(valorTotal);
+        if(!stages.valid) return `${base}\n\nPercentuais de pagamento inválidos: ajuste as três etapas para totalizar 100%.`;
+        const lines = ['na aprovação desta proposta','na entrega da primeira proposta','na entrega final do serviço']
+          .map((label,i)=>`• ${threeStagePercentText(stages.percentages[i])} do valor total, correspondente a ${money(stages.values[i])}, ${label}${i===2?'.':';'}`);
+        return `${base}\n\nO pagamento poderá ser realizado à vista, parcelado em 03 (três) etapas ou parcelado no cartão de crédito, conforme condições acordadas entre as partes.\n\nNo caso de pagamento parcelado em 03 (três) etapas, o valor será dividido da seguinte forma:\n\n${lines.join('\n')}\n\nObs.: Em caso de parcelamento no cartão de crédito, poderão ser aplicadas taxas administrativas da operadora.`;
+      }
       if(mode === 'avista') return `${base}\n\nO pagamento será realizado à vista, no valor total de ${money(valorTotal)} (${valorExtenso}), conforme condições acordadas entre as partes.`;
       if(mode === 'entrada_parcelas'){
         const entrada = parseBRLCurrency(document.getElementById('propEntradaValor')?.value || '');
@@ -12749,7 +12836,10 @@ ${p.obs}` : ''}`;
       // complementar normalmente com o tipo e as características do serviço.
       setValue('propTitulo', 'DESCRIÇÃO DA PROPOSTA');
       setValue('propData', todayISO());
-      setValue('propFormaPagamento', 'padrao');
+      setValue('propFormaPagamento', 'tres_etapas');
+      setValue('propEtapa1Pct', '50');
+      setValue('propEtapa2Pct', '25');
+      setValue('propEtapa3Pct', '25');
       setValue('propParcelasQtd', '5');
       setValue('propPrazoDias', '20');
       syncProposalNumber(previewNextProposalNumber());
