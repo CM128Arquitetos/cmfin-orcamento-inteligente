@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- v81: alinhamento padronizado dos campos e cards das três etapas -->
   <!-- v80: pagamento em 3 etapas com percentuais editáveis, valores automáticos e histórico preservado -->
+  <!-- v82: redação da segunda etapa atualizada na proposta e nos textos gerados -->
   <!-- v79: botões do Editor da Proposta responsivos + restauração da aba ativa após F5/recarregamento -->
   <!-- v78: aba Proposta inicia somente com Dados Principais e Ações da Proposta expandidos -->
   <!-- v77: paginação bidirecional com quebra de parágrafos + undo/redo multipágina + autosave visual + toolbar consolidada -->
@@ -381,14 +383,19 @@
     /* v80 - condições comerciais: percentuais por etapa */
     .payment-stages-panel{margin-top:14px;padding:15px;border:1px solid var(--line);border-radius:14px;background:#f8faf8;}
     .payment-stages-grid,.payment-stages-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
-    .payment-stages-grid label{font-size:.68rem;line-height:1.45;min-height:32px;}
-    .payment-stages-values{margin-top:12px;}
-    .payment-stages-values>div{padding:12px;border:1px solid var(--line);background:#fff;border-radius:12px;}
-    .payment-stages-values small{display:block;font-size:.69rem;color:var(--muted);font-weight:700;}
-    .payment-stages-values strong{display:block;font-size:1rem;margin-top:5px;}
+    /* v81: títulos com mesma altura e campos perfeitamente alinhados */
+    .payment-stages-grid{align-items:stretch;}
+    .payment-stages-grid>div{display:grid !important;grid-template-rows:54px 50px;align-content:end;min-width:0;}
+    .proposal-editor .payment-stages-grid>div>label,
+    .payment-stages-grid label{display:flex;align-items:flex-end;min-height:0;height:54px;margin:0;padding-bottom:7px;font-size:.68rem;line-height:1.45;}
+    .payment-stages-grid input{height:50px;min-height:50px;margin:0;}
+    .payment-stages-values{margin-top:12px;align-items:stretch;}
+    .payment-stages-values>div{min-width:0;min-height:90px;padding:10px;border:1px solid var(--line);background:#fff;border-radius:12px;display:flex;flex-direction:column;justify-content:space-between;}
+    .payment-stages-values small{display:block;font-size:.69rem;line-height:1.35;color:var(--muted);font-weight:700;}
+    .payment-stages-values strong{display:block;font-size:1rem;margin-top:5px;white-space:nowrap;}
     .payment-stages-status{margin-top:12px;font-weight:800;font-size:.82rem;color:var(--success);}
     .payment-stages-status.invalid{color:var(--danger);}
-    @media(max-width:650px){.payment-stages-grid,.payment-stages-values{grid-template-columns:1fr;}.payment-stages-grid label{min-height:auto;}}
+    @media(max-width:650px){.payment-stages-grid,.payment-stages-values{grid-template-columns:1fr;}.payment-stages-grid>div{grid-template-rows:auto 50px;}.proposal-editor .payment-stages-grid>div>label,.payment-stages-grid label{height:auto;min-height:0;padding-bottom:7px;}.payment-stages-values>div{min-height:76px;}}
 
     .proposal-editor #paymentEntryFields > div > label { min-height: 1.15rem; }
 
@@ -11250,7 +11257,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
         return [base,
           '<p><strong>O pagamento poderá ser realizado</strong> à vista, parcelado em 03 (três) etapas ou parcelado no cartão de crédito, conforme condições acordadas entre as partes.</p>',
           '<p>No caso de pagamento parcelado em 03 (três) etapas, o valor será dividido da seguinte forma:</p>',
-          ...['na aprovação desta proposta','na entrega da primeira proposta','na entrega final do serviço'].map((label,i)=>`<div class="proposal-list-row proposal-payment-row">${threeStagePercentText(stages.percentages[i])} do valor total, correspondente a <strong>${money(stages.values[i])}</strong>, ${label}${i===2?'.':';'}</div>`),
+          ...['na aprovação desta proposta','após a apresentação da proposta aprovada','na entrega final do serviço'].map((label,i)=>`<div class="proposal-list-row proposal-payment-row">${threeStagePercentText(stages.percentages[i])} do valor total, correspondente a <strong>${money(stages.values[i])}</strong>, ${label}${i===2?'.':';'}</div>`),
           '<p class="proposal-payment-note">Obs.: Em caso de parcelamento no cartão de crédito, poderão ser aplicadas taxas administrativas da operadora.</p>'
         ];
       }
@@ -11293,7 +11300,7 @@ Texto descritivo do bloco. Ajuste este conteúdo conforme a proposta.
       if(mode === 'tres_etapas'){
         const stages = threeStagePaymentData(valorTotal);
         if(!stages.valid) return `${base}\n\nPercentuais de pagamento inválidos: ajuste as três etapas para totalizar 100%.`;
-        const lines = ['na aprovação desta proposta','na entrega da primeira proposta','na entrega final do serviço']
+        const lines = ['na aprovação desta proposta','após a apresentação da proposta aprovada','na entrega final do serviço']
           .map((label,i)=>`• ${threeStagePercentText(stages.percentages[i])} do valor total, correspondente a ${money(stages.values[i])}, ${label}${i===2?'.':';'}`);
         return `${base}\n\nO pagamento poderá ser realizado à vista, parcelado em 03 (três) etapas ou parcelado no cartão de crédito, conforme condições acordadas entre as partes.\n\nNo caso de pagamento parcelado em 03 (três) etapas, o valor será dividido da seguinte forma:\n\n${lines.join('\n')}\n\nObs.: Em caso de parcelamento no cartão de crédito, poderão ser aplicadas taxas administrativas da operadora.`;
       }
